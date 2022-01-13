@@ -1,6 +1,7 @@
 """
 Client that dumps samples directly to the jack client with the :mod:`jack` package.
 """
+import typing
 from itertools import cycle
 import multiprocessing as mp
 import queue as queue
@@ -82,10 +83,33 @@ class JackClient(mp.Process):
     """
     Client that dumps frames of audio directly into a running jackd client.
 
-    When first initialized, sets module level variables above.
+    See the :meth:`.process` method to see how the client works in detail, but
+    as a narrative overview:
+
+    * The client interacts with a running jackd daemon, typically launched with :func:`.external.start_jackd`
+      The jackd process is configured with the ``JACKDSTRING`` pref, which by default is built from other parameters
+      like the ``FS`` sampling rate et al.
+    * :class:`multiprocessing.Event` objects are used to synchronize state within the client,
+      eg. the play event signals that the client should begin to pull frames from the sound queue
+    * :class:`multiprocessing.Queue` objects are used to send samples to the client,
+      specifically chunks samples with length ``BLOCKSIZE``
+    * The general pattern of using both together is to load a queue with chunks of samples and then set the
+      play event.
+    * Jackd will call the ``process`` method repeatedly, within which this class will check the state
+      of the event flags and pull from the appropriate queues to load the samples into jackd's audio buffer
+
+    When first initialized, sets module level variables above, which are the public
+    hooks to use the client. Within autopilot, the module-level variables are used, but
+    if using the jackclient or sound system outside of a typical autopilot context, you can
+    instantiate a JackClient and then pass it to sounds as ``jack_client``.
+
+    Args:
+        name (str): name of client, default "jack_client"
+        outchannels (list): Optionally manually pass outchannels rather than getting
+            from prefs. A list of integers corresponding to output channels to initialize.
+            if ``None`` (default), get ``'OUTCHANNELS'`` from prefs
 
     Attributes:
-        name (str): name of client, default "jack_client"
         q (:class:`~.multiprocessing.Queue`): Queue that stores buffered frames of audio
         q_lock (:class:`~.multiprocessing.Lock`): Lock that manages access to the Queue
         play_evt (:class:`multiprocessing.Event`): Event used to trigger loading samples from `QUEUE`, ie. playing.
@@ -99,7 +123,10 @@ class JackClient(mp.Process):
         mono_output (bool): ``True`` or ``False`` depending on if the number of output channels is 1 or >1, respectively.
             detected and set in :meth:`.JackClient.boot_server` , initialized to ``True`` (which is hopefully harmless)
     """
-    def __init__(self, name='jack_client', debug_timing=False):
+    def __init__(self,
+                 name='jack_client',
+                 outchannels: typing.Optional[list] = None,
+                 debug_timing:bool=False):
         """
         Args:
             name:
@@ -109,6 +136,11 @@ class JackClient(mp.Process):
         # TODO: If global client variable is set, just return that one.
 
         self.name = name
+        if outchannels is None:
+            self.outchannels = prefs.get('OUTCHANNELS')
+        else:
+            self.outchannels = outchannels
+
         #self.pipe = pipe
         self.q = mp.Queue()
         self.q_lock = mp.Lock()
@@ -167,7 +199,6 @@ class JackClient(mp.Process):
         if self.alsa_nperiods is None:
             self.alsa_nperiods = 1
 
-
     def boot_server(self):
         """
         Called by :meth:`.JackClient.run` to boot the server upon starting the process.
@@ -198,22 +229,20 @@ class JackClient(mp.Process):
         processing sample starts.
         """
         ## Parse OUTCHANNELS into listified_outchannels and set `self.mono_output`
-        # Get the pref
-        outchannels = prefs.get('OUTCHANNELS')
         
         # This generates `listified_outchannels`, which is always a list
         # It also sets `self.mono_output` if outchannels is None
-        if outchannels == '':
+        if self.outchannels == '':
             # Mono mode
             listified_outchannels = []
             self.mono_output = True
-        elif not isinstance(outchannels, list):
+        elif not isinstance(self.outchannels, list):
             # Must be a single integer-like thing
-            listified_outchannels = [int(outchannels)]
+            listified_outchannels = [int(self.outchannels)]
             self.mono_output = False
         else:
             # Already a list
-            listified_outchannels = outchannels
+            listified_outchannels = self.outchannels
             self.mono_output = False
         
         ## Initalize self.client
@@ -242,7 +271,8 @@ class JackClient(mp.Process):
 
         # Activate the client
         self.client.activate()
-        
+        self.logger.debug('client activated')
+
         
         ## Hook up the outports (data sinks) to physical ports
         # Get the actual physical ports that can play sound
@@ -283,6 +313,7 @@ class JackClient(mp.Process):
         """
         self.logger = init_logger(self)
         self.boot_server()
+        self.logger.debug('server booted')
 
         if self.debug_timing:
             self.querythread = Thread(target=self._query_timebase)
@@ -356,7 +387,6 @@ class JackClient(mp.Process):
                 self.write_to_outports(data)
 
         else:
-
             # A play event has been set
             # Play a sound
 
@@ -382,11 +412,11 @@ class JackClient(mp.Process):
                 else:
                     # Play zeros
                     data = np.zeros(self.blocksize, dtype='float32')
-                
+
                 # Write data
                 self.write_to_outports(data)
 
-                
+
                 # sound is over
                 self.play_evt.clear()
                 # end time is just the start of the next frame??

@@ -77,12 +77,16 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             # it should be at least 2 (in case its first spawned in its module)
             # but otherwise nocollide
             p_num = 2
+            _module_name = module_name
+            module_name = f"{_module_name}_{str(p_num).zfill(2)}"
             if module_name in globals()['_LOGGERS']:
                 for existing_mod in globals()['_LOGGERS']:
                     if module_name in existing_mod and re.match(r'\d$', existing_mod):
                         p_num += 1
 
-            module_name += f"_{str(p_num).zfill(2)}"
+                module_name = f"{_module_name}_{str(p_num).zfill(2)}"
+
+
 
 
         # get name of object if it has one
@@ -129,7 +133,7 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 
             ## file handler
             # base filename is the module_name + '.log
-            base_filename = (Path(prefs.get('LOGDIR')) / module_name).with_suffix('.log')
+            base_filename = Path(prefs.get('LOGDIR')) / (module_name + '.log')
 
             # if directory doesn't exist, try to make it
             if not base_filename.parent.exists():

@@ -13,3 +13,4 @@ PyOpenGL
 pyqtgraph>=0.11.0rc0
 PySide2
 tqdm
+validators

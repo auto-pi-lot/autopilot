@@ -69,6 +69,7 @@ will be raised with the string given as the message
 import json
 import subprocess
 import multiprocessing as mp
+from threading import Lock
 import os
 import logging
 import typing
@@ -106,18 +107,40 @@ class Scopes(Enum):
     AUDIO = auto() #: Audio prefs...
 
 
+using_manager = False
+try:
+    _PREF_MANAGER = mp.Manager() # type: mp.managers.SyncManager
+    """
+    The :class:`multiprocessing.Manager` that stores prefs during system operation and makes them available
+    and consistent across processes.
+    """
+    using_manager = True
+
+    _PREFS = _PREF_MANAGER.dict()  # type: mp.managers.SyncManager.dict
+    """
+    stores a dictionary of preferences that mirrors the global variables.
+    """
+
+    _INITIALIZED = mp.Value(c_bool, False)  # type: mp.Value
+    """
+    Boolean flag to indicate whether prefs have been initialzied from ``prefs.json``
+    """
+
+    _LOCK = mp.Lock()  # type: mp.Lock
+    """
+    :class:`multiprocessing.Lock` to control access to ``prefs.json``
+    """
+
+except (EOFError, FileNotFoundError):
+    # can't use mp.Manager in ipython and other interactive contexts
+    # fallback to just regular old dict
+
+    _PREF_MANAGER = None
+    _PREFS = {}
+    _INITIALIZED = False
+    _LOCK = Lock()
 
 
-_PREF_MANAGER = mp.Manager() # type: mp.managers.SyncManager
-"""
-The :class:`multiprocessing.Manager` that stores prefs during system operation and makes them available
-and consistent across processes.
-"""
-
-_PREFS = _PREF_MANAGER.dict() # type: mp.managers.SyncManager.dict
-"""
-stores a dictionary of preferences that mirrors the global variables.
-"""
 
 _LOGGER = None # type: typing.Union[logging.Logger, None]
 """
@@ -126,15 +149,6 @@ Logger used by prefs initialized by :func:`.core.loggers.init_logger`
 Initially None, created once prefs are populated because init_logger requires some prefs to be set (uh the logdir and level and stuff)
 """
 
-_INITIALIZED = mp.Value(c_bool, False) # type: mp.Value
-"""
-Boolean flag to indicate whether prefs have been initialzied from ``prefs.json``
-"""
-
-_LOCK = mp.Lock() # type: mp.Lock
-"""
-:class:`multiprocessing.Lock` to control access to ``prefs.json``
-"""
 
 # not documenting, just so that the full function doesn't need to be put in for each directory
 # lol at this literal reanimated fossil halfway evolved between os.path and pathlib
@@ -417,6 +431,11 @@ Each entry should be a dict with the following structure::
     }
 """
 
+_WARNED = []
+"""
+Keep track of which prefs we have warned about getting defaults for
+so we don't warn a zillion times
+"""
 
 def get(key: typing.Union[str, None] = None):
     """
@@ -433,7 +452,10 @@ def get(key: typing.Union[str, None] = None):
 
     # if nothing is requested of us, return everything
     if key is None:
-        return globals()['_PREFS']._getvalue()
+        if using_manager:
+            return globals()['_PREFS']._getvalue()
+        else:
+            return globals()['_PREFS'].copy()
 
     else:
         # check for deprecation
@@ -458,7 +480,9 @@ def get(key: typing.Union[str, None] = None):
             # try to get a default value
             try:
                 default_val = globals()['_DEFAULTS'][key]['default']
-                warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', UserWarning)
+                if key not in globals()['_WARNED']:
+                    globals()['_WARNED'].append(key)
+                    warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', UserWarning)
                 return default_val
 
             # if you still can't find a value, None is an unambiguous signal for pref not set
@@ -481,7 +505,12 @@ def set(key: str, val):
         val: Value of pref to set (prefs are not type validated against default types)
     """
     globals()['_PREFS'][key] = val
-    if globals()['_INITIALIZED'].value and 'pytest' not in sys.modules:
+    if using_manager:
+        initialized = globals()['_INITIALIZED'].value
+    else:
+        initialized = globals()['_INITIALIZED']
+
+    if initialized and 'pytest' not in sys.modules:
         save_prefs()
 
 
@@ -503,7 +532,11 @@ def save_prefs(prefs_fn: str = None):
     # take lock for access to prefs file
     with globals()['_LOCK']:
         with open(prefs_fn, 'w') as prefs_f:
-            json.dump(globals()['_PREFS']._getvalue(), prefs_f,
+            if using_manager:
+                save_prefs = globals()['_PREFS']._getvalue()
+            else:
+                save_prefs = globals()['_PREFS'].copy()
+            json.dump(save_prefs, prefs_f,
                       indent=4, separators=(',', ': '))
 
 
@@ -588,8 +621,11 @@ def init(fn=None):
 
     # also store as a dictionary so other modules can have one if they want it
     # globals()['__dict__'] = prefs
+    if using_manager:
+        initialized = globals()['_INITIALIZED'].value = True
+    else:
+        initialized = globals()['_INITIALIZED'] = True
 
-    globals()['_INITIALIZED'].value = True
 
 def add(param, value):
     """
@@ -696,16 +732,19 @@ def clear():
     """
     global _PREFS
     global _PREF_MANAGER
-    _PREFS = _PREF_MANAGER.dict()
+    if using_manager:
+        _PREFS = _PREF_MANAGER.dict()
+    else:
+        _PREFS = {}
 
 
 
 #######################3
 
-if not _INITIALIZED.value:
-    init()
-
-    # replace module
-    # sys.modules[__name__] = _Prefs(__name__)
-
+if using_manager:
+    if not _INITIALIZED.value:
+        init()
+else:
+    if not _INITIALIZED:
+        init()
 

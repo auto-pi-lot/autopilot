@@ -1,10 +1,13 @@
 import typing
 from time import time
+from collections import deque as dq
 
 import numpy as np
 from scipy.spatial import distance
 from scipy.spatial.transform import Rotation as R
 from scipy.optimize import curve_fit
+from scipy.spatial import distance
+from scipy.spatial.distance import euclidean
 
 from autopilot.transform.transforms import Transform
 from autopilot.transform.timeseries import Kalman
@@ -460,6 +463,331 @@ def _ellipsoid_func(fit, a, b, c, x, y, z):
     """
     x_fit, y_fit, z_fit = fit[:,0], fit[:,1], fit[:,2]
     return ((x_fit - x)**2 / a**2) + ((y_fit - y)**2 / b**2) + ((z_fit - z)**2 / c**2)
+
+
+class Order_Points(Transform):
+    """
+    Order x-y coordinates into a line, such that each point (row) in an array is ordered next to its nearest points
+
+    Useful for when points are extracted from an image, but need to be treated as a line rather than disordered points!
+
+    Starting with a point, find the nearest point and add that to a deque. Once all points are found on the 'forward pass',
+    start the initial point again goind the 'other direction.'
+
+    The threshold parameter tunes the (percentile) distance consecutive points may be from one another.
+    The default threshold of ``1`` will connect all the points but won't necessarily find a very compact line.
+    Lower thresholds make more sensible lines, but may miss points depending on how line-like the initial points are.
+
+    Note that the first point chosen (first in the input array) affects the line that is formed with the points do not form an unambiguous line.
+    I am not surehow to arbitrarily specify a point to start from, but would love to hear what people want!
+
+    Examples:
+
+        .. plot::
+
+            import matplotlib.pyplot as plt
+            import numpy as np
+            from timeit import timeit
+
+            from autopilot.transform.geometry import Order_Points
+
+            # order all points, with no thresholded distance
+            orderer = Order_Points(1)
+
+            runs = 100
+            total_time = timeit(
+                'points = orderer.process(points)',
+                setup='points = np.column_stack([np.random.rand(100), np.random.rand(100)])',
+                globals=globals(),
+                number=runs
+            )
+            print(f'mean time per execution (ms): {total_time*1000/runs}')
+
+            points = np.column_stack([np.random.rand(100), np.random.rand(100)])
+            ordered_points = orderer.process(points)
+
+            # lower threshold!
+            orderer.closeness_threshold = 0.25
+            lowthresh_points = orderer.process(points)
+
+            fig, ax = plt.subplots(1,3)
+            ax[0].scatter(points[:,0], points[:,1])
+            ax[1].scatter(points[:,0], points[:,1])
+            ax[2].scatter(points[:,0], points[:,1])
+            ax[1].plot(ordered_points[:,0], ordered_points[:,1], c='r')
+            ax[2].plot(lowthresh_points[:,0], lowthresh_points[:,1], c='r')
+
+            ax[1].set_title('threshold = 1')
+            ax[2].set_title('threshold = 0.25')
+            plt.show()
+
+
+    """
+    def __init__(self, closeness_threshold:float=1, **kwargs):
+        """
+
+        Args:
+            closeness_threshold (float): The percentile of distances beneath which to consider
+                connecting points, from 0 to 1. Eg. 0.5 would allow points that are closer than 50% of all distances
+                between all points to be connected. Default is 1, which allows all points to be connected.
+        """
+        super(Order_Points, self).__init__(**kwargs)
+        self.closeness_threshold = np.clip(closeness_threshold, 0, 1)
+
+
+    def process(self, input:np.ndarray) -> np.ndarray:
+        """
+
+        Args:
+            input (:class:`numpy.ndarray`): an ``n x 2`` array of x/y points
+
+        Returns:
+            :class:`numpy.ndarray` Array of points, reordered into a line
+
+
+        """
+        dists = distance.squareform(distance.pdist(input))
+
+        close_thresh = np.max(dists) * self.closeness_threshold
+
+        inds = np.ones((input.shape[0],), dtype=bool)
+
+        backwards = False
+        found = False
+        point = 0
+        new_points = dq()
+
+        # Pick a point to start with.. the first one, why not.
+        new_points.append(input[point, :])
+        inds[point] = False
+
+        while True:
+            # get indices of points that are close enough to consider and sort them
+            close_enough = np.where(
+                np.logical_and(
+                    inds,
+                    dists[point, :] < close_thresh,
+                ))[0]
+            close_enough = close_enough[np.argsort(dists[point, close_enough])]
+
+            if len(close_enough) == 0:
+                # either at one end or *the end*
+                if not backwards:
+                    point = 0
+                    backwards = True
+                    continue
+                else:
+                    break
+
+            else:
+                point = close_enough[0]
+                inds[point] = False
+
+            if not backwards:
+                # new_points.append(input[inds.pop(point), :])
+                new_points.append(input[point, :])
+            else:
+                # new_points.appendleft(input[inds.pop(point), :])
+                new_points.appendleft(input[point, :])
+
+        return np.row_stack(new_points)
+
+
+class Linefit_Prasad(Transform):
+    """
+    Given an ordered series of x/y coordinates (see :class:`.Order_Points` ),
+    use D.Prasad et al.'s parameter-free line fitting algorithm to make a simplified, fitted line.
+
+    Optimized from the original MATLAB code, including precomputing some of the transformation matrices. The
+    attribute names are from the original, and due to the nature of code transcription doesn't follow some of Autopilot's usual
+    structural style.
+
+    Args:
+        return_metrics (bool):
+
+    Examples:
+
+        .. plot::
+
+            import matplotlib.pyplot as plt
+            import numpy as np
+
+            from autopilot.transform.geometry import Order_Points, Linefit_Prasad
+
+            fs, f, t = 2, 1/50, 200
+
+            x = np.arange(t*fs)/fs
+            y = (np.sin(2*np.pi*f*x)+(np.random.rand(len(x))*0.5-0.25))*50
+            points = np.column_stack([x,y])
+
+            orderer = Order_Points(closeness_threshold=0.2)
+            prasad  = Linefit_Prasad()
+
+            ordered = orderer.process(points)
+            segs    = prasad.process(ordered)
+
+            fig, ax = plt.subplots(2,1)
+            ax[0].scatter(x,y)
+            ax[1].scatter(x,y)
+            ax[0].plot(ordered[:,0], ordered[:,1], color='r')
+            ax[1].plot(segs[:,0], segs[:,1], color='r')
+            ax[1].scatter(segs[:,0], segs[:,1], color='y')
+            ax[0].set_title('ordered points')
+            ax[1].set_title('prasad fit line')
+            fig.tight_layout()
+            plt.show()
+
+
+    References:
+        :cite:`prasadParameterIndependentLine2011`
+        Original MATLAB Implementation: https://docs.google.com/open?id=0B10RxHxW3I92dG9SU0pNMV84alk
+    """
+    def __init__(self, return_metrics:bool=False, **kwargs):
+        super(Linefit_Prasad, self).__init__(**kwargs)
+
+        self.return_metrics = return_metrics
+
+        ## compute constants
+        phi = np.arange(0, np.pi*2, np.pi / 180)
+
+        sin_p = np.sin(phi)
+        cos_p = np.cos(phi)
+        sin_plus_cos = sin_p+cos_p
+        sin_minus_cos = sin_p-cos_p
+
+        term1 = []
+        term1.append(np.abs(cos_p))
+        term1.append(np.abs(sin_p))
+        term1.append(np.abs(sin_plus_cos))
+        term1.append(np.abs(sin_minus_cos))
+        self.term1 = np.row_stack((term1, term1))
+
+        tt2 = []
+        tt2.append(sin_p)
+        tt2.append(cos_p)
+        tt2.append(sin_minus_cos)
+        tt2.append(sin_plus_cos)
+        tt2.extend([-tt2[0], -tt2[1], -tt2[2], -tt2[3]])
+        self.tt2 = np.row_stack(tt2)
+
+
+    def process(self, input:np.ndarray) -> np.ndarray:
+        """
+        Given an ``n x 2`` array of ordered x/y points, return
+
+        Args:
+            input (:class:`numpy.ndarray`): ``n x 2`` array of ordered x/y points
+
+        Returns:
+            :class:`numpy.ndarray` an ``m x 2`` simplified array of line segments
+        """
+        # input should be a list of ordered coordinates
+        # all credit to http://ieeexplore.ieee.org/document/6166585/
+        # adapted from MATLAB scripts here: https://docs.google.com/open?id=0B10RxHxW3I92dG9SU0pNMV84alk
+        # don't expect a lot of commenting from me here,
+        # I don't claim to *understand* it, I just transcribed
+
+        x = input[:, 0]
+        y = input[:, 1]
+
+        first = 0
+        last = len(input) - 1
+
+        seglist = []
+        seglist.append([x[0], y[0]])
+
+        if self.return_metrics:
+            precision = []
+            reliability = []
+
+        while first < last:
+
+            mdev_results = self._maxlinedev(x[first:last + 1], y[first:last + 1])
+
+            while mdev_results['d_max'] > mdev_results['del_tol_max']:
+                if mdev_results['index_d_max'] + first == last:
+                    last = len(x) - 1
+                    break
+                else:
+                    last = mdev_results['index_d_max'] + first
+
+                if (last == first + 1) or (last == first):
+                    last = len(x) - 1
+                    break
+
+                try:
+                    mdev_results = self._maxlinedev(x[first:last + 1], y[first:last + 1])
+                except IndexError:
+                    break
+
+            seglist.append([x[last], y[last]])
+            if self.return_metrics:
+                precision.append(mdev_results['precision'])
+                reliability.append(mdev_results['reliability'])
+
+            first = last
+            last = len(x) - 1
+
+        if self.return_metrics:
+            return np.row_stack(seglist), precision, reliability
+        else:
+            return np.row_stack(seglist)
+
+    def _maxlinedev(self, x, y):
+        # all credit to http://ieeexplore.ieee.org/document/6166585/
+        # adapted from MATLAB scripts here: https://docs.google.com/open?id=0B10RxHxW3I92dG9SU0pNMV84alk
+
+        x = x.astype(np.float)
+        y = y.astype(np.float)
+
+        results = {}
+
+        first = 0
+        last = len(x) - 1
+
+        X = np.array([[x[0], y[0]], [x[last], y[last]]])
+        A = np.array([
+            [(y[0] - y[last]) / (y[0] * x[last] - y[last] * x[0])],
+            [(x[0] - x[last]) / (x[0] * y[last] - x[last] * y[0])]
+        ])
+
+        if np.isnan(A[0]) and np.isnan(A[1]):
+            devmat = np.column_stack((x - x[first], y - y[first])) ** 2
+            dev = np.abs(np.sqrt(np.sum(devmat, axis=1)))
+        elif np.isinf(A[0]) and np.isinf(A[1]):
+            c = x[0] / y[0]
+            devmat = np.column_stack((
+                x[:] / np.sqrt(1 + c ** 2),
+                -c * y[:] / np.sqrt(1 + c ** 2)
+            ))
+            dev = np.abs(np.sum(devmat, axis=1))
+        else:
+            devmat = np.column_stack((x, y))
+            dev = np.abs(np.matmul(devmat, A) - 1.) / np.sqrt(np.sum(A ** 2))
+
+        results['d_max'] = np.max(dev)
+        results['index_d_max'] = np.argmax(dev)
+
+        s_mat = np.column_stack((x - x[first], y - y[first])) ** 2
+        s_max = np.max(np.sqrt(np.sum(s_mat, axis=1)))
+        del_phi_max = self._digital_error(s_max)
+        results['del_tol_max'] = np.tan((del_phi_max * s_max))
+
+        if self.return_metrics:
+            results['precision'] = np.linalg.norm(dev, ord=2) / np.sqrt(float(last))
+            results['reliability'] = np.sum(dev) / s_max
+
+        return results
+
+    def _digital_error(self, ss):
+
+        tt2 = self.tt2 / ss
+        term2 = ss * (1 - tt2 + tt2 ** 2)
+
+        case_value = (1 / ss ** 2) * self.term1 * term2
+
+        return np.max(case_value)
+
 
 
 
