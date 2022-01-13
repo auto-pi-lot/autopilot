@@ -5,6 +5,10 @@ use the :func:`.default_sound_class` function.
 import typing
 import sys
 from warnings import warn
+from queue import Empty
+from abc import abstractmethod
+import threading
+from time import sleep
 
 import numpy as np
 
@@ -45,7 +49,7 @@ class Sound(Stim):
         self.duration = duration
         self.logger = init_logger(self)
 
-        self.table = None # type: np.ndarray
+        self.table = None # type: typing.Optional[np.ndarray]
         self.initialized = False
 
     def get_nsamples(self):
@@ -208,6 +212,16 @@ class Jack_Sound(Stim):
         self.initialized = False
         self.buffered = False
         self.buffered_continuous = False
+
+    @abstractmethod
+    def init_sound(self):
+        """
+        Abstract method to initialize sound. Should set the :attr:`.table` attribute
+
+        .. todo::
+
+            ideally should standardize by returning an array, but pyo objects don't return arrays necessarily...
+        """
 
     def chunk(self, pad=True):
         """
@@ -531,7 +545,7 @@ class Jack_Sound(Stim):
         self.end()
 
 
-def get_sound_class(backend: typing.Optional[str] = None) -> Sound:
+def get_sound_class(backend: typing.Optional[str] = None) -> typing.Union[typing.Type[Sound],typing.Type[Jack_Sound],typing.Type[Pyo_Sound]]:
     """
     Get the default sound class as defined by ``'AUDIOSERVER'``
 

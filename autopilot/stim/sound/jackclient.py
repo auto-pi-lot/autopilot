@@ -358,14 +358,15 @@ class JackClient(mp.Process):
             ## Switch on whether we are in continuous mode
             if self.continuous.is_set():
                 # We are in continuous mode, keep playing
-                if self.continuous_cycle is None:
-                    try:
-                        to_cycle = self.continuous_q.get_nowait()
-                        self.continuous_cycle = cycle(to_cycle)
-                        self.logger.debug(f'started playing continuous sound with length {len(to_cycle)} frames')
-                    except Empty:
+                # check if the continuous sound has changed, even if we already have one
+                try:
+                    to_cycle = self.continuous_q.get_nowait()
+                    self.continuous_cycle = cycle(to_cycle)
+                    self.logger.debug(f'got continuous sound with length {len(to_cycle)} frames')
+                except Empty:
+                    if self.continuous_cycle is None:
                         self.logger.exception('told to play continuous sound but nothing in queue, will try again next loop around')
-                        self.client.outports[0].get_array()[:] = self.zero_arr.T
+                        self.write_to_outports(self.zero_arr.T)
                         return
 
                 # Get the data to play
@@ -378,6 +379,7 @@ class JackClient(mp.Process):
                 # We are not in continuous mode, play silence
                 # clear continuous sound after it's done
                 if self.continuous_cycle is not None:
+                    self.logger.debug('continuous flag cleared')
                     self.continuous_cycle = None
 
                 # Play zeros

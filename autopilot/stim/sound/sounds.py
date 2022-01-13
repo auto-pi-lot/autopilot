@@ -53,7 +53,7 @@ from autopilot import prefs
 from autopilot.stim.sound.base import get_sound_class, Sound
 import autopilot
 
-BASE_CLASS = get_sound_class()  # type: Sound
+BASE_CLASS = get_sound_class()
 
 
 ## The rest of the module defines actual sounds, which inherit from BASE_CLASS
