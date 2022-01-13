@@ -5,7 +5,9 @@ from datetime import datetime
 import os
 import logging
 import tables
+from itertools import count
 # from autopilot.core.networking import Net_Node
+import autopilot
 from autopilot.hardware import BCM_TO_BOARD
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
@@ -22,26 +24,29 @@ class Task(object):
     Generic Task metaclass
 
     Attributes:
-        PARAMS (:class:`collections.OrderedDict`): Params to define task, like::
+        PARAMS (:class:`collections.OrderedDict`): Params to define task, like:
+            ::
 
-            PARAMS = odict()
-            PARAMS['reward']         = {'tag':'Reward Duration (ms)',
-                                        'type':'int'}
-            PARAMS['req_reward']     = {'tag':'Request Rewards',
-                                        'type':'bool'}
+                PARAMS = odict()
+                PARAMS['reward']         = {'tag':'Reward Duration (ms)',
+                                            'type':'int'}
+                PARAMS['req_reward']     = {'tag':'Request Rewards',
+                                            'type':'bool'}
 
-        HARDWARE (dict): dict for necessary hardware, like::
+        HARDWARE (dict): dict for necessary hardware, like:
+            ::
 
-            HARDWARE = {
-                'POKES':{
-                    'L': hardware.Beambreak, ...
-                },
-                'PORTS':{
-                    'L': hardware.Solenoid, ...
+                HARDWARE = {
+                    'POKES':{
+                        'L': hardware.Beambreak, ...
+                    },
+                    'PORTS':{
+                        'L': hardware.Solenoid, ...
+                    }
                 }
-            }
 
-        PLOT (dict): Dict of plotting parameters, like::
+        PLOT (dict): Dict of plotting parameters, like:
+            ::
 
                 PLOT = {
                     'data': {
@@ -53,17 +58,18 @@ class Task(object):
                     'roll_window' : 50 # number of trials to roll window over
                 }
 
-        Trial_Data (:class:`tables.IsDescription`): Data table description, like::
+        Trial_Data (:class:`tables.IsDescription`): Data table description, like:
+            ::
 
-            class TrialData(tables.IsDescription):
-                trial_num = tables.Int32Col()
-                target = tables.StringCol(1)
-                response = tables.StringCol(1)
-                correct = tables.Int32Col()
-                correction = tables.Int32Col()
-                RQ_timestamp = tables.StringCol(26)
-                DC_timestamp = tables.StringCol(26)
-                bailed = tables.Int32Col()
+                class TrialData(tables.IsDescription):
+                    trial_num = tables.Int32Col()
+                    target = tables.StringCol(1)
+                    response = tables.StringCol(1)
+                    correct = tables.Int32Col()
+                    correction = tables.Int32Col()
+                    RQ_timestamp = tables.StringCol(26)
+                    DC_timestamp = tables.StringCol(26)
+                    bailed = tables.Int32Col()
 
         STAGE_NAMES (list): List of stage method names
         stage_block (:class:`threading.Event`): Signal when task stages complete.
@@ -97,6 +103,13 @@ class Task(object):
 
 
     def __init__(self, *args, **kwargs):
+        """
+        Args:
+            subject (str): Name of subject running the task
+            current_trial (int): Current trial number, default 0
+            *args ():
+            **kwargs ():
+        """
 
         # Task management
         self.stage_block = None  # a threading.Event used by the pilot to manage stage transitions
@@ -105,8 +118,10 @@ class Task(object):
         self.stages = None  # Some generator that continuously returns the next stage of the trial
         self.triggers = {}
         self.stim_manager = None
+        self.subject = kwargs.get('subject', None)
 
-        self.trial_counter = None  # will be init'd by the subtask because will use the current trial
+        self.trial_counter = count(int(kwargs.get('current_trial', 0)))  # will be init'd by the subtask because will use the current trial
+        self.current_trial = int(kwargs.get('current_trial', 0))
 
         # Hardware
         self.hardware = {}  # dict to store references to hardware
@@ -141,6 +156,10 @@ class Task(object):
             self.hardware[type] = {}
             # then iterate through each pin and handler of this type
             for pin, handler in values.items():
+                # if the hardware is specified as a string, try and get it from registry
+                if isinstance(handler, str):
+                    handler = autopilot.get_hardware(handler)
+
                 try:
                     hw_args = pin_numbers[type][pin]
                     if isinstance(hw_args, dict):
@@ -166,8 +185,8 @@ class Task(object):
                         if 'pin' in hw_args.keys():
                             self.pin_id[hw_args['pin']] = pin 
 
-                except:
-                    self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}".format(type, pin))
+                except Exception as e:
+                    self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}\nGot exception:{}".format(type, pin, e))
 
     def set_reward(self, vol=None, duration=None, port=None):
         """
@@ -191,9 +210,9 @@ class Task(object):
                         port.dur_from_vol(vol)
                     except AttributeError:
                         self.logger.warning('No calibration found, using duration = 20ms instead')
-                        port.duration = 0.02
+                        port.duration = 20.0
                 else:
-                    port.duration = float(duration)/1000.
+                    port.duration = float(duration)
         else:
             try:
                 if vol:
@@ -201,10 +220,10 @@ class Task(object):
                         self.hardware['PORTS'][port].dur_from_vol(vol)
                     except AttributeError:
                         self.logger.warning('No calibration found, using duration = 20ms instead')
-                        port.duration = 0.02
+                        port.duration = 20.0
 
                 else:
-                    self.hardware['PORTS'][port].duration = float(duration) / 1000.
+                    self.hardware['PORTS'][port].duration = float(duration)
             except KeyError:
                 raise Exception('No port found named {}'.format(port))
 
@@ -246,7 +265,6 @@ class Task(object):
         if not unlocked:
             self.logger.debug('Trigger called, but trigger lock has not been released by stage method. returning')
             return
-
 
         # Call the trigger
         try:

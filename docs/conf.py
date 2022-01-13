@@ -81,12 +81,15 @@ extensions = [
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.graphviz',
     'sphinx.ext.autosummary',
+    'sphinx.ext.imgconverter',
+    'matplotlib.sphinxext.plot_directive',
     #'sphinx_automodapi.automodapi',
     'autodocsumm',   # https://github.com/Chilipp/autodocsumm
     #'sphinxcontrib.fulltoc',
     #'localext.fulltoc'
     'sphinx_sass',
-    'local_directives'
+    'local_directives',
+    'sphinxcontrib.bibtex'
 ]
 
 if try_theme == 'rtd':
@@ -112,6 +115,7 @@ autodoc_default_options = {
     'members': True,
     'member-order': 'bysource',
     # 'exclude-members': '__doc__',
+    'private-members': False,
     'undoc-members': False,
     'show-inheritance': True,
     'autosummary': True
@@ -155,6 +159,9 @@ exclude_patterns = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
 
+# location of .bib file used for references
+bibtex_bibfiles = ['autopilot_docs.bib']
+
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -165,20 +172,7 @@ pygments_style = None
 html_theme = 'sphinx_rtd_theme'
 html_style = 'css/autopilot_theme.css'
 html_logo = '_images/autopilot_logo.svg'
-# elif try_theme == 'bootstrap':
-#     html_theme = 'bootstrap'
-#     html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-# else:
-#     html_theme = 'bootstrap'
-#     html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-
-#html_theme = "basicstrap"
-#
-# html_theme = "sphinx_rtd_theme"
-# html_theme_path = ["_themes", ]
-#
-
-
+html_favicon = '_images/favicon.svg'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -190,27 +184,11 @@ if html_theme == 'sphinx_rtd_theme':
         'collapse_navigation': False # keep expanding toc
     }
 
-elif html_theme == 'bootstrap':
-    html_theme_options = {
-        'navbar_title': "Autopilot",
-        'navbar_site_name': 'Autopilot Docs',
-        'globaltoc_depth': 3,
-        'navbar_class': "navbar navbar-inverse",
-        'bootswatch_theme': "readable",
-        'navbar_pagenav': True,
-
-    }
-
-
-#
-# html_sidebars = {
-#     '**': ['localtoc.html', 'relations.html']
-# }
-
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_extra_path = ['_images']
 
 # configure sass compilation
 sass_configs = [
@@ -226,22 +204,10 @@ html_css_files = [
 
 html_baseurl = 'https://docs.auto-pi-lot.com/'
 
-# Custom sidebar templates, must be a dictionary that maps document names
-# to template names.
-#
-# The default sidebars (for documents that don't match any pattern) are
-# defined by theme itself.  Builtin themes are using these templates by
-# default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
-# 'searchbox.html']``.
-#
-# html_sidebars = {}
-
-
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'autopilotdoc'
-
 
 # -- Options for LaTeX output ------------------------------------------------
 
@@ -320,14 +286,15 @@ epub_exclude_files = ['search.html']
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
                        'PySide2': ('https://doc.qt.io/qtforpython/PySide2/', None),
                        'tables': ('https://pytables.readthedocs.io/en/latest/', None),
-                       'pandas': ('http://pandas.pydata.org/pandas-docs/stable/', None),
+                       'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
                        'zmq': ('https://pyzmq.readthedocs.io/en/latest/', None),
                        'tornado': ('https://www.tornadoweb.org/en/stable/', None),
                        'pyqtgraph': ('https://pyqtgraph.readthedocs.io/en/latest/', None),
                        'numpy': ('https://numpy.readthedocs.io/en/latest/', None),
                        'npyscreen': ('https://npyscreen.readthedocs.io/', None),
                        'jack': ('https://jackclient-python.readthedocs.io/en/0.4.5/', None),
-                       'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),}
+                       'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+                       'picamera': ('https://picamera.readthedocs.io/en/release-1.13/', None)}
 
 # -- Options for todo extension ----------------------------------------------
 

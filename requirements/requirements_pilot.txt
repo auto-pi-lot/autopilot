@@ -2,17 +2,19 @@
 # python3-numpy
 # python3-pandas
 # python3-tables
-pyzmq
+pyzmq>=18.1.*
 npyscreen
-tornado
+tornado>=5.0.*
 inputs
 requests
 blosc
 JACK-Client
 scikit-video
 tqdm
-numpy
+numpy>=1.16.5
 pandas
 tables
 cffi
 pigpio @ https://github.com/sneakers-the-rat/pigpio/tarball/master
+scipy>=1.6.0
+validators

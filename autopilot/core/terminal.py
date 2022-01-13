@@ -5,12 +5,18 @@ import argparse
 import json
 import sys
 import os
+from pathlib import Path
+from pprint import pformat
+import time
+
 import datetime
 import logging
 import threading
 from collections import OrderedDict as odict
 import numpy as np
+
 from PySide2 import QtCore, QtGui, QtSvg, QtWidgets
+
 from autopilot import prefs
 from autopilot.core import styles
 import time
@@ -38,9 +44,9 @@ if __name__ == '__main__':
 
 from autopilot.core.subject import Subject
 from autopilot.core.plots import Plot_Widget
-from autopilot.core.networking import Terminal_Station, Net_Node
-from autopilot.core.utils import InvokeEvent, Invoker, get_invoker
-from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test
+from autopilot.networking import Net_Node, Terminal_Station
+from autopilot.utils.invoker import get_invoker
+from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog, Stream_Video, Plugins
 from autopilot.core.loggers import init_logger
 
 # Try to import viz, but continue if that doesn't work
@@ -99,7 +105,6 @@ class Terminal(QtWidgets.QMainWindow):
         node (:class:`~.networking.Net_Node`): Our Net_Node we use to communicate with our main networking object
         networking (:class:`~.networking.Terminal_Station`): Our networking object to communicate with the outside world
         subjects (dict): A dictionary mapping subject ID to :class:`~.subject.Subject` object.
-        pilots (dict): A dictionary mapping pilot ID to a list of its subjects, its IP, and any other pilot attributes.
         layout (:class:`QtWidgets.QGridLayout`): Layout used to organize widgets
         control_panel (:class:`~.gui.Control_Panel`): Control Panel to manage pilots and subjects
         data_panel (:class:`~.plots.Plot_Widget`): Plots for each pilot and subject.
@@ -129,7 +134,6 @@ class Terminal(QtWidgets.QMainWindow):
 
         # data
         self.subjects = {}  # Dict of our open subject objects
-        self.pilots = None
 
         # gui
         self.layout = None
@@ -140,12 +144,11 @@ class Terminal(QtWidgets.QMainWindow):
         self.data_panel = None
         self.logo = None
 
+        # property private attributes
+        self._pilots = None
+
         # logging
         self.logger = init_logger(self)
-
-        # Load pilots db as ordered dictionary
-        with open(prefs.get('PILOT_DB')) as pilot_file:
-            self.pilots = json.load(pilot_file, object_pairs_hook=odict)
 
         # Listen dictionary - which methods to call for different messages
         # Methods are spawned in new threads using handle_message
@@ -172,14 +175,14 @@ class Terminal(QtWidgets.QMainWindow):
         # The split is so the external networking can run in another process, do potentially time-consuming tasks
         # like resending & confirming message delivery without blocking or missing messages
 
-        self.node = Net_Node(id="_T", upstream='T', port=prefs.get('MSGPORT'), listens=self.listens)
-        self.logger.info("Net Node Initialized")
-
         # Start external communications in own process
         # Has to be after init_network so it makes a new context
         self.networking = Terminal_Station(self.pilots)
         self.networking.start()
         self.logger.info("Station object Initialized")
+
+        self.node = Net_Node(id="_T", upstream='T', port=prefs.get('MSGPORT'), listens=self.listens, instance=False)
+        self.logger.info("Net Node Initialized")
 
         # send an initial ping looking for our pilots
         self.node.send('T', 'INIT')
@@ -190,6 +193,18 @@ class Terminal(QtWidgets.QMainWindow):
         # self.heartbeat_timer.start()
         #self.heartbeat(once=True)
         self.logger.info('Terminal Initialized')
+
+        # if we don't have any pilots, pop a dialogue to declare one
+        if len(self.pilots) == 0:
+            box = pop_dialog(
+                'No Pilots', 'No pilots were found in the pilot_db, add one now?',
+                buttons=('Yes', 'No')
+            )
+            ret = box.exec_()
+            if ret == box.Yes:
+                self.new_pilot()
+
+
 
     def initUI(self):
         """
@@ -215,27 +230,37 @@ class Terminal(QtWidgets.QMainWindow):
         self.setWindowTitle('Terminal')
         #self.menuBar().setFixedHeight(40)
 
-        # This is the pixel resolution of the entire screen 
-        screensize = app.primaryScreen().size()
-        
-        # This is the available geometry of the primary screen, excluding
-        # window manager reserved areas such as task bars and system menus.
-        primary_display = app.primaryScreen().availableGeometry()
-        
-        
+        # This is the pixel resolution of the entire screen
+        if 'pytest' in sys.modules:
+            primary_display = None
+            terminal_winsize_behavior = 'custom'
+            custom_size=[0,0,1000,480]
+        else:
+            terminal_winsize_behavior = prefs.get('TERMINAL_WINSIZE_BEHAVIOR')
+            custom_size = prefs.get('TERMINAL_CUSTOM_SIZE')
+            app = QtWidgets.QApplication.instance()
+            screensize = app.primaryScreen().size()
+
+            # This is the available geometry of the primary screen, excluding
+            # window manager reserved areas such as task bars and system menus.
+            primary_display = app.primaryScreen().availableGeometry()
+
         ## Initalize the menuBar
         # Linux: Set the menuBar to a fixed height
         # Darwin: Don't worry about menuBar
         if sys.platform == 'darwin':
             bar_height = 0
         else:
-            bar_height = (primary_display.height()/30)+5
-            self.menuBar().setFixedHeight(bar_height)
+            if primary_display is None:
+                self.menuBar().setFixedHeight(30)
+            else:
+                bar_height = (primary_display.height()/30)+5
+                self.menuBar().setFixedHeight(bar_height)
 
         # Create a File menu
         self.file_menu = self.menuBar().addMenu("&File")
         self.file_menu.setObjectName("file")
-        
+
         # Add "New Pilot" and "New Protocol" actions to File menu
         new_pilot_act = QtWidgets.QAction("New &Pilot", self, triggered=self.new_pilot)
         new_prot_act  = QtWidgets.QAction("New Pro&tocol", self, triggered=self.new_protocol)
@@ -247,7 +272,7 @@ class Terminal(QtWidgets.QMainWindow):
 
         # Create a Tools menu
         self.tool_menu = self.menuBar().addMenu("&Tools")
-        
+
         # Add actions to Tools menu
         subject_weights_act = QtWidgets.QAction("View Subject &Weights", self, triggered=self.subject_weights)
         update_protocol_act = QtWidgets.QAction("Update Protocols", self, triggered=self.update_protocols)
@@ -258,15 +283,26 @@ class Terminal(QtWidgets.QMainWindow):
         self.tool_menu.addAction(reassign_act)
         self.tool_menu.addAction(calibrate_act)
 
-        # Create a Plots menu and add Psychometric Curve action
+        # Swarm menu
+        # (tools 4 administering and interacting with agents in swarm)
+        self.swarm_menu = self.menuBar().addMenu("S&warm")
+        stream_video = QtWidgets.QAction("Stream Video", self, triggered=self.stream_video)
+        self.swarm_menu.addAction(stream_video)
+
+        # Plots menu
         self.plots_menu = self.menuBar().addMenu("&Plots")
-        psychometric = QtGui.QAction("Psychometric Curve", self, triggered=self.plot_psychometric)
+        psychometric = QtWidgets.QAction("Psychometric Curve", self, triggered=self.plot_psychometric)
         self.plots_menu.addAction(psychometric)
 
         # Create a Tests menu and add a Test Bandwidth action
         self.tests_menu = self.menuBar().addMenu("Test&s")
         bandwidth_test_act = QtWidgets.QAction("Test Bandwidth", self, triggered=self.test_bandwidth)
         self.tests_menu.addAction(bandwidth_test_act)
+
+        # Create a Plugins menu to manage plugins and provide a hook to give them additional terminal actions
+        self.plugins_menu = self.menuBar().addMenu("Plugins")
+        plugin = QtWidgets.QAction("Manage Plugins", self, triggered=self.manage_plugins)
+        self.plugins_menu.addAction(plugin)
 
 
         ## Init main panels and add to layout
@@ -281,9 +317,9 @@ class Terminal(QtWidgets.QMainWindow):
         self.data_panel.init_plots(self.pilots.keys())
 
         # Set logo to corner widget
-        if sys.platform != 'darwin':
-            self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
-            self.menuBar().adjustSize()
+        # if sys.platform != 'darwin':
+        #     self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
+        #     self.menuBar().adjustSize()
 
         # Add Control Panel and Data Panel to main layout
         #self.layout.addWidget(self.logo, 0,0,1,2)
@@ -292,19 +328,18 @@ class Terminal(QtWidgets.QMainWindow):
         self.layout.setColumnStretch(0, 1)
         self.layout.setColumnStretch(1, 3)
 
-        
+
         ## Set window size
         # The window size behavior depends on TERMINAL_WINSIZE_BEHAVIOR pref
         # If 'remember': restore to the geometry from the last close
         # If 'maximum': restore to fill the entire screen
         # If 'moderate': restore to a reasonable size of (1000, 400) pixels
-        terminal_winsize_behavior = prefs.get('TERMINAL_WINSIZE_BEHAVIOR')
-        
+
         # Set geometry according to pref
         if terminal_winsize_behavior == 'maximum':
             # Set geometry to available geometry
             self.setGeometry(primary_display)
-            
+
             # Set SizePolicy to maximum
             self.setSizePolicy(
                 QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
@@ -323,13 +358,12 @@ class Terminal(QtWidgets.QMainWindow):
                 # this app has been run
                 # So default to the moderate size
                 self.move(primary_display.left(), primary_display.top())
-                self.resize(1000, 400)                
+                self.resize(1000, 400)
             else:
                 # It was saved, so restore the last geometry
                 self.restoreGeometry(self.settings.value("geometry"))
 
         elif terminal_winsize_behavior == "custom":
-            custom_size = prefs.get('TERMINAL_CUSTOM_SIZE')
             self.move(custom_size[0], custom_size[1])
             self.resize(custom_size[2], custom_size[3])
         else:
@@ -340,7 +374,7 @@ class Terminal(QtWidgets.QMainWindow):
             self.move(primary_display.left(), primary_display.top())
             self.resize(1000, 400)
 
-    
+
         ## Finalize some aesthetics
         # set stylesheet for main window
         self.setStyleSheet(styles.TERMINAL)
@@ -353,11 +387,112 @@ class Terminal(QtWidgets.QMainWindow):
         self.show()
         logging.info('UI Initialized')
 
+    def reset_ui(self):
+        """
+        Clear Layout and call :meth:`~.Terminal.initUI` again
+        """
+
+        # type: () -> None
+        self.layout = QtWidgets.QGridLayout()
+        self.layout.setSpacing(0)
+        self.layout.setContentsMargins(0,0,0,0)
+        self.widget.setLayout(self.layout)
+        self.setCentralWidget(self.widget)
+        self.initUI()
+
+    ################
+    # Properties
+
+    @property
+    def pilots(self) -> odict:
+        """
+        A dictionary mapping pilot ID to its attributes, including a list of its subjects assigned to it, its IP, etc.
+
+        Returns:
+            dict: like ``self.pilots['pilot_id'] = {'subjects': ['subject_0', 'subject_1'], 'ip': '192.168.0.101'}``
+        """
+
+        # try to load, if none exists make one
+        if self._pilots is None:
+
+            pilot_db_fn = Path(prefs.get('PILOT_DB'))
+
+            # if pilot file doesn't exist, make blank one
+            if not pilot_db_fn.exists():
+                self.logger.warning(f'No pilot_db.json file was found at {pilot_db_fn}, creating a new one')
+                self._pilots = odict()
+                with open(pilot_db_fn, 'w') as pilot_file:
+                    json.dump(self._pilots, pilot_file)
+
+            # otherwise, try to load it
+            else:
+                try:
+                    # Load pilots db as ordered dictionary
+                    with open(pilot_db_fn, 'r') as pilot_file:
+                        self._pilots = json.load(pilot_file, object_pairs_hook=odict)
+                    self.logger.info(f'successfully loaded pilot_db.json file from {pilot_db_fn}')
+                    self.logger.debug(pformat(self._pilots))
+                except Exception as e:
+                    self.logger.exception((f"Exception opening pilot_db.json file at {pilot_db_fn}, got exception: {e}.\n",
+                                           "Not proceeding to prevent possibly overwriting corrupt pilot_db.file"))
+                    raise e
+
+        return self._pilots
+
+
+    @property
+    def protocols(self) -> list:
+        """
+        List of protocol names available in ``PROTOCOLDIR``
+
+        Returns:
+            list: list of protocol names in ``prefs.get('PROTOCOLDIR')``
+        """
+        # get list of protocol files
+        protocols = os.listdir(prefs.get('PROTOCOLDIR'))
+        protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]
+        return protocols
+
+    @property
+    def subject_protocols(self) -> dict:
+        """
+
+        Returns:
+            subject_protocols (dict): a dictionary of subjects: [protocol, step]
+        """
+        # get subjects and current protocols
+        subjects = self.subject_list
+        subjects_protocols = {}
+        for subject in subjects:
+            if subject not in self.subjects.keys():
+                self.subjects[subject] = Subject(subject)
+
+            subjects_protocols[subject] = [self.subjects[subject].protocol_name, self.subjects[subject].step]
+
+        return subjects_protocols
+
+    @property
+    def subject_list(self) -> list:
+        """
+        Get a list of all subject IDs
+
+        Returns:
+            list: list of all subject IDs present in :attr:`.Terminal.pilots`
+        """
+        subjects = []
+        for pilot, vals in self.pilots.items():
+            subjects.extend(vals['subjects'])
+
+        # use sets to get a unique list
+        subjects = list(set(subjects))
+
+        return subjects
+
     ##########################3
     # Listens & inter-object methods
 
     def ping_pilot(self, pilot):
-        self.send(pilot, 'PING')
+        self.node.send(pilot, 'PING')
 
     def heartbeat(self, once=False):
         """
@@ -467,6 +602,9 @@ class Terminal(QtWidgets.QMainWindow):
             task = self.subjects[subject_name].prepare_run()
             task['pilot'] = value['pilot']
 
+            # FIXME: Don't hardcode wait time, wait until we get confirmation that the running task has fully unloaded
+            time.sleep(5)
+
             self.node.send(to=value['pilot'], key="START", value=task)
 
     def l_ping(self, value):
@@ -553,11 +691,13 @@ class Terminal(QtWidgets.QMainWindow):
         """
         if name is None:
             name, ok = QtWidgets.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
+            if not ok or not name:
+                self.logger.info('Cancel button clicked, not adding new pilot')
+                return
 
         # Warn if we're going to overwrite
         if name in self.pilots.keys():
             self.logger.warning(f'pilot with id {name} already in pilot db, overwriting...')
-
 
         if pilot_prefs is None:
             pilot_prefs = {}
@@ -604,23 +744,6 @@ class Terminal(QtWidgets.QMainWindow):
                 protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), placeholder_name + '.json')
                 with open(protocol_file, 'w') as pfile_open:
                     json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
-
-    @property
-    def subject_list(self):
-        """
-        Get a list of all subject IDs
-
-        Returns:
-            list: list of all subject IDs present in :attr:`.Terminal.pilots`
-        """
-        subjects = []
-        for pilot, vals in self.pilots.items():
-            subjects.extend(vals['subjects'])
-
-        # use sets to get a unique list
-        subjects = list(set(subjects))
-
-        return subjects
 
     def subject_weights(self):
         """
@@ -674,39 +797,6 @@ class Terminal(QtWidgets.QMainWindow):
         msgbox.setText("Subject Protocols Updated for:")
         msgbox.setDetailedText("\n".join(sorted(updated_subjects)))
         msgbox.exec_()
-
-    @property
-    def protocols(self):
-        """
-        Returns:
-            list: list of protocol files in ``prefs.get('PROTOCOLDIR')``
-        """
-        # get list of protocol files
-        protocols = os.listdir(prefs.get('PROTOCOLDIR'))
-        protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]
-        return protocols
-
-    @property
-    def subject_protocols(self):
-        """
-
-        Returns:
-            subject_protocols (dict): a dictionary of subjects: [protocol, step]
-        """
-        # get subjects and current protocols
-        subjects = self.subject_list
-        subjects_protocols = {}
-        for subject in subjects:
-            try:
-                if subject not in self.subjects.keys():
-                    self.subjects[subject] = Subject(subject)
-
-                subjects_protocols[subject] = [self.subjects[subject].protocol_name, self.subjects[subject].step]
-            except Exception as e:
-                self.logger.exception(f'Could not get protocol for subject {subject}, got error: {e}')
-
-        # TODO: Pop dialogue here with exceptions, but should implement in a uniform not ad-hoc way.
-        return subjects_protocols
 
     def reassign_protocols(self):
         """
@@ -830,6 +920,24 @@ class Terminal(QtWidgets.QMainWindow):
             #viz.plot_psychometric(self.subjects_protocols)
         #result = psychometric_dialog.exec_()
 
+    def manage_plugins(self):
+        plugs = Plugins()
+        plugs.exec_()
+
+    def stream_video(self):
+        """
+        Open a window to stream videos from a connected pilot.
+
+        Choose from connected pilots and configured :class:`~.hardware.cameras.Camera` objects
+        (``prefs.json`` sent by Pilots in :meth:`.Pilot.handshake` ). Stream video, save to file.
+
+        .. todo::
+
+            Configure camera parameters!!!
+        """
+
+        video_dialog = Stream_Video(self.pilots)
+
     def closeEvent(self, event):
         """
         When Closing the Terminal Window, close any running subject objects,
@@ -841,7 +949,7 @@ class Terminal(QtWidgets.QMainWindow):
         """
         # Save the window geometry, to be optionally restored next time
         self.settings.setValue("geometry", self.saveGeometry())
-        
+
         # TODO: Check if any subjects are currently running, pop dialog asking if we want to stop
 
         # Close all subjects files

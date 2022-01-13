@@ -1,0 +1,23 @@
+# YAML 1.2
+---
+abstract: "Neuroscience needs behavior, and behavioral experiments require the coordination of large numbers of heterogeneous hardware components and data streams. Currently available tools strongly limit the complexity and reproducibility of experiments. Here we introduce Autopilot, a complete, open-source Python framework for behavioral neuroscience that distributes experiments over networked swarms of Raspberry Pis. Autopilot enables qualitatively greater experimental flexibility by allowing arbitrary numbers of hardware components to be combined in arbitrary experimental designs. Research is made reproducible by documenting all data and task design parameters in a human-readable and publishable format at the time of collection. Autopilot provides an order-of-magnitude performance improvement over existing tools while also being an order of magnitude less costly to implement. Autopilot’s flexible, scalable architecture allows neuroscientists to design the next generation of experiments to investigate the behaving brain."
+authors: 
+  -
+    family-names: Saunders
+    given-names: Jonny
+    name-particle: "L."
+    orcid: "https://orcid.org/0000-0003-0545-5066"
+  -
+    family-names: Wehr
+    given-names: Michael
+    orcid: "https://orcid.org/0000-0003-3485-7697"
+cff-version: "1.1.0"
+date-released: 2019-10-17
+doi: "10.1101/807693"
+keywords: 
+license: "MPL-2.0"
+message: "If you use this software, please cite it using these metadata."
+repository-code: "https://github.com/wehr-lab/autopilot"
+title: "Autopilot: Automating behavioral experiments with lots of Raspberry Pis"
+version: "0.4.3"
+...

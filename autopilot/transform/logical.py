@@ -145,3 +145,26 @@ class Condition(Transform):
             ret['shape'] = (1,)
 
         return ret
+
+
+class Compare(Transform):
+    """
+    Compare processed values using some function that returns a boolean
+
+    ie. process will ``return compare_fn(*args)`` from ``process``.
+
+    it is expected that ``input`` will be an iterable with len > 1
+    """
+    def __init__(self, compare_fn:callable, *args, **kwargs):
+        """
+        Args:
+            compare_fn (callable): Function used to compare the values given to :meth:`.Compare.process`
+            *args ():
+            **kwargs ():
+        """
+        super(Compare, self).__init__(*args, **kwargs)
+
+        self.compare_fn = compare_fn
+
+    def process(self, input):
+        return self.compare_fn(*input)

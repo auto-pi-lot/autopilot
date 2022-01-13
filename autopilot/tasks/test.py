@@ -18,7 +18,7 @@ from autopilot.tasks.task import Task
 from autopilot.hardware import gpio, cameras
 # from autopilot.transform import make_transform, transforms
 from autopilot import transform as t
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 
 
 class DLC_Latency(Task):

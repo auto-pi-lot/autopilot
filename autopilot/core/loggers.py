@@ -60,8 +60,12 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
         if "__main__" in module_name:
             # awkward workaround to get module name of __main__ run objects
             mod_obj = inspect.getmodule(instance)
-            mod_suffix  = inspect.getmodulename(inspect.getmodule(instance).__file__)
-            module_name = '.'.join([mod_obj.__package__, mod_suffix])
+            try:
+                mod_suffix  = inspect.getmodulename(inspect.getmodule(instance).__file__)
+                module_name = '.'.join([mod_obj.__package__, mod_suffix])
+            except AttributeError:
+                # when running interactively or from a plugin, __main__ does not have __file__
+                module_name = "__main__"
 
 
         module_name = re.sub('^autopilot.', '', module_name)
@@ -73,20 +77,23 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             # it should be at least 2 (in case its first spawned in its module)
             # but otherwise nocollide
             p_num = 2
+            _module_name = module_name
+            module_name = f"{_module_name}_{str(p_num).zfill(2)}"
             if module_name in globals()['_LOGGERS']:
                 for existing_mod in globals()['_LOGGERS']:
-                    if module_name in existing_mod and re.match('\d$', existing_mod):
+                    if module_name in existing_mod and re.match(r'\d$', existing_mod):
                         p_num += 1
 
-            module_name += f"_{str(p_num).zfill(2)}"
+                module_name = f"{_module_name}_{str(p_num).zfill(2)}"
+
 
 
 
         # get name of object if it has one
-        if hasattr(instance, 'name'):
-            object_name = str(instance.name)
-        elif hasattr(instance, 'id'):
+        if hasattr(instance, 'id'):
             object_name = str(instance.id)
+        elif hasattr(instance, 'name'):
+            object_name = str(instance.name)
         else:
             object_name = None
 
@@ -126,7 +133,7 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 
             ## file handler
             # base filename is the module_name + '.log
-            base_filename = (Path(prefs.get('LOGDIR')) / module_name).with_suffix('.log')
+            base_filename = Path(prefs.get('LOGDIR')) / (module_name + '.log')
 
             # if directory doesn't exist, try to make it
             if not base_filename.parent.exists():
@@ -165,6 +172,5 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 
         logger = logging.getLogger(logger_name)
         logger.info(f"Logger created: {logger_name}")
-
 
     return logger

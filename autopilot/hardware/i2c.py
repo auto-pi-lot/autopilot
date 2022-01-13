@@ -1,9 +1,13 @@
 import os
+import typing
 import sys
+import warnings
 from autopilot import prefs
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 from autopilot.hardware import Hardware
 from autopilot.hardware.cameras import Camera
+from autopilot.transform.geometry import IMU_Orientation, Spheroid
+from autopilot import external
 
 import threading
 import time
@@ -15,8 +19,14 @@ from scipy.interpolate import griddata
 
 from queue import Queue, Empty
 
-if prefs.get('AGENT') in ['pilot']:
+# if prefs.get('AGENT') in ['pilot']:
+#     import pigpio
+
+try:
     import pigpio
+except ImportError:
+    warnings.warn('pigpio could not be imported, GPIO devices cannot be used!')
+
 
 try:
     import MLX90640 as mlx_cam
@@ -28,7 +38,13 @@ except ImportError:
 
 class I2C_9DOF(Hardware):
     """
-    A `Sparkfun 9DOF<https://www.sparkfun.com/products/13944>`_ combined accelerometer, magnetometer, and gyroscope.
+    A `Sparkfun 9DOF <https://www.sparkfun.com/products/13944>`_ combined accelerometer, magnetometer, and gyroscope.
+
+    **Sensor Datasheet**: https://cdn.sparkfun.com/assets/learn_tutorials/3/7/3/LSM9DS1_Datasheet.pdf
+
+    **Hardware Datasheet**: https://github.com/sparkfun/9DOF_Sensor_Stick
+
+    **Documentation on calculating position values**: https://arxiv.org/pdf/1704.06053.pdf
 
     This device uses I2C, so must be connected accordingly:
 
@@ -39,6 +55,22 @@ class I2C_9DOF(Hardware):
 
     This class uses code from the `Adafruit Circuitfun <https://github.com/adafruit/Adafruit_CircuitPython_LSM9DS1>`_ library,
     modified to use pigpio
+
+
+    .. note::
+
+        use this for processing?? https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6111698/
+
+    Args:
+        accel (bool): Whether the accelerometer should be made active (default: True)
+        gyro (bool): Whether the gyroscope should be made active (default: True) -- accel must be true if gyro is true
+        mag (bool): Whether the magnetomete should be made active (default: True)
+        gyro_hpf (int, float): Highpass filter cutoff for onboard gyroscope filter.
+            One of :attr:`.GYRO_HPF_CUTOFF` (default: 4), or ``False`` to disable
+        kalman_mode ('both', 'accel', None): Whether to use a kalman filter that integrates accelerometer and gyro readings ('both', default),
+            a kalman filter with just the accelerometer values ('accel'), or just return the raw calculated orientation values from :attr:`.rotation`
+        invert_gyro (list, tuple): if not False (default), a list/tuple of the numerical axis index to invert on the gyroscope.
+            eg. passing (1, 2) will invert the y and z axes.
     """
 
     # Internal constants and register values:
@@ -94,6 +126,9 @@ class I2C_9DOF(Hardware):
     _REGISTER_OUT_Y_H_XL = 0x2B
     _REGISTER_OUT_Z_L_XL = 0x2C
     _REGISTER_OUT_Z_H_XL = 0x2D
+    _REGISTER_FIFO_CTRL = 0b101110
+    _REGISTER_FIFO_SRC = 0b101111
+    _REGISTER_ORIENT_CFG_G = 0b10011
 
     _REGISTER_WHO_AM_I_M = 0x0F
     _REGISTER_CTRL_REG1_M = 0x20
@@ -129,10 +164,51 @@ class I2C_9DOF(Hardware):
     GYROSCALE_500DPS = (0b01 << 3)  # +/- 500 degrees/s rotation
     GYROSCALE_2000DPS = (0b11 << 3)  # +/- 2000 degrees/s rotation
 
-    def __init__(self, *args, **kwargs):
+    GYRO_HPF_CUTOFF = {
+        57: 0b0,
+        30: 0b1,
+        15: 0b10,
+        8:  0b11,
+        4:  0b100,
+        2:  0b101,
+        1:  0b110,
+        0.5: 0b111,
+        0.2: 0b1000,
+        0.1: 0b1001
+    }
+    """
+    Highpass-filter cutoff frequencies (keys, in Hz) mapped to binary flag.
+    
+    .. note::
+     
+        the frequency of a given binary flag is dependent on the output frequency (952Hz by default, changing
+        frequency is not currently exposed in this object). See Table 52 of 
+        `the sensor datasheet <https://cdn.sparkfun.com/assets/learn_tutorials/3/7/3/LSM9DS1_Datasheet.pdf>`_ for more.
+    """
+
+    def __init__(self, accel:bool=True, gyro:bool=True, mag:bool=True,
+                 gyro_hpf: float = 0.2, accel_range = ACCELRANGE_4G, kalman_mode:str='both',
+                 invert_gyro = False, *args, **kwargs):
         super(I2C_9DOF, self).__init__(*args, **kwargs)
 
+        if not any((accel, gyro, mag)):
+            self.logger.exception('All sensors were indicated as off! need to measure something!')
+            return
+
+        # init private attributes
+        self._accel_mg_lsb = None
+        self._mag_mgauss_lsb = None
+        self._gyro_dps_digit = None
+        self._gyro_filter = False
+        self._sphere = None
+
+        # make empty arrays
+        self._acceleration = np.zeros((3), float)
+        self._gyro = np.zeros((3), float)
+        self._mag = np.zeros((3), float)
+
         # Initialize the pigpio connection
+        self.pigpiod = external.start_pigpiod()
         self.pig = pigpio.pi()
 
         # Open I2C buses
@@ -143,21 +219,47 @@ class I2C_9DOF(Hardware):
         self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG8, 0x05)
         self.pig.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG2_M, 0x0C)
 
-        ## enable continuous collection
+        ## enable hardware devices
         # gyro
-        self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG1_G, 0xC0)
+        if gyro:
+            self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG1_G, 0xC0)
+            # accelerometer must be turned on if gyro is
+            accel = True
+
+            # invert gyro if requested
+            if invert_gyro:
+                self.gyro_polarity = invert_gyro
+            else:
+                self._gyro_polarity = None
+
         # accelerometer
-        self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG5_XL, 0x38)
-        self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG6_XL, 0xC0)
+        if accel:
+            self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG5_XL, 0x38)
+            self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG6_XL, 0xC0)
         # magnetometer
-        self.pig.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG3_M, 0x00)
+        if mag:
+            self.pig.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG3_M, 0x00)
 
         # set default ranges for sensors
-        self.accel_range = self.ACCELRANGE_2G
+        self.accel_range = accel_range
+        self.gyro_scale = self.GYROSCALE_245DPS
 
-        self._accel_mg_lsb = None
-        self._mag_mgauss_lsb = None
-        self._gyro_dps_digit = None
+        # turn on gyro hpf
+        self.gyro_filter = gyro_hpf
+
+        # instantiate kalman
+        self.kalman_mode = kalman_mode
+        if self.kalman_mode in ('both', 'accel'):
+            self.kalman = IMU_Orientation()
+        else:
+            self.kalman = IMU_Orientation(use_kalman=False)
+
+        # load calibration
+        if 'accelerometer' in self.calibration.keys():
+            self._accel_sphere = Spheroid(target=(9.8,9.8,9.8,0,0,0),
+                                    source = self.calibration['accelerometer']['spheroid'])
+        else:
+            self._accel_sphere = None
 
     @property
     def accel_range(self):
@@ -245,6 +347,66 @@ class I2C_9DOF(Hardware):
         elif val == self.GYROSCALE_2000DPS:
             self._gyro_dps_digit = self._GYRO_DPS_DIGIT_2000DPS
 
+    @property
+    def gyro_filter(self) -> typing.Union[int, float, bool]:
+        """
+        Set the high-pass filter for the gyroscope.
+
+        .. note::
+
+            the frequency of a given binary flag is dependent on the output frequency (952Hz by default, changing
+            frequency is not currently exposed in this object). See Table 52 of
+            `the sensor datasheet <https://cdn.sparkfun.com/assets/learn_tutorials/3/7/3/LSM9DS1_Datasheet.pdf>`_ for more.
+
+        Args:
+            gyro_filter (int, float, False): Filter frequency (in :attr:`.GYRO_HPF_CUTOFF`) or False to disable
+
+        Returns:
+            float, bool: current HPF cutoff or ``False`` if disabled
+        """
+        return self._gyro_filter
+
+    @gyro_filter.setter
+    def gyro_filter(self, gyro_filter: float):
+
+        if gyro_filter and gyro_filter not in self.GYRO_HPF_CUTOFF.keys():
+            self.logger.exception(f'Cannot set gyro HPF to value other than one of {list(self.GYRO_HPF_CUTOFF.keys())} or False, got {gyro_filter}')
+            return
+
+        # turn on HPF/set to particular frequency
+        if gyro_filter:
+            # configure signal chain to take signal after HPF
+            # See Figure 28 in sensor datasheet
+            self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG2_G, 0b0101)
+
+            # configure filter
+            filt = 0b01000000 | self.GYRO_HPF_CUTOFF[gyro_filter]
+            self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG3_G, filt)
+
+            self._gyro_filter = gyro_filter
+
+        else:
+            # None or False, turn HPF off
+            self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG2_G, 0b0000)
+            self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG3_G, 0b00000000)
+            self._gyro_filter = False
+
+    @property
+    def gyro_polarity(self):
+        return self._gyro_polarity
+
+    @gyro_polarity.setter
+    def gyro_polarity(self, gyro_polarity):
+
+        # construct binary command in a rl shitty way lol
+        cmd = 0b0
+        for axis in gyro_polarity:
+            cmd |= 0b1 << (5-axis)
+
+        self.pig.i2c_write_byte_data(self.accel, self._REGISTER_ORIENT_CFG_G, cmd)
+
+        self._gyro_polarity = gyro_polarity
+
 
     @property
     def acceleration(self):
@@ -260,8 +422,15 @@ class I2C_9DOF(Hardware):
         # and adapting with the sparkfun code in main docstring
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_XL, 6)
         if s >= 0:
-            raw =  struct.unpack('<3h', buffer(b))
-            return map(lambda x: x*self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD, raw)
+            self._acceleration[:] = np.squeeze(np.frombuffer(b, '<3h') * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD)
+        else:
+            self.logger.exception(f'Got pigpio exception code {s}, returning last reading')
+
+        if self._accel_sphere is not None:
+            # return calibrated accelerometer readings
+            return self._accel_sphere.process(self._acceleration.copy())
+        else:
+            return self._acceleration.copy()
 
     @property
     def magnetic(self):
@@ -275,8 +444,11 @@ class I2C_9DOF(Hardware):
         (s, b) = self.pig.i2c_read_i2c_block_data(self.magnet, 0x80 | self._REGISTER_OUT_X_L_M, 6)
 
         if s >= 0:
-            raw = struct.unpack('<3h', buffer(b))
-            return map(lambda x: x * self._mag_mgauss_lsb / 1000.0, raw)
+            self._mag[:] =  np.squeeze(np.frombuffer(b, '<3h') * self._mag_mgauss_lsb / 1000.0)
+            return self._mag.copy()
+        else:
+            self.logger.exception(f'Got pigpio exception code {s}')
+            return self._mag.copy()
 
     @property
     def gyro(self):
@@ -287,8 +459,49 @@ class I2C_9DOF(Hardware):
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_G, 6)
 
         if s>=0:
-            raw = struct.unpack('<3h', buffer(b))
-            return map(lambda x: x * self._gyro_dps_digit, raw)
+            self._gyro[:] = np.squeeze(np.frombuffer(b, '<3h') * self._gyro_dps_digit)
+            return self._gyro.copy()
+        else:
+            self.logger.exception(f'Got pigpio exception code {s}')
+            return self._gyro.copy()
+
+    @property
+    def rotation(self):
+        """
+        Return roll (rotation around x axis) and pitch (rotation around y axis) computed from the accelerometer
+
+        Uses :class:`.transform.geometry.IMU_Orientation` to fuse accelerometer and gyroscope with Kalman filter
+
+        Returns:
+            np.ndarray - [roll, pitch]
+        """
+
+        # read gyro and accelerometer together
+        # s, b = self.pig.i2c_read_i2c_block_data(self.accel, self._REGISTER_OUT_X_L_G, 12)
+        if self.kalman_mode == "both":
+            # read gyro
+            (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_G, 6)
+            if s >= 0:
+                self._gyro[:] = np.squeeze(np.frombuffer(b, '<3h') * self._gyro_dps_digit)
+            else:
+                self.logger.exception(f'Got pigpio exception code getting gyro {s}')
+
+        # read accelerometer
+        (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_XL, 6)
+        if s >= 0:
+            if self._accel_sphere is not None:
+                self._acceleration[:] = self._accel_sphere.process(np.squeeze(
+                    np.frombuffer(b, '<3h') * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD))
+            else:
+                self._acceleration[:] = np.squeeze(
+                    np.frombuffer(b, '<3h') * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD)
+        else:
+            self.logger.exception(f'Got pigpio exception code getting accelerometer {s}')
+
+        if self.kalman_mode == 'both':
+            return self.kalman.process((self._acceleration.copy(), self._gyro.copy()))
+        else:
+            return self.kalman.process(self._acceleration.copy())
 
     @property
     def temperature(self):
@@ -297,10 +510,66 @@ class I2C_9DOF(Hardware):
             float: Temperature in Degrees C
         """
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_TEMP_OUT_L, 2)
-        buf = buffer(b)
-        temp = ((buf[1] << 8) | buf[0]) >> 4
+        # buf = b
+        temp = ((b[1] << 8) | b[0]) >> 4
         temp = self._twos_comp(temp, 12)
         return 27.5 + temp/16
+
+    def calibrate(self, what: str ="accelerometer",
+                  samples: int= 10000,
+                  sample_dur:typing.Optional[float] = None) -> dict:
+        """
+        Calibrate sensor readings to correct for bias and scale errors
+
+        .. note::
+
+            Currently only calibrating the accelerometer is implemented.
+
+        The accelerometer is calibrated by rotating the sensor slowly in all three rotational dimensions in such a
+        way that minimizes linear acceleration (not due to gravity). A perfect sensor would output a sphere of points
+        centered at 0
+
+        Args:
+            what (str): which sensor is to be calibrated (currentlty only "accelerometer" implemented)
+            samples (int): number of samples that should be used to compute the calibration
+            sample_dur (float): number of seconds to sample for, overrides ``samples`` if not None (default)
+
+        Returns:
+            dict: calibration dictionary (also saved to disk using :attr:`.Hardware.calibration` )
+        """
+        readings = []
+
+        if what == "accelerometer":
+            self.logger.info('Calibrating motion sensor -- rotate it in all three dimensions slowly!')
+
+            if sample_dur is not None:
+                start_time = time.time()
+                while time.time() - start_time < sample_dur:
+                    readings.append(self.accel)
+            else:
+                n = 0
+                while n < samples:
+                    readings.append(self.accel)
+
+            readings = np.row_stack(readings)
+
+            # fit a spheroid transformation from the read samples
+            self._accel_sphere = Spheroid(target=(9.8,9.8,9.8,0,0,0), fit=readings,
+                              bounds=((5,5,5,-10, -10, -10),(15,15,15,10,10,10)))
+            cal_dict = {
+                'accelerometer':{
+                    'spheroid': self._accel_sphere.source,
+                    'n_samples': int(readings.shape[0]),
+                    'timestamp': datetime.now().isoformat()
+
+                }
+            }
+            self.calibration = cal_dict
+        else:
+            self.logger.exception(f'Dont know how to calibrate {what}, only accelerometer calibration is implemented')
+
+
+
 
     def _twos_comp(self, val, bits):
         # Convert an unsigned integer in 2's compliment form of the specified bit

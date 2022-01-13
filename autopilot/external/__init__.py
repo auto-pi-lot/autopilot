@@ -110,12 +110,9 @@ def start_jackd():
     if prefs.get('FS'):
         jackd_string = jackd_string.replace('-rfs', f"-r{prefs.get('FS')}")
 
-    if prefs.get('JACKDBLOCKSIZE'):
-        jackd_string = jackd_string.replace('JACKDBLOCKSIZE', str(prefs.get('JACKDBLOCKSIZE')))
-
-    if prefs.get('JACKDNPERIODS'):
-        jackd_string = jackd_string.replace('JACKDNPERIODS', str(prefs.get('JACKDNPERIODS')))
-
+    # replace string nperiods with number
+    if prefs.get('ALSA_NPERIODS'):
+        jackd_string = jackd_string.replace('-nper', f"-n{prefs.get('ALSA_NPERIODS')}")
 
     # construct rest of launch string!
     # if JACKD_MODULE:

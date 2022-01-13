@@ -14,7 +14,7 @@ import autopilot.hardware.gpio
 from autopilot.tasks import Task
 from autopilot.stim.visual.visuals import Grating
 from collections import OrderedDict as odict
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 
 from autopilot import prefs
 TASK = 'GoNoGo'

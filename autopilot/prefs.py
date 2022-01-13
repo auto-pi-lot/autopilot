@@ -48,6 +48,10 @@ Warning:
 
 This iteration of prefs with respect to work done on the `People's Ventilator Project <https://www.peoplesvent.org/en/latest/pvp.common.prefs.html>`_
 
+If a pref has a string for a ``'deprecation'`` field in :data:`.prefs._DEFAULTS` , a ``FutureWarning``
+will be raised with the string given as the message
+
+
 """
 
 # this is strictly a placeholder module to
@@ -62,10 +66,10 @@ This iteration of prefs with respect to work done on the `People's Ventilator Pr
 # Prefs is a top-level module! It shouldn't depend on anything else in Autopilot,
 # and if it does, it should carefully import it where it is needed!
 # (prefs needs to be possible to import everywhere, including eg. in setup_autopilot)
-
 import json
 import subprocess
 import multiprocessing as mp
+from threading import Lock
 import os
 import logging
 import typing
@@ -103,18 +107,40 @@ class Scopes(Enum):
     AUDIO = auto() #: Audio prefs...
 
 
+using_manager = False
+try:
+    _PREF_MANAGER = mp.Manager() # type: mp.managers.SyncManager
+    """
+    The :class:`multiprocessing.Manager` that stores prefs during system operation and makes them available
+    and consistent across processes.
+    """
+    using_manager = True
+
+    _PREFS = _PREF_MANAGER.dict()  # type: mp.managers.SyncManager.dict
+    """
+    stores a dictionary of preferences that mirrors the global variables.
+    """
+
+    _INITIALIZED = mp.Value(c_bool, False)  # type: mp.Value
+    """
+    Boolean flag to indicate whether prefs have been initialzied from ``prefs.json``
+    """
+
+    _LOCK = mp.Lock()  # type: mp.Lock
+    """
+    :class:`multiprocessing.Lock` to control access to ``prefs.json``
+    """
+
+except (EOFError, FileNotFoundError):
+    # can't use mp.Manager in ipython and other interactive contexts
+    # fallback to just regular old dict
+
+    _PREF_MANAGER = None
+    _PREFS = {}
+    _INITIALIZED = False
+    _LOCK = Lock()
 
 
-_PREF_MANAGER = mp.Manager() # type: mp.Manager
-"""
-The :class:`multiprocessing.Manager` that stores prefs during system operation and makes them available
-and consistent across processes.
-"""
-
-_PREFS = _PREF_MANAGER.dict() # type: dict
-"""
-stores a dictionary of preferences that mirrors the global variables.
-"""
 
 _LOGGER = None # type: typing.Union[logging.Logger, None]
 """
@@ -123,15 +149,6 @@ Logger used by prefs initialized by :func:`.core.loggers.init_logger`
 Initially None, created once prefs are populated because init_logger requires some prefs to be set (uh the logdir and level and stuff)
 """
 
-_INITIALIZED = mp.Value(c_bool, False) # type: mp.Value
-"""
-Boolean flag to indicate whether prefs have been initialzied from ``prefs.json``
-"""
-
-_LOCK = mp.Lock()
-"""
-:class:`multiprocessing.Lock` to control access to ``prefs.json``
-"""
 
 # not documenting, just so that the full function doesn't need to be put in for each directory
 # lol at this literal reanimated fossil halfway evolved between os.path and pathlib
@@ -192,7 +209,19 @@ _DEFAULTS = odict({
         'type': 'str',
         'text': 'Location of virtual environment, if used.',
         "scope": Scopes.COMMON,
-        "default": sys.prefix if hasattr(sys, 'real_prefix') or (sys.base_prefix != sys.prefix) else False
+        "default": str(Path(sys.prefix).resolve()) if hasattr(sys, 'real_prefix') or (sys.base_prefix != sys.prefix) else False
+    },
+    'AUTOPLUGIN': {
+        'type': 'bool',
+        'text': "Attempt to import the contents of the plugin directory",
+        "scope": Scopes.COMMON,
+        "default": True
+    },
+    'PLUGIN_DB': {
+        'type': 'str',
+        'text': 'filename to use for the .json plugin_db that keeps track of installed plugins',
+        "default": str(_basedir / "plugin_db.json"),
+        "scope": Scopes.COMMON
     },
     'BASEDIR': {
         'type': 'str',
@@ -233,7 +262,7 @@ _DEFAULTS = odict({
     'PLUGINDIR': {
         'type': 'str',
         "text": "Directory to import ",
-        "default": os.path.join(os.path.expanduser("~"), "autopilot"),
+        "default": str(_basedir / 'plugins'),
         "scope": Scopes.DIRECTORY
     },
     'REPODIR': {
@@ -315,8 +344,9 @@ _DEFAULTS = odict({
         "scope": Scopes.LINEAGE
     },
     'CHILDID': {
-        'type': 'str',
-        "text": "Child ID:",
+        'type': 'list',
+        "text": "List of Child ID:",
+        'default': [],
         "depends": ("LINEAGE", "PARENT"),
         "scope": Scopes.LINEAGE
     },
@@ -345,15 +375,16 @@ _DEFAULTS = odict({
     },
     'NCHANNELS': {
         'type': 'int',
-        'text': "Number of Audio channels",
+        'text': "Number of Audio channels (deprecated; used OUTCHANNELS)",
         'default': 1,
         'depends': 'AUDIOSERVER',
-        "scope": Scopes.AUDIO
+        "scope": Scopes.AUDIO,
+        'deprecation': "Deprecated and will be removed, use OUTCHANNELS instead"
     },
     'OUTCHANNELS': {
         'type': 'list',
         'text': 'List of Audio channel indexes to connect to',
-        'default': '[1]',
+        'default': '',
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },
@@ -364,16 +395,9 @@ _DEFAULTS = odict({
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },
-    'JACKDBLOCKSIZE': {
+    'ALSA_NPERIODS': {
         'type': 'int',
-        'text': 'Block Size - number of samples in a single jack frame',
-        'default': 1024,
-        'depends': 'AUDIOSERVER',
-        'scope': Scopes.AUDIO
-    },
-    'JACKDNPERIODS': {
-        'type': 'int',
-        'text': 'N Periods - number of blocks of audio stored in jack buffer',
+        'text': 'number of buffer periods to use with ALSA sound driver',
         'default': 3,
         'depends': 'AUDIOSERVER',
         'scope': Scopes.AUDIO
@@ -381,7 +405,7 @@ _DEFAULTS = odict({
     'JACKDSTRING': {
         'type': 'str',
         'text': 'Arguments to pass to jackd, see the jackd manpage',
-        'default': 'jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -nJACKDNPERIODS -pJACKDBLOCKSIZE -s &',
+        'default': 'jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -nper -s &',
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },
@@ -407,6 +431,11 @@ Each entry should be a dict with the following structure::
     }
 """
 
+_WARNED = []
+"""
+Keep track of which prefs we have warned about getting defaults for
+so we don't warn a zillion times
+"""
 
 def get(key: typing.Union[str, None] = None):
     """
@@ -423,11 +452,27 @@ def get(key: typing.Union[str, None] = None):
 
     # if nothing is requested of us, return everything
     if key is None:
-        return globals()['_PREFS']._getvalue()
+        if using_manager:
+            return globals()['_PREFS']._getvalue()
+        else:
+            return globals()['_PREFS'].copy()
 
     else:
+        # check for deprecation
+        dep_notice = globals()['_DEFAULTS'].get(key, {}).get('deprecation', None)
+        if dep_notice is not None:
+            warnings.warn(dep_notice, FutureWarning)
+
         # try to get the value from the prefs manager
         try:
+            # if it's a directory and it doesn't exist, try and make it
+            if globals()['_DEFAULTS'].get(key, {}).get('scope', False) == Scopes.DIRECTORY:
+                try:
+                    path = Path(globals()['_PREFS'][key]).resolve()
+                    if not path.exists():
+                        path.mkdir(parents=True, exist_ok=True)
+                except Exception as e:
+                    warnings.warn(f"prefs {key} was a directory, but a directory couldnt be created. got exception {e}")
             return globals()['_PREFS'][key]
 
         # if none exists...
@@ -435,7 +480,9 @@ def get(key: typing.Union[str, None] = None):
             # try to get a default value
             try:
                 default_val = globals()['_DEFAULTS'][key]['default']
-                warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', UserWarning)
+                if key not in globals()['_WARNED']:
+                    globals()['_WARNED'].append(key)
+                    warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', UserWarning)
                 return default_val
 
             # if you still can't find a value, None is an unambiguous signal for pref not set
@@ -458,7 +505,12 @@ def set(key: str, val):
         val: Value of pref to set (prefs are not type validated against default types)
     """
     globals()['_PREFS'][key] = val
-    if globals()['_INITIALIZED'].value:
+    if using_manager:
+        initialized = globals()['_INITIALIZED'].value
+    else:
+        initialized = globals()['_INITIALIZED']
+
+    if initialized and 'pytest' not in sys.modules:
         save_prefs()
 
 
@@ -480,7 +532,11 @@ def save_prefs(prefs_fn: str = None):
     # take lock for access to prefs file
     with globals()['_LOCK']:
         with open(prefs_fn, 'w') as prefs_f:
-            json.dump(globals()['_PREFS']._getvalue(), prefs_f,
+            if using_manager:
+                save_prefs = globals()['_PREFS']._getvalue()
+            else:
+                save_prefs = globals()['_PREFS'].copy()
+            json.dump(save_prefs, prefs_f,
                       indent=4, separators=(',', ': '))
 
 
@@ -528,33 +584,32 @@ def init(fn=None):
         with open(fn, 'r') as pfile:
             prefs = json.load(pfile)
 
-    try:
-        assert(isinstance(prefs, dict))
-    except AssertionError:
-        print(prefs)
-        Exception('prefs must return a dict')
-
     # Get the current git hash
-    prefs['HASH'] = git_version(prefs['REPODIR'])
+    if prefs.get('REPODIR', False):
+        try:
+            prefs['HASH'] = git_version(prefs.get('REPODIR'))
+        except Exception as e:
+            prefs['HASH'] = ''
+            warnings.warn(f'git hash for repo could not be found! will not be able to keep good provenance! got exception: \n{e}')
+    else:
+        warnings.warn('REPODIR is not set in prefs.json, cant get git hash!!!')
 
-    # FIXME: Should this be here? if so need to restructure so that it uses calibration directory, more standardized way of doing calibrations.
+    # FIXME: This 100% should not happen here and should happen in the relevant hardware classes.
     # Load any calibration data
+    if prefs.get('BASEDIR', False):
+        cal_path = os.path.join(prefs['BASEDIR'], 'port_calibration_fit.json')
+        cal_raw = os.path.join(prefs['BASEDIR'], 'port_calibration.json')
 
-    cal_path = os.path.join(prefs['BASEDIR'], 'port_calibration_fit.json')
-    cal_raw = os.path.join(prefs['BASEDIR'], 'port_calibration.json')
-
-    #TODO: make fit calibration update if new calibration results received
-    # aka check if dates in raw results are more recent than date in a 'info' field, for example
-    if os.path.exists(cal_path):
-        with open(cal_path, 'r') as calf:
-            cal_fns = json.load(calf)
-        prefs['PORT_CALIBRATION'] = cal_fns
-    elif os.path.exists(cal_raw):
-        # aka raw calibration results exist but no fit has been computed
-        luts = compute_calibration(path=cal_raw, do_return=True)
-        with open(cal_path, 'w') as calf:
-            json.dump(luts, calf)
-        prefs['PORT_CALIBRATION'] = luts
+        if os.path.exists(cal_path):
+            with open(cal_path, 'r') as calf:
+                cal_fns = json.load(calf)
+            prefs['PORT_CALIBRATION'] = cal_fns
+        elif os.path.exists(cal_raw):
+            # aka raw calibration results exist but no fit has been computed
+            luts = compute_calibration(path=cal_raw, do_return=True)
+            with open(cal_path, 'w') as calf:
+                json.dump(luts, calf)
+            prefs['PORT_CALIBRATION'] = luts
 
     ###########################
 
@@ -566,8 +621,11 @@ def init(fn=None):
 
     # also store as a dictionary so other modules can have one if they want it
     # globals()['__dict__'] = prefs
+    if using_manager:
+        initialized = globals()['_INITIALIZED'].value = True
+    else:
+        initialized = globals()['_INITIALIZED'] = True
 
-    globals()['_INITIALIZED'].value = True
 
 def add(param, value):
     """
@@ -613,11 +671,8 @@ def git_version(repo_dir):
         out = subprocess.Popen(cmd, stdout = subprocess.PIPE, env=env).communicate()[0]
         return out
 
-    try:
-        out = _minimal_ext_cmd(['git','-C',repo_dir, 'rev-parse', 'HEAD'])
-        GIT_REVISION = out.strip().decode('ascii')
-    except OSError:
-        GIT_REVISION = "Unknown"
+    out = _minimal_ext_cmd(['git','-C',repo_dir, 'rev-parse', 'HEAD'])
+    GIT_REVISION = out.strip().decode('ascii')
 
     return GIT_REVISION
 
@@ -669,90 +724,27 @@ def compute_calibration(path=None, calibration=None, do_return=False):
         with open(lut_fn, 'w') as lutf:
             json.dump(luts, lutf)
 
-#
-# class _Prefs(types.ModuleType):
-#     """
-#     Hidden class that replaces the module so that prefs can be subscripted
-#
-#     with respect to: https://sohliloquies.blogspot.com/2017/07/how-to-make-subscriptable-module-in.html
-#     """
-#
-#     def __init__(self, *args, **kwargs):
-#         super(_Prefs, self).__init__(*args, **kwargs)
-#
-#         # assign globals as attributes
-#         for key, val in globals().items():
-#             if key == "get":
-#                 continue
-#             self.__setattr__(key, val)
-#
-#     def __getitem__(self, item):
-#         return self.get(item)
-#
-#     def __setitem__(self, key, value):
-#         set(key, value)
-#
-#     def __getattr__(self, key):
-#         """
-#         get global (module) values first, then prefs
-#         """
-#
-#         # if key in globals().keys():
-#         #     return globals()[key]
-#         try:
-#             return object.__getattribute__(self, key)
-#         except AttributeError:
-#             return self.get(key)
-#
-#     def get(self, key: typing.Union[str, None] = None):
-#         """
-#         Get a pref!
-#
-#         If a value for the given ``key`` can't be found, prefs will attempt to
-#
-#         Args:
-#             key (str, None): get pref of specific ``key``, if ``None``, return all prefs
-#
-#         Returns:
-#             value of pref (type variable!), or ``None`` if no pref of passed ``key``
-#         """
-#
-#         # if nothing is requested of us, return everything
-#         if key is None:
-#             return self._PREFS._getvalue()
-#
-#         else:
-#             # try to get the value from the prefs manager
-#             try:
-#                 return self._PREFS[key]
-#
-#             # if none exists...
-#             except KeyError:
-#                 # try to get a default value
-#                 try:
-#                     default_val = globals()['_DEFAULTS'][key]['default']
-#                     warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt '
-#                                   f'happen and everything should be specified in prefs')
-#                     return default_val
-#
-#                 # if you still can't find a value, None is an unambiguous signal for pref not set
-#                 # (no pref is ever None)
-#                 except KeyError:
-#                     return None
-#
-#     # def __setattr__(self, key, val):
-#     #     object.__setattr__(self, key, val)
-#     #     set(key, val)
-#
-#
+def clear():
+    """
+    Mostly for use in testing, clear loaded prefs (without deleting prefs.json)
+
+    (though you will probably overwrite prefs.json if you clear and then set another pref so don't use this except in testing probably)
+    """
+    global _PREFS
+    global _PREF_MANAGER
+    if using_manager:
+        _PREFS = _PREF_MANAGER.dict()
+    else:
+        _PREFS = {}
+
 
 
 #######################3
 
-if not _INITIALIZED.value:
-    init()
-
-    # replace module
-    # sys.modules[__name__] = _Prefs(__name__)
-
+if using_manager:
+    if not _INITIALIZED.value:
+        init()
+else:
+    if not _INITIALIZED:
+        init()
 
