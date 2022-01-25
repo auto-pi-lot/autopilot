@@ -87,6 +87,7 @@ class Pyo_Sound(Stim):
 
     """
 
+    @Introspect()
     def __init__(self):
         self.PARAMS = None  # list of strings of parameters to be defined
         self.type = None  # string human readable name of sound
@@ -170,6 +171,7 @@ class Jack_Sound(Stim):
     str: type of server, always 'jack' for `Jack_Sound` s.
     """
 
+    @Introspect()
     def __init__(self, jack_client: typing.Optional['autopilot.stim.sound.jackclient.JackClient'] = None):
         """Initialize a new Jack_Sound
 
