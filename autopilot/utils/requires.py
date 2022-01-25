@@ -83,8 +83,10 @@ class Python_Package(Requirement):
 
         if spec:
             importable = True
-            version = metadata.version(self.name)
+
+            version = metadata.version(self.package_name)
             version_match = self.version.contains(version)
+
 
         if importable and version_match:
             return True

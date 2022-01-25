@@ -16,6 +16,7 @@ from autopilot import prefs
 from autopilot.core.loggers import init_logger
 from autopilot.utils.requires import Requirements, Python_Package
 from autopilot.stim.stim import Stim
+from autopilot.utils.decorators import Introspect
 
 Backends = {
     'pyo': Python_Package('pyo'),
@@ -39,12 +40,15 @@ class Sound(Stim):
     type = None
     server_type = 'dummy'
 
+    @Introspect()
     def __init__(self,
         fs: int = None,
         duration: float = None,
 
         **kwargs
     ):
+        if fs is None:
+            raise ValueError('Dummy classes must be passed an explicit fs (sampling rate) argument, as it cannot be inferred from the server (since there is none)')
         self.fs = fs
         self.duration = duration
         self.logger = init_logger(self)
