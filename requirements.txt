@@ -13,3 +13,4 @@ tables>=3.4.2
 cffi
 validators
 importlib-metadata; python_version < '3.8'
+packaging

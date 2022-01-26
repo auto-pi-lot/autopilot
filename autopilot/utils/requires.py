@@ -78,7 +78,7 @@ class Python_Package(Requirement):
             self.package_name = self.name
 
     @property
-    def import_spec(self) -> typing.Union['ModuleSpec', False]:
+    def import_spec(self) -> typing.Union['ModuleSpec', bool]:
         """
         The :class:`importlib.machinery.ModuleSpec` for :attr:`.name` , if present, otherwise False
 
@@ -92,7 +92,7 @@ class Python_Package(Requirement):
             return False
 
     @property
-    def package_version(self) -> typing.Union[str, False]:
+    def package_version(self) -> typing.Union[str, bool]:
         """
         The version of the installed package, if found. Uses :attr:`.package_name` (name when installing, eg.
         ``auto-pi-lot`` ) which can differ from the :attr:`.name`  (eg. ``autopilot`` ) of a package

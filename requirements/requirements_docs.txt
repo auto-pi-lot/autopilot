@@ -33,3 +33,4 @@ pytest
 matplotlib
 validators
 importlib-metadata; python_version < '3.8'
+packaging
