@@ -5,7 +5,11 @@ Draft for now, to be integrated in v0.5.0
 """
 import typing
 from importlib.util import find_spec
-from importlib import metadata
+import sys
+if sys.version_info.minor<8:
+    from importlib_metadata import version
+else:
+    from importlib.metadata import version
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from packaging.specifiers import SpecifierSet
@@ -101,7 +105,7 @@ class Python_Package(Requirement):
         if not self.import_spec:
             return False
         else:
-            return metadata.version(self.package_name)
+            return version(self.package_name)
 
     @property
     def met(self) -> bool:
