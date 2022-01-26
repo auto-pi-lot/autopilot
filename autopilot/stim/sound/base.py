@@ -182,7 +182,9 @@ class Jack_Sound(Stim):
     """
 
     @Introspect()
-    def __init__(self, jack_client: typing.Optional['autopilot.stim.sound.jackclient.JackClient'] = None):
+    def __init__(self,
+                 jack_client: typing.Optional['autopilot.stim.sound.jackclient.JackClient'] = None,
+                 **kwargs):
         """Initialize a new Jack_Sound
 
         This sets sound-specific parameters to None, set jack-specific
