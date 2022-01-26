@@ -601,15 +601,24 @@ def init(fn=None):
         cal_raw = os.path.join(prefs['BASEDIR'], 'port_calibration.json')
 
         if os.path.exists(cal_path):
-            with open(cal_path, 'r') as calf:
-                cal_fns = json.load(calf)
-            prefs['PORT_CALIBRATION'] = cal_fns
+            try:
+                with open(cal_path, 'r') as calf:
+                    cal_fns = json.load(calf)
+                prefs['PORT_CALIBRATION'] = cal_fns
+            except json.decoder.JSONDecodeError:
+                warnings.warn(f'calibration file was malformed. Renaming to avoid using in the future')
+                os.rename(cal_path, cal_path + '.bak')
         elif os.path.exists(cal_raw):
             # aka raw calibration results exist but no fit has been computed
-            luts = compute_calibration(path=cal_raw, do_return=True)
-            with open(cal_path, 'w') as calf:
-                json.dump(luts, calf)
-            prefs['PORT_CALIBRATION'] = luts
+            try:
+                luts = compute_calibration(path=cal_raw, do_return=True)
+                with open(cal_path, 'w') as calf:
+                    json.dump(luts, calf)
+                prefs['PORT_CALIBRATION'] = luts
+            except json.decoder.JSONDecodeError:
+                warnings.warn(f'processed calibration file was malformed. Renaming to avoid using in the future')
+                os.rename(cal_raw, cal_raw + '.bak')
+
 
     ###########################
 

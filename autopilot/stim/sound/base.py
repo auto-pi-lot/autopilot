@@ -23,7 +23,15 @@ from autopilot.utils.decorators import Introspect
 Backends = {
     'pyo': Python_Package('pyo'),
     'jack': Requirements([
-        Python_Package('jack', package_name='JACK-Client') # TODO: Add jack system
+        Python_Package(
+            'jack',
+            package_name='JACK-Client') # TODO: Add jack system
+        # System_Library(
+        #   'jackd2',
+        #   bin_name = 'jackd',
+        #   install_script = autopilot.setup.SCRIPTS['jackd_source'],
+        #   ...
+        # )
     ]),
     'dummy': True,
     'docs': True
