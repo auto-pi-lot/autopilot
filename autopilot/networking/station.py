@@ -289,7 +289,6 @@ class Station(multiprocessing.Process):
         msg_enc = msg.serialize()
 
         if not msg_enc:
-            #set_trace(term_size=(80,40))
             self.logger.exception('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
