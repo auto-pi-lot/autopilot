@@ -551,7 +551,7 @@ class Jack_Sound(Stim):
         if not self.continuous:
             self.logger.warning("stop_continuous called but not a continuous sound!")
             return
-
+        self.logger.debug('stop_continuous sound called')
         self.continuous_flag.clear()
         self.continuous_loop.clear()
 
@@ -560,6 +560,7 @@ class Jack_Sound(Stim):
         Release any resources held by this sound
 
         """
+        self.logger.debug('end_sound called')
 
         if self.play_evt.is_set():
             self.play_evt.clear()
@@ -580,9 +581,6 @@ class Jack_Sound(Stim):
         self.table = None
         self.initialized = False
 
-
-    def __del__(self):
-        self.end()
 
 
 def get_sound_class(server_type: typing.Optional[str] = None) -> typing.Union[typing.Type[Sound],typing.Type[Jack_Sound],typing.Type[Pyo_Sound]]:
