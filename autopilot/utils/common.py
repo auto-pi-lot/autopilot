@@ -47,7 +47,7 @@ def list_classes(module) -> typing.List[typing.Tuple[str, str]]:
         mod_name = module.__name__
 
     # get names of module files within top-level package
-    submodules = [mod for _, mod, _ in pkgutil.iter_modules([mod_path])]
+    submodules = [mod for _, mod, _ in pkgutil.iter_modules([str(mod_path)])]
     submod_paths = [(mod_path / mod).with_suffix('.py') for mod in submodules]
 
     # parse the files to get the names of the classes
