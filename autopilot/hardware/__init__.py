@@ -82,9 +82,6 @@ class Hardware(object):
 
     Primarily for the purpose of defining necessary attributes.
 
-    Also defines `__del__` to call `release()` so objects are always released
-    even if not explicitly.
-
     Attributes:
         name (str): unique name used to identify this object within its group.
         group (str): hardware group, corresponds to key in prefs.json ``"HARDWARE": {"GROUP": {"ID": {**params}}}``
@@ -250,7 +247,3 @@ class Hardware(object):
             self.logger.info(f'Calibration saved to {cal_fn}: \n{calibration}')
 
         self._calibration = calibration
-
-    def __del__(self):
-        self.release()
-

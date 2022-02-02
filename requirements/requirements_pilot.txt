@@ -18,3 +18,5 @@ cffi
 pigpio @ https://github.com/sneakers-the-rat/pigpio/tarball/master
 scipy>=1.6.0
 validators
+importlib-metadata; python_version < '3.8'
+packaging

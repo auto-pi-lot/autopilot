@@ -53,7 +53,7 @@ from autopilot import prefs
 from autopilot.stim.sound.base import get_sound_class, Sound
 import autopilot
 
-BASE_CLASS = get_sound_class()  # type: Sound
+BASE_CLASS = get_sound_class()
 
 
 ## The rest of the module defines actual sounds, which inherit from BASE_CLASS
@@ -192,6 +192,32 @@ class Noise(BASE_CLASS):
 
         # Flag as initialized
         self.initialized = True
+
+    def iter_continuous(self) -> typing.Generator:
+        """
+        Continuously yield frames of audio. If this method is not overridden,
+        just wraps :attr:`.table` in a :class:`itertools.cycle` object and
+        returns from it.
+
+        Returns:
+            np.ndarray: A single frame of audio
+        """
+        # preallocate
+        if self.channel is None:
+            table = np.empty(self.blocksize, dtype=np.float32)
+        else:
+            table = np.empty((self.blocksize, 2), dtype=np.float32)
+
+        rng = np.random.default_rng()
+
+
+        while True:
+            if self.channel is None:
+                table[:] = rng.uniform(-self.amplitude, self.amplitude, self.blocksize)
+            else:
+                table[:,self.channel] = rng.uniform(-self.amplitude, self.amplitude, self.blocksize)
+
+            yield table
 
 class File(BASE_CLASS):
     """

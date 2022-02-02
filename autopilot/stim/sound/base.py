@@ -5,18 +5,33 @@ use the :func:`.default_sound_class` function.
 import typing
 import sys
 from warnings import warn
+from queue import Empty
+from abc import abstractmethod
+import threading
+from time import sleep
+from itertools import cycle
 
 import numpy as np
 
 from autopilot import prefs
+from autopilot import dehydrate
 from autopilot.core.loggers import init_logger
 from autopilot.utils.requires import Requirements, Python_Package
 from autopilot.stim.stim import Stim
+from autopilot.utils.decorators import Introspect
 
 Backends = {
     'pyo': Python_Package('pyo'),
     'jack': Requirements([
-        Python_Package('jack', package_name='JACK-Client') # TODO: Add jack system
+        Python_Package(
+            'jack',
+            package_name='JACK-Client') # TODO: Add jack system
+        # System_Library(
+        #   'jackd2',
+        #   bin_name = 'jackd',
+        #   install_script = autopilot.setup.SCRIPTS['jackd_source'],
+        #   ...
+        # )
     ]),
     'dummy': True,
     'docs': True
@@ -35,17 +50,20 @@ class Sound(Stim):
     type = None
     server_type = 'dummy'
 
+    @Introspect()
     def __init__(self,
         fs: int = None,
         duration: float = None,
 
         **kwargs
     ):
+        if fs is None:
+            raise ValueError('Dummy classes must be passed an explicit fs (sampling rate) argument, as it cannot be inferred from the server (since there is none)')
         self.fs = fs
         self.duration = duration
         self.logger = init_logger(self)
 
-        self.table = None # type: np.ndarray
+        self.table = None # type: typing.Optional[np.ndarray]
         self.initialized = False
 
     def get_nsamples(self):
@@ -79,6 +97,7 @@ class Pyo_Sound(Stim):
 
     """
 
+    @Introspect()
     def __init__(self):
         self.PARAMS = None  # list of strings of parameters to be defined
         self.type = None  # string human readable name of sound
@@ -162,7 +181,10 @@ class Jack_Sound(Stim):
     str: type of server, always 'jack' for `Jack_Sound` s.
     """
 
-    def __init__(self, jack_client: typing.Optional['autopilot.stim.sound.jackclient.JackClient'] = None):
+    @Introspect()
+    def __init__(self,
+                 jack_client: typing.Optional['autopilot.stim.sound.jackclient.JackClient'] = None,
+                 **kwargs):
         """Initialize a new Jack_Sound
 
         This sets sound-specific parameters to None, set jack-specific
@@ -208,6 +230,16 @@ class Jack_Sound(Stim):
         self.initialized = False
         self.buffered = False
         self.buffered_continuous = False
+
+    @abstractmethod
+    def init_sound(self):
+        """
+        Abstract method to initialize sound. Should set the :attr:`.table` attribute
+
+        .. todo::
+
+            ideally should standardize by returning an array, but pyo objects don't return arrays necessarily...
+        """
 
     def chunk(self, pad=True):
         """
@@ -382,21 +414,10 @@ class Jack_Sound(Stim):
             self.q.put_nowait(None)
             self.buffered = True
 
-    def buffer_continuous(self):
+    def _init_continuous(self):
         """
-        Dump chunks into the continuous sound queue for looping.
-
-        Continuous shoulds should always have full frames -
-        ie. the number of samples in a sound should be a multiple of :data:`.jackclient.BLOCKSIZE`.
-
-        This method will call :meth:`.quantize_duration` to force duration such that the sound has full frames.
-
-        An exception will be raised if the sound has been padded.
+        Create a duration quantized table for playing continuously
         """
-
-        # FIXME: Initialized should be more flexible,
-        # for now just deleting whatever init happened because
-        # continuous sounds are in development
         self.table = None
         self.initialized = False
 
@@ -413,7 +434,24 @@ class Jack_Sound(Stim):
             raise Exception(
                 "Continuous sounds cannot have padded chunks - sounds need to have n_samples % blocksize == 0")
 
-        # empty queue
+    def buffer_continuous(self):
+        """
+        Dump chunks into the continuous sound queue for looping.
+
+        Continuous shoulds should always have full frames -
+        ie. the number of samples in a sound should be a multiple of :data:`.jackclient.BLOCKSIZE`.
+
+        This method will call :meth:`.quantize_duration` to force duration such that the sound has full frames.
+
+        An exception will be raised if the sound has been padded.
+        """
+
+        # FIXME: Initialized should be more flexible,
+        # for now just deleting whatever init happened because
+        # continuous sounds are in development
+        # self._init_continuous()
+
+        # Give a dehydrated version of ourself
         while not self.continuous_q.empty():
             try:
                 _ = self.continuous_q.get_nowait()
@@ -423,7 +461,7 @@ class Jack_Sound(Stim):
 
         # put all the chunks into the queue, rather than one at a time
         # to avoid partial receipt
-        self.continuous_q.put(self.chunks.copy())
+        self.continuous_q.put(dehydrate(self))
 
         self.buffered_continuous = True
 
@@ -489,6 +527,21 @@ class Jack_Sound(Stim):
         # after the sound server start playing, it will clear the queue, unbuffering us
         self.buffered_continuous = False
 
+    def iter_continuous(self) -> typing.Generator:
+        """
+        Continuously yield frames of audio. If this method is not overridden,
+        just wraps :attr:`.table` in a :class:`itertools.cycle` object and
+        returns from it.
+
+        Returns:
+            np.ndarray: A single frame of audio
+        """
+        self._init_continuous()
+        iterator = cycle(self.chunks)
+        yield from iterator
+
+
+
     def stop_continuous(self):
         """
         Stop playing a continuous sound
@@ -498,7 +551,7 @@ class Jack_Sound(Stim):
         if not self.continuous:
             self.logger.warning("stop_continuous called but not a continuous sound!")
             return
-
+        self.logger.debug('stop_continuous sound called')
         self.continuous_flag.clear()
         self.continuous_loop.clear()
 
@@ -507,6 +560,7 @@ class Jack_Sound(Stim):
         Release any resources held by this sound
 
         """
+        self.logger.debug('end_sound called')
 
         if self.play_evt.is_set():
             self.play_evt.clear()
@@ -527,11 +581,9 @@ class Jack_Sound(Stim):
         self.table = None
         self.initialized = False
 
-    def __del__(self):
-        self.end()
 
 
-def get_sound_class(backend: typing.Optional[str] = None) -> Sound:
+def get_sound_class(server_type: typing.Optional[str] = None) -> typing.Union[typing.Type[Sound],typing.Type[Jack_Sound],typing.Type[Pyo_Sound]]:
     """
     Get the default sound class as defined by ``'AUDIOSERVER'``
 
@@ -544,7 +596,9 @@ def get_sound_class(backend: typing.Optional[str] = None) -> Sound:
 
     ## First, switch the behavior based on the pref AUDIOSERVER
     # Get the pref
-    server_type = prefs.get('AUDIOSERVER')
+    if server_type is None:
+        server_type = prefs.get('AUDIOSERVER')
+
 
     # True is a synonym for 'jack', the default server
     if server_type == True:

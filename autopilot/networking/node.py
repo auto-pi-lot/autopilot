@@ -234,7 +234,7 @@ class Net_Node(object):
              key:str=None,
              value:typing.Any=None,
              msg:Optional['Message']=None,
-             repeat:bool=True, flags = None, force_to:bool = False):
+             repeat:bool=False, flags = None, force_to:bool = False):
         """
         Send a message via our :attr:`~.Net_Node.sock` , DEALER socket.
 

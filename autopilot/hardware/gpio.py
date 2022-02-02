@@ -24,7 +24,7 @@ from datetime import datetime
 import itertools
 import typing
 import warnings
-
+from collections import deque as dq
 
 from autopilot import prefs
 from autopilot.hardware import Hardware, BOARD_TO_BCM
@@ -310,6 +310,7 @@ class GPIO(Hardware):
         Note:
             the Hardware metaclass will call this method on object deletion.
         """
+        self.logger.debug('releasing')
         try:
             self.pull = None
         except:
@@ -697,6 +698,7 @@ class Digital_Out(GPIO):
         """
         Stops and deletes all scripts, sets to :attr:`~.Digital_Out.off`, and calls :meth:`.GPIO.release`
         """
+        self.logger.debug('releasing')
         try:
 
             self.delete_all_scripts()
@@ -723,6 +725,7 @@ class Digital_In(GPIO):
             set this event whenever the callback is triggered. Can be used to handle
             stage transition logic here instead of the :class:`.Task` object, as is typical.
         record (bool): Whether all logic transitions should be recorded as a list of ('EVENT', 'Timestamp') tuples.
+        max_events (int): Maximum size of the :attr:`.events` deque
         **kwargs: passed to :class:`GPIO`
 
     Sets the internal pullup/down resistor to :attr:`.Digital_In.off` and
@@ -733,19 +736,18 @@ class Digital_In(GPIO):
         pull and trigger are set by polarity on initialization in digital inputs, unlike other GPIO classes.
         They are not mutually synchronized however, ie. after initialization if any one of these attributes are changed, the other two will remain the same.
 
-
     Attributes:
         pig (:meth:`pigpio.pi`): The pigpio connection.
         pin (int): Broadcom-numbered pin, converted from the argument given on instantiation
         callbacks (list): A list of :meth:`pigpio.callback`s kept to clear them on exit
         polarity (int): Logic direction, if 1: off=0, on=1, pull=low, trigger=high and vice versa for 0
-        events (list): if :attr:`.record` is True, a list of ('EVENT', 'TIMESTAMP') tuples
+        events (list): if :attr:`.record` is True, a deque of ('EVENT', 'TIMESTAMP') tuples of length ``max_events``
     """
     is_trigger=True
     type = 'DIGI_IN'
     input = True
 
-    def __init__(self, pin, event=None, record=True, **kwargs):
+    def __init__(self, pin, event=None, record=True, max_events=256, **kwargs):
         """
 
         """
@@ -763,8 +765,7 @@ class Digital_In(GPIO):
         self.callbacks = []
 
         # List to store logic transition events
-        # FIXME: Should be a deque
-        self.events = []
+        self.events = dq(maxlen=max_events)
 
         self.record = record
         if self.record:
@@ -853,6 +854,7 @@ class Digital_In(GPIO):
         """
         Clears any callbacks and calls :meth:`GPIO.release`
         """
+        self.logger.debug('releasing')
         self.clear_cb()
         super(Digital_In, self).release()
 
@@ -983,6 +985,7 @@ class PWM(Digital_Out):
 
         """
         # FIXME: reimplementing parent release method here because of inconsistent use of self.off -- unify API and fix!!
+        self.logger.debug('releasing')
         try:
             self.delete_all_scripts()
             self.set(0) # clean values should handle inversion, don't use self.off
@@ -1257,6 +1260,7 @@ class LED_RGB(Digital_Out):
         """
         Release each channel and stop pig without calling superclass.
         """
+        self.logger.debug('releasing')
         for chan in self.channels.values():
             chan.release()
         self.pig.stop()

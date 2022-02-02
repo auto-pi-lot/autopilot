@@ -82,6 +82,7 @@ import warnings
 
 #from autopilot.core.loggers import init_logger
 from collections import OrderedDict as odict
+from autopilot.exceptions import DefaultPrefWarning
 
 class Scopes(Enum):
     """
@@ -395,10 +396,17 @@ _DEFAULTS = odict({
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },
+    'ALSA_NPERIODS': {
+        'type': 'int',
+        'text': 'number of buffer periods to use with ALSA sound driver',
+        'default': 3,
+        'depends': 'AUDIOSERVER',
+        'scope': Scopes.AUDIO
+    },
     'JACKDSTRING': {
         'type': 'str',
         'text': 'Arguments to pass to jackd, see the jackd manpage',
-        'default': 'jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &',
+        'default': 'jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -nper -s &',
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },
@@ -475,7 +483,7 @@ def get(key: typing.Union[str, None] = None):
                 default_val = globals()['_DEFAULTS'][key]['default']
                 if key not in globals()['_WARNED']:
                     globals()['_WARNED'].append(key)
-                    warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', UserWarning)
+                    warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', DefaultPrefWarning)
                 return default_val
 
             # if you still can't find a value, None is an unambiguous signal for pref not set
@@ -594,15 +602,24 @@ def init(fn=None):
         cal_raw = os.path.join(prefs['BASEDIR'], 'port_calibration.json')
 
         if os.path.exists(cal_path):
-            with open(cal_path, 'r') as calf:
-                cal_fns = json.load(calf)
-            prefs['PORT_CALIBRATION'] = cal_fns
+            try:
+                with open(cal_path, 'r') as calf:
+                    cal_fns = json.load(calf)
+                prefs['PORT_CALIBRATION'] = cal_fns
+            except json.decoder.JSONDecodeError:
+                warnings.warn(f'calibration file was malformed. Renaming to avoid using in the future')
+                os.rename(cal_path, cal_path + '.bak')
         elif os.path.exists(cal_raw):
             # aka raw calibration results exist but no fit has been computed
-            luts = compute_calibration(path=cal_raw, do_return=True)
-            with open(cal_path, 'w') as calf:
-                json.dump(luts, calf)
-            prefs['PORT_CALIBRATION'] = luts
+            try:
+                luts = compute_calibration(path=cal_raw, do_return=True)
+                with open(cal_path, 'w') as calf:
+                    json.dump(luts, calf)
+                prefs['PORT_CALIBRATION'] = luts
+            except json.decoder.JSONDecodeError:
+                warnings.warn(f'processed calibration file was malformed. Renaming to avoid using in the future')
+                os.rename(cal_raw, cal_raw + '.bak')
+
 
     ###########################
 

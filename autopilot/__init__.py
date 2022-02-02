@@ -3,3 +3,4 @@ __version__ = '0.4.3'
 
 from autopilot.setup import setup_autopilot
 from autopilot.utils.registry import get, get_task, get_hardware, get_names
+from autopilot.utils.hydration import dehydrate, hydrate

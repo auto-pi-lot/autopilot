@@ -5,13 +5,19 @@ Draft for now, to be integrated in v0.5.0
 """
 import typing
 from importlib.util import find_spec
-from importlib import metadata
+import sys
+if sys.version_info.minor<8:
+    from importlib_metadata import version
+else:
+    from importlib.metadata import version
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from packaging.specifiers import SpecifierSet
 
 from autopilot.utils import types
 
+if typing.TYPE_CHECKING:
+    from importlib.machinery import ModuleSpec
 
 @dataclass
 class Requirement(ABC):
@@ -72,28 +78,54 @@ class Python_Package(Requirement):
             self.package_name = self.name
 
     @property
+    def import_spec(self) -> typing.Union['ModuleSpec', bool]:
+        """
+        The :class:`importlib.machinery.ModuleSpec` for :attr:`.name` , if present, otherwise False
+
+        Returns:
+            :class:`importlib.machinery.ModuleSpec` or False
+        """
+        spec = find_spec(self.name)
+        if spec:
+            return spec
+        else:
+            return False
+
+    @property
+    def package_version(self) -> typing.Union[str, bool]:
+        """
+        The version of the installed package, if found. Uses :attr:`.package_name` (name when installing, eg.
+        ``auto-pi-lot`` ) which can differ from the :attr:`.name`  (eg. ``autopilot`` ) of a package
+        (used when importing)
+
+
+        Returns:
+            str: 'x.x.x' or False if not found
+        """
+        if not self.import_spec:
+            return False
+        else:
+            return version(self.package_name)
+
+    @property
     def met(self) -> bool:
         """
         Return ``True`` if python package is found in the PYTHONPATH that satisfies the ``SpecifierSet``
         """
-        importable = False
-        version_match = False
-        # check if we have an import spec (the package is importable
-        spec = find_spec(self.name)
-
-        if spec:
-            importable = True
-            version = metadata.version(self.name)
-            version_match = self.version.contains(version)
-
-        if importable and version_match:
+        if self.import_spec and self.version.contains(self.package_version):
             return True
         else:
             return False
-        # TODO: add informative messages if present but outdated
+
+        # TODO: make a 'status' type that can differentiate between outdated vs. not installed packages
 
     def resolve(self) -> bool:
-        raise NotImplementedError
+        """
+        We're not supposed to
+        Returns:
+
+        """
+        raise NotImplementedError()
 
 
 @dataclass
