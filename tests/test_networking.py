@@ -213,6 +213,7 @@ def test_multihop(node_params, station_params):
     # try sending message from node_1 to node_3 through the stations
     node_1.send(to=['station_1', 'station_2', 'station_3', 'node_3'],
                 key='GOTIT',
+                repeat=True,
                 value=0)
 
     time.sleep(0.2)

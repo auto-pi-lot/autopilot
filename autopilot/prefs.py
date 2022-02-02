@@ -82,6 +82,7 @@ import warnings
 
 #from autopilot.core.loggers import init_logger
 from collections import OrderedDict as odict
+from autopilot.exceptions import DefaultPrefWarning
 
 class Scopes(Enum):
     """
@@ -482,7 +483,7 @@ def get(key: typing.Union[str, None] = None):
                 default_val = globals()['_DEFAULTS'][key]['default']
                 if key not in globals()['_WARNED']:
                     globals()['_WARNED'].append(key)
-                    warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', UserWarning)
+                    warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', DefaultPrefWarning)
                 return default_val
 
             # if you still can't find a value, None is an unambiguous signal for pref not set
