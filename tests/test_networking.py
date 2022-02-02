@@ -206,8 +206,8 @@ def test_multihop(node_params, station_params):
     time.sleep(0.1)
 
     # send messages from nodes to stations to open connection
-    node_1.send('station_1', 'HELLO', '')
-    node_3.send('station_3', 'HELLO', '')
+    node_1.send('station_1', 'HELLO', '', repeat=True)
+    node_3.send('station_3', 'HELLO', '', repeat=True)
     time.sleep(0.1)
 
     # try sending message from node_1 to node_3 through the stations
