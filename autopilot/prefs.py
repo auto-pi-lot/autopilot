@@ -109,37 +109,46 @@ class Scopes(Enum):
 
 
 using_manager = False
-try:
-    _PREF_MANAGER = mp.Manager() # type: mp.managers.SyncManager
-    """
-    The :class:`multiprocessing.Manager` that stores prefs during system operation and makes them available
-    and consistent across processes.
-    """
-    using_manager = True
-
-    _PREFS = _PREF_MANAGER.dict()  # type: mp.managers.SyncManager.dict
-    """
-    stores a dictionary of preferences that mirrors the global variables.
-    """
-
-    _INITIALIZED = mp.Value(c_bool, False)  # type: mp.Value
-    """
-    Boolean flag to indicate whether prefs have been initialzied from ``prefs.json``
-    """
-
-    _LOCK = mp.Lock()  # type: mp.Lock
-    """
-    :class:`multiprocessing.Lock` to control access to ``prefs.json``
-    """
-
-except (EOFError, FileNotFoundError):
-    # can't use mp.Manager in ipython and other interactive contexts
-    # fallback to just regular old dict
-
+if getattr(mp.process.current_process(), '_inheriting', False):
+    # Check if it's safe to use multiprocessing manager, using the check in multiprocessing/spawn.py:_check_not_importing_main
+    # see https://docs.python.org/2/library/multiprocessing.html#windows
     _PREF_MANAGER = None
     _PREFS = {}
     _INITIALIZED = False
     _LOCK = Lock()
+else:
+
+    try:
+        _PREF_MANAGER = mp.Manager() # type: typing.Optional[mp.managers.SyncManager]
+        """
+        The :class:`multiprocessing.Manager` that stores prefs during system operation and makes them available
+        and consistent across processes.
+        """
+        using_manager = True
+
+        _PREFS = _PREF_MANAGER.dict()  # type: mp.managers.SyncManager.dict
+        """
+        stores a dictionary of preferences that mirrors the global variables.
+        """
+
+        _INITIALIZED = mp.Value(c_bool, False)  # type: mp.Value
+        """
+        Boolean flag to indicate whether prefs have been initialzied from ``prefs.json``
+        """
+
+        _LOCK = mp.Lock()  # type: mp.Lock
+        """
+        :class:`multiprocessing.Lock` to control access to ``prefs.json``
+        """
+
+    except (EOFError, FileNotFoundError):
+        # can't use mp.Manager in ipython and other interactive contexts
+        # fallback to just regular old dict
+
+        _PREF_MANAGER = None
+        _PREFS = {}
+        _INITIALIZED = False
+        _LOCK = Lock()
 
 
 
