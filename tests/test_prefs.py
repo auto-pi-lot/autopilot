@@ -2,28 +2,56 @@ import pytest
 import warnings
 
 from autopilot import prefs
+from autopilot.exceptions import DefaultPrefWarning
 
-@pytest.mark.parametrize('default_pref', [(k, v) for k, v in prefs._DEFAULTS.items()])
-def test_prefs_defaults(default_pref):
-
-    # make sure that we didnt' actually load anything from some phantom uh prefs file idk
-
-    # if prefs._INITIALIZED.value:
-    #     warnings.warn('prefs was initialized, so defaults could not be tested')
-    #     return
-    # save any existing set prefs to restore at the end
+@pytest.fixture(scope='function')
+def clean_prefs(request):
+    """
+    Clear and stash prefs, restore on finishing
+    """
     existing_prefs = prefs._PREFS._getvalue().copy()
     prefs._PREFS = prefs._PREF_MANAGER.dict()
 
+    def restore_prefs():
+        for k, v in existing_prefs.items():
+            prefs._PREFS[k] = v
+
+    request.addfinalizer(restore_prefs)
+
+@pytest.mark.parametrize('default_pref', [(k, v) for k, v in prefs._DEFAULTS.items()])
+def test_prefs_defaults(default_pref, clean_prefs):
+
     if 'default' in default_pref[1].keys():
-        with pytest.warns(UserWarning):
-            assert prefs.get(default_pref[0]) == default_pref[1]['default']
+        assert prefs.get(default_pref[0]) == default_pref[1]['default']
     else:
         assert prefs.get(default_pref[0]) is None
 
-    # restore
-    for k, v in existing_prefs.items():
-        prefs._PREFS[k] = v
+
+
+@pytest.mark.parametrize('default_pref', [(k, v) for k, v in prefs._DEFAULTS.items()])
+def test_prefs_warnings(default_pref, clean_prefs):
+    """
+    Test that getting a default pref warns once and only once
+    """
+
+    if 'default' in default_pref[1].keys():
+        # if we have a default...
+        # first make sure that it's not in the "warned" list
+        try:
+            prefs._WARNED.remove(default_pref[0])
+        except ValueError:
+            pass
+
+
+        with pytest.warns(DefaultPrefWarning, match='Returning default prefs') as record:
+            # warn when first getting, should warn
+            assert prefs.get(default_pref[0]) == default_pref[1]['default']
+            # get again, should only emit one warning
+            assert prefs.get(default_pref[0]) == default_pref[1]['default']
+
+        # filter to just default warnings
+        _warns = [r.category == DefaultPrefWarning for r in record]
+        assert sum(_warns) == 1
 
 
 def test_prefs_deprecation():

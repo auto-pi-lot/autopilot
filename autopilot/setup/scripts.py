@@ -121,11 +121,6 @@ SCRIPTS = odict({
         'type': 'bool',
         'text': 'Create an alias to launch with "autopilot" (must be run from setup_autopilot, calls make_alias)'
     },
-    'jackd_apt': {
-        'type': 'bool',
-        'text': 'Install jack audio from apt repository (required if AUDIOSERVER == jack)',
-        'commands': ['sudo apt update && sudo apt install -y jackd2']
-    },
     'jackd_source': {
         'type': 'bool',
         'text': 'Install jack audio from source, try this if youre having compatibility or runtime issues with jack (required if AUDIOSERVER == jack)',

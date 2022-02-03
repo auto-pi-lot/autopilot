@@ -9,6 +9,7 @@ import multiprocessing as mp
 from tqdm.auto import tqdm
 import inspect
 import typing
+import shutil
 
 import time
 import traceback
@@ -127,6 +128,7 @@ class Camera(Hardware):
 
         # internal attributes
         self._cam = None #: camera subobject test
+        self._fps = None
         self._output_filename = None
         self._capture_thread = None
         self._writer = None
@@ -653,8 +655,9 @@ class PiCamera(Camera):
         super(PiCamera, self).__init__(*args, **kwargs)
 
         if not globals()['PICAMERA']:
-            self.logger.exception('the picamera package could not be imported, install it before use!')
-            return
+            nopicam = 'the picamera package could not be imported, install it before use!'
+            self.logger.exception(nopicam)
+            raise ImportError(nopicam)
 
         self._sensor_mode = None
         self._cam = None
@@ -1174,7 +1177,6 @@ class Camera_Spinnaker(Camera):
         # internal variables
         self._bin = None
         self._exposure = None
-        self._fps = None
         self._frame_trigger = None
         self._pixel_format = None
         self._acquisition_mode = None
@@ -1859,6 +1861,9 @@ class Directory_Writer(object):
             ffmpeg_bin (str): ffmpeg binary to use, default is to use ffmpeg in ``$PATH``,
                 otherwise specific binary can be specified.
         """
+
+        _check_ffmpeg()
+
         self.dir = dir
         self.fps = fps
         self.ext = ext
@@ -1926,6 +1931,9 @@ class Video_Writer(mp.Process):
         """
 
         super(Video_Writer, self).__init__()
+
+        _check_ffmpeg()
+
 
         self.q = q
         self.path = path
@@ -2034,3 +2042,11 @@ def list_spinnaker_cameras():
     system.ReleaseInstance()
 
     return cam_info
+
+
+def _check_ffmpeg() -> bool:
+    if shutil.which('ffmpeg') is None:
+        raise ImportError(
+            'ffmpeg could not be found on the system, and it is needed in order to write videos. install it with apt (sudo apt update && sudo apt install ffmpeg)')
+    else:
+        return True

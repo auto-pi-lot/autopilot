@@ -145,6 +145,20 @@ cloned repository, rather than from the system/venv libraries.::
     Development work is done on the ``dev`` branch, which may have additional features/bugfixes but is much less stable!
     To use it just ``git checkout dev`` from your repository directory.
 
+Extra Dependencies
+-------------------
+
+Different deployments depend on different packages! Eg. `Pilot`s on raspberry pis need some means of interacting with the GPIO pins, and
+`Terminal`s need packages for the GUI. Rather than requiring them all for every installation, we use a set of optional dependencies.
+
+Depending on how you intend to use it, you will likely need some additional set of packages, specified like::
+
+    pip install auto-pi-lot[pilot]
+    # or
+    pip install auto-pi-lot[terminal]
+    # or if using an editable install
+    pip install .[pilot]
+
 
 Configuration
 ==============
