@@ -12,8 +12,7 @@ import autopilot.hardware.gpio
 from autopilot.hardware import gpio
 from autopilot.tasks import Task
 from collections import OrderedDict as odict
-from autopilot.core.networking import Net_Node
-from autopilot.core.utils import find_recursive
+from autopilot.networking.node import Net_Node
 
 from autopilot import prefs
 import pdb
