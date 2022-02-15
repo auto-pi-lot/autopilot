@@ -799,6 +799,7 @@ class Pilot:
                 self.task.end()
             except Exception as e:
                 self.logger.exception(f'got exception while stopping task: {e}')
+            del self.task
             self.task = None
             row.append()
             table.flush()

@@ -126,7 +126,7 @@ class Station(multiprocessing.Process):
             self.ip = ""
 
 
-        self.file_block = threading.Event() # to wait for file transfer
+        self.file_block = multiprocessing.Event() # to wait for file transfer
 
         # number messages as we send them
         self.msg_counter = count()
@@ -146,7 +146,10 @@ class Station(multiprocessing.Process):
 
 
     def __del__(self):
-        self.release()
+        try:
+            self.release()
+        except:
+            pass
 
     def run(self):
         """
@@ -289,7 +292,6 @@ class Station(multiprocessing.Process):
         msg_enc = msg.serialize()
 
         if not msg_enc:
-            #set_trace(term_size=(80,40))
             self.logger.exception('Message could not be encoded:\n{}'.format(str(msg)))
             return
 

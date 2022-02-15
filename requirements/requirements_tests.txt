@@ -22,3 +22,5 @@ pylint
 coveralls
 pytest-qt~=3.3.0
 validators
+importlib-metadata; python_version < '3.8'
+packaging

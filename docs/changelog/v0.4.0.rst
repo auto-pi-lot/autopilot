@@ -1,6 +1,51 @@
 .. _changelog_v040:
 
-v0.4.3 (October 20th)
+v0.4.4 - Timing and Sound (February 2nd, 2022)
+----------------------------
+Several parts to this update!
+
+* See `PR#146 <https://github.com/wehr-lab/autopilot/pull/146>`_ for details about improvements to jackd sound timing! In short:
+* Changed the way that continuous sounds work. Rather than cycling through an array, which was easy to drop, now pass a sound object that can generate its own samples on the fly using the `hydration` module.
+* More accurate timing of sound ending callbacks. Before, the event would be called immediately on buffering the sounds into the jack ports, but that was systematically too early. Instead, use jack timing methods to account for delay from blocksize and n_periods to wait_until a certain delay to `set()` the event. See `_wait_for_end`
+
+Other stuff:
+
+New
+~~~~~~~~~~~~~~~~~~~
+
+* ``hydration`` module for creating and storing autopilot objects between processes and computers!
+* ``@Introspect`` made and added to sound classes. Will be moved to root class. Allows storing the parameters given on instantiation.
+* ``requires`` module for more explicit declarations of by-object dependencies to resolve lots of the little fragile checks throughout the package, as well as make it easier for plugins :)
+* ``types`` module that will, well, have types for v0.5.0's reworked type system!
+* minor - added exceptions module, just stubs for now
+* Made dummy sound class to just use sounds without needing a running sound server
+* New transformations! The Prasad line fitting algorithm as ``Linefit_Prasad`` and ordering points in a line from, eg. edge detection in ``Order_Points`  `
+
+Improvements
+~~~~~~~~~~~~~~~~~~~
+
+* Only warn once for returning a default pref value, and make its own warning class so that it can be filtered.
+* Cleaning up the base sound classes and moved them to their own module because sounds was very cumbersome and hard to reason about. Now use ``get_sound_class`` instead of declaring within the module.
+* Made optional install packages as ``extras_require`` so now can install with ``pip install auto-pi-lot -E pilot`` rather than autodetecting based on architecture. Further improvements (moving to poetry) will be in v0.5.0
+
+Bugfixes
+~~~~~~~~~~~~~~~~~~~
+
+* Correctly identify filenames in logging, before the last module name was treated as a suffix on the path and removed, and so only the most recent logger created would actually log to disk. Logging now works across threads and processes.
+* Fall back to a non-multiprocessing-based prefs if for some reason we can't use a mp.Manager in the given context (eg. ipython) - Still need to figure out a way to not print the exception because it is thrown asynchronously.
+* as much as i love it, the splash screen being absent for whatever reason shouldn't crash the program.
+* Raise an exception when instantiating a picamera without having picamera installed, re: https://github.com/wehr-lab/autopilot/issues/142
+* Raise ImportError when ffmpeg is not present and trying to use a videowriter class
+* Use a deque rather than an infinitely growing list to store GPIO events.
+
+Docs
+~~~~~~~~~~~~~~~~~~~
+
+* Documenting the scripts module a bit better.
+* Lots more docs on jack_server
+
+
+v0.4.3 (October 20th, 2021)
 ---------------------
 
 New Features

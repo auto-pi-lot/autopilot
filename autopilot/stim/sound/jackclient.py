@@ -10,9 +10,12 @@ from copy import copy
 from queue import Empty
 import time
 from threading import Thread
+if typing.TYPE_CHECKING:
+    from autopilot.stim.sound.base import Jack_Sound
 
 
 # importing configures environment variables necessary for importing jack-client module below
+import autopilot
 from autopilot import external
 from autopilot.core.loggers import init_logger
 
@@ -165,6 +168,8 @@ class JackClient(mp.Process):
         self.continuous_cycle = None
         self.continuous.clear()
         self.continuous_loop.clear()
+        self._continuous_sound = None # type: typing.Optional['Jack_Sound']
+        self._continuous_dehydrated = None
 
         # store the frames of the continuous sound and cycle through them if set in continous mode
         self.continuous_cycle = None
@@ -361,8 +366,16 @@ class JackClient(mp.Process):
                 # check if the continuous sound has changed, even if we already have one
                 try:
                     to_cycle = self.continuous_q.get_nowait()
-                    self.continuous_cycle = cycle(to_cycle)
-                    self.logger.debug(f'got continuous sound with length {len(to_cycle)} frames')
+                    if self._continuous_dehydrated is None or self._continuous_dehydrated != to_cycle:
+                        self._continuous_dehydrated = to_cycle
+                        self._continuous_sound = autopilot.hydrate(self._continuous_dehydrated)
+                        self.continuous_cycle = self._continuous_sound
+                        self.logger.debug(f'got new continuous sound: {self._continuous_dehydrated}')
+                    elif self._continuous_dehydrated == to_cycle:
+                        self.logger.debug(f'received a new continuous sound, but was identical to old sound. not rehydrating')
+
+                    self.continuous_cycle = self._continuous_sound.iter_continuous()
+
                 except Empty:
                     if self.continuous_cycle is None:
                         self.logger.exception('told to play continuous sound but nothing in queue, will try again next loop around')

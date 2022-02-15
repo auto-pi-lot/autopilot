@@ -14,3 +14,5 @@ pyqtgraph>=0.11.0rc0
 PySide2
 tqdm
 validators
+importlib-metadata; python_version < '3.8'
+packaging

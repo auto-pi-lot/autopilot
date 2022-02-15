@@ -320,6 +320,7 @@ class Task(object):
         """
         Release all hardware objects
         """
+        self.logger.debug('ending task')
         for k, v in self.hardware.items():
             for pin, obj in v.items():
                 obj.release()
@@ -327,6 +328,9 @@ class Task(object):
         if hasattr(self, 'stim_manager'):
             if self.stim_manager is not None:
                 self.stim_manager.end()
+                del self.stim_manager
+
+        del self.hardware
 
         self.logger.info('stopped task')
 

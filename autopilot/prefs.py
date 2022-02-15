@@ -82,6 +82,7 @@ import warnings
 
 #from autopilot.core.loggers import init_logger
 from collections import OrderedDict as odict
+from autopilot.exceptions import DefaultPrefWarning
 
 class Scopes(Enum):
     """
@@ -108,37 +109,46 @@ class Scopes(Enum):
 
 
 using_manager = False
-try:
-    _PREF_MANAGER = mp.Manager() # type: mp.managers.SyncManager
-    """
-    The :class:`multiprocessing.Manager` that stores prefs during system operation and makes them available
-    and consistent across processes.
-    """
-    using_manager = True
-
-    _PREFS = _PREF_MANAGER.dict()  # type: mp.managers.SyncManager.dict
-    """
-    stores a dictionary of preferences that mirrors the global variables.
-    """
-
-    _INITIALIZED = mp.Value(c_bool, False)  # type: mp.Value
-    """
-    Boolean flag to indicate whether prefs have been initialzied from ``prefs.json``
-    """
-
-    _LOCK = mp.Lock()  # type: mp.Lock
-    """
-    :class:`multiprocessing.Lock` to control access to ``prefs.json``
-    """
-
-except (EOFError, FileNotFoundError):
-    # can't use mp.Manager in ipython and other interactive contexts
-    # fallback to just regular old dict
-
+if getattr(mp.process.current_process(), '_inheriting', False):
+    # Check if it's safe to use multiprocessing manager, using the check in multiprocessing/spawn.py:_check_not_importing_main
+    # see https://docs.python.org/2/library/multiprocessing.html#windows
     _PREF_MANAGER = None
     _PREFS = {}
     _INITIALIZED = False
     _LOCK = Lock()
+else:
+
+    try:
+        _PREF_MANAGER = mp.Manager() # type: typing.Optional[mp.managers.SyncManager]
+        """
+        The :class:`multiprocessing.Manager` that stores prefs during system operation and makes them available
+        and consistent across processes.
+        """
+        using_manager = True
+
+        _PREFS = _PREF_MANAGER.dict()  # type: mp.managers.SyncManager.dict
+        """
+        stores a dictionary of preferences that mirrors the global variables.
+        """
+
+        _INITIALIZED = mp.Value(c_bool, False)  # type: mp.Value
+        """
+        Boolean flag to indicate whether prefs have been initialzied from ``prefs.json``
+        """
+
+        _LOCK = mp.Lock()  # type: mp.Lock
+        """
+        :class:`multiprocessing.Lock` to control access to ``prefs.json``
+        """
+
+    except (EOFError, FileNotFoundError):
+        # can't use mp.Manager in ipython and other interactive contexts
+        # fallback to just regular old dict
+
+        _PREF_MANAGER = None
+        _PREFS = {}
+        _INITIALIZED = False
+        _LOCK = Lock()
 
 
 
@@ -482,7 +492,7 @@ def get(key: typing.Union[str, None] = None):
                 default_val = globals()['_DEFAULTS'][key]['default']
                 if key not in globals()['_WARNED']:
                     globals()['_WARNED'].append(key)
-                    warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', UserWarning)
+                    warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', DefaultPrefWarning)
                 return default_val
 
             # if you still can't find a value, None is an unambiguous signal for pref not set
@@ -601,15 +611,24 @@ def init(fn=None):
         cal_raw = os.path.join(prefs['BASEDIR'], 'port_calibration.json')
 
         if os.path.exists(cal_path):
-            with open(cal_path, 'r') as calf:
-                cal_fns = json.load(calf)
-            prefs['PORT_CALIBRATION'] = cal_fns
+            try:
+                with open(cal_path, 'r') as calf:
+                    cal_fns = json.load(calf)
+                prefs['PORT_CALIBRATION'] = cal_fns
+            except json.decoder.JSONDecodeError:
+                warnings.warn(f'calibration file was malformed. Renaming to avoid using in the future')
+                os.rename(cal_path, cal_path + '.bak')
         elif os.path.exists(cal_raw):
             # aka raw calibration results exist but no fit has been computed
-            luts = compute_calibration(path=cal_raw, do_return=True)
-            with open(cal_path, 'w') as calf:
-                json.dump(luts, calf)
-            prefs['PORT_CALIBRATION'] = luts
+            try:
+                luts = compute_calibration(path=cal_raw, do_return=True)
+                with open(cal_path, 'w') as calf:
+                    json.dump(luts, calf)
+                prefs['PORT_CALIBRATION'] = luts
+            except json.decoder.JSONDecodeError:
+                warnings.warn(f'processed calibration file was malformed. Renaming to avoid using in the future')
+                os.rename(cal_raw, cal_raw + '.bak')
+
 
     ###########################
 
