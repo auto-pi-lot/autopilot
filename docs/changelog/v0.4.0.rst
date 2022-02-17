@@ -1,7 +1,7 @@
 .. _changelog_v040:
 
 v0.4.4 - Timing and Sound (February 2nd, 2022)
-----------------------------
+------------------------------------------------
 Several parts to this update!
 
 * See `PR#146 <https://github.com/wehr-lab/autopilot/pull/146>`_ for details about improvements to jackd sound timing! In short:
@@ -46,7 +46,7 @@ Docs
 
 
 v0.4.3 (October 20th, 2021)
----------------------
+----------------------------
 
 New Features
 ~~~~~~~~~~~~

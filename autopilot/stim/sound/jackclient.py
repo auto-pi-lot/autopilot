@@ -1,5 +1,11 @@
 """
 Client that dumps samples directly to the jack client with the :mod:`jack` package.
+
+.. note::
+
+    The latest version of raspiOS (bullseye) causes a lot of problems with the Jack audio that we have not figured out a workaround for.
+    If you intend to use sound, we recommend sticking with Buster for now (available from their `legacy downloads <https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-legacy>`_ section).
+
 """
 import typing
 from itertools import cycle

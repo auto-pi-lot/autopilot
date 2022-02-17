@@ -1,18 +1,27 @@
 ![PyPI](https://img.shields.io/pypi/v/auto-pi-lot)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/auto-pi-lot)](https://pypi.org/project/auto-pi-lot/)
-[![Documentation Status](https://readthedocs.org/projects/auto-pi-lot/badge/?version=latest)](https://docs.auto-pi-lot.com/en/latest/?badge=latest)
 ![PyPI - Status](https://img.shields.io/pypi/status/auto-pi-lot)
-
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code_of_conduct.md) 
+[![Twitter Follow](https://img.shields.io/twitter/follow/auto_pi_lot?style=social)](https://twitter.com/auto_pi_lot)
+
+
+Status:
+
+[![Documentation Status](https://readthedocs.org/projects/auto-pi-lot/badge/?version=latest)](https://docs.auto-pi-lot.com/en/latest/?badge=latest)
+[![Travis (.com) branch](https://img.shields.io/travis/com/wehr-lab/autopilot/main)](https://app.travis-ci.com/github/wehr-lab/autopilot/branches)
+[![Coveralls branch](https://img.shields.io/coveralls/github/wehr-lab/autopilot/main)](https://coveralls.io/github/wehr-lab/autopilot)
+![Jonny Status](https://img.shields.io/badge/jonny-dissertating-critical)
+
+
 
 # Autopilot
 
 ![Autopilot Banner Logo](docs/_images/autopilot_logo_banner.png)
 
-| [Docs](https://docs.auto-pi-lot.com) | [Paper](https://www.biorxiv.org/content/10.1101/807693v1) | [Forum](https://github.com/wehr-lab/autopilot/discussions) | [Hardware](https://auto-pi-lot.com/hardware/) |
+| [Docs](https://docs.auto-pi-lot.com) | [Paper](https://www.biorxiv.org/content/10.1101/807693v1) | [Forum](https://github.com/wehr-lab/autopilot/discussions) | [Wiki](https://wiki.auto-pi-lot.com) |
 | :-: | :-: | :-: | :-: |
-| [![Read the Docs](docs/_images/docs_link.png)](https://docs.auto-pi-lot.com) | [![Paper](docs/_images/paper_link.png)](https://www.biorxiv.org/content/10.1101/807693v1)  | [![Forum](docs/_images/discussion_link.png)](https://github.com/wehr-lab/autopilot/discussions) | [![Hardware (Coming Soon!)](docs/_images/hardware_link_construction.png)](https://auto-pi-lot.com/hardware)
+| [![Read the Docs](docs/_images/docs_link.png)](https://docs.auto-pi-lot.com) | [![Paper](docs/_images/paper_link.png)](https://www.biorxiv.org/content/10.1101/807693v1)  | [![Forum](docs/_images/discussion_link.png)](https://github.com/wehr-lab/autopilot/discussions) | [![Wiki](docs/_images/hardware_link.png)](https://wiki.auto-pi-lot.com)
 
 Autopilot is a Python framework for performing complex, hardware-intensive behavioral experiments with swarms of networked Raspberry Pis. 
 As a tool, it provides researchers with a toolkit of flexible modules to design experiments without rigid programming & API limitations. 
@@ -76,7 +85,7 @@ The initial setup routine uses a CLI interface that is SSH friendly :)
 
 ```bash
 pip3 install auto-pi-lot
-python3 -m autopilot.setup.setup_autopilot
+python3 -m autopilot.setup.setup
 ```
 
 ![Autopilot Setup Console](docs/_images/installer.png)
@@ -86,6 +95,8 @@ All of Autopilot is quite new, so bugs, incomplete documentation, missing featur
 
 
 # Development Status
+
+Jonny is trying to graduate! Autopilot will be slow and maybe a little chaotic until then!
 
 ## Branch Map
 
@@ -133,7 +144,9 @@ After much ado, we're releasing Autopilot's first major upgrade. Cameras, Contin
 
 **Python Versions**
 
-- Python==3.7.*
+- 3.7
+- 3.8
+- 3.9
 
 **Raspberry Pi Versions**
 
