@@ -198,6 +198,13 @@ SCRIPTS = odict({
             'sudo raspi-config nonint do_camera 0'
         ]
     },
+    'picamera_legacy':{
+      'type':'bool',
+      'text': 'Enable Legacy Picamera driver (for raspiOS Bullseye)',
+      'commands': [
+          'sudo raspi-config nonint do_legacy 0'
+      ]
+    },
     'pigpiod': {
         'type': 'bool',
         'text': 'Install pigpio daemon (sneakers fork that gives full timestamps and has greater capacity for scripts)',
