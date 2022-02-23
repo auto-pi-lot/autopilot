@@ -109,7 +109,7 @@ class Scopes(Enum):
 
 
 using_manager = False
-if getattr(mp.process.current_process(), '_inheriting', False):
+if getattr(mp.process.current_process(), '_inheriting', False) or os.getenv('AUTOPILOT_NO_PREFS_MANAGER'):
     # Check if it's safe to use multiprocessing manager, using the check in multiprocessing/spawn.py:_check_not_importing_main
     # see https://docs.python.org/2/library/multiprocessing.html#windows
     _PREF_MANAGER = None
