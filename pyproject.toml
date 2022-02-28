@@ -30,22 +30,21 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<3.10"
-pyzmq = ">=18.1.*"
+pyzmq = ">=20.0.0"
 npyscreen = "^4.10.5"
-tornado = ">=5.0.*"
+tornado = "^6.1.0"
 inputs = "^0.5"
 requests = "^2.26.0"
 scikit-video = "^1.1.11"
 tqdm = "^4.62.3"
-numpy = ">=1.16.5"
-scipy = ">=1.6.0"
-pandas = ">=0.19.2"
-tables = ">=3.4.2"
+numpy = "^1.19.0"
+scipy = "^1.6.0"
+pandas = "^1.1.0"
+tables = "^3.6.0"
 cffi = "^1.15.0"
 blosc2 = "^0.2.0"
 JACK-Client  = {version = "^0.5.3", optional = true}
 pigpio       = {git = "https://github.com/sneakers-the-rat/pigpio", branch="master", optional=true}
-PyOpenGL     = {version = "^3.1.5", optional = true}
 pyqtgraph    = {version = "^0.12.3", optional = true}
 PySide2      = {version = "^5.15.2", optional = true}
 Sphinx       = {version = "^4.3.1", optional = true}
@@ -71,12 +70,19 @@ sphinx-autobuild = "^2021.3.14"
 
 [tool.poetry.extras]
 pilot = ["pigpio", "JACK-Client"]
-terminal = ["PyOpenGL", "pyqtgraph", "PySide2"]
+terminal = ["pyqtgraph", "PySide2"]
 docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex",
         "scikit-learn", "altair", "bokeh", "colorcet", "sphinx-rtd-theme", "sphinx-sass", "pytest"]
-tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt"]
+tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio"]
+plotting = ["altair", "bokeh", "colorcet"]
 
+[[tool.poetry.source]]
+name = "piwheels"
+url = "https://www.piwheels.org/simple"
 
+[[tool.poetry.source]]
+name = "pypi2"
+url = "https://www.pypi.org/simple"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

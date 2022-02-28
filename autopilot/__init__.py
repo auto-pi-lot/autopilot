@@ -1,7 +1,7 @@
 __author__  = 'Jonny Saunders <j@nny.fyi>'
 
 import sys
-if sys.version_info.minor<8:
+if sys.version_info < (3,8):
     from importlib_metadata import version
 else:
     from importlib.metadata import version
