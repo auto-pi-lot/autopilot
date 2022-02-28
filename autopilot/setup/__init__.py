@@ -1,0 +1,1 @@
+from autopilot.setup.scripts import SCRIPTS

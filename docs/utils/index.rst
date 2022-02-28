@@ -9,7 +9,11 @@ Utils
 
 .. toctree::
    common
+   decorators
+   hydration
    invoker
    plugins
    registry
+   requires
+   types
    wiki
