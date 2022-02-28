@@ -408,7 +408,8 @@ class Gammatone(Noise):
     def _init_sound(self):
         # just the gammatone specific parts so they can be called separately on init
         self.table = self.filter.process(self.table)
-        self.chunk()
+        if self.server_type == 'jack':
+            self.chunk()
 
 
 
