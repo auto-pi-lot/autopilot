@@ -378,13 +378,14 @@ class Gammatone(Noise):
     def __init__(self,
                  frequency:float, duration:float, amplitude:float=0.01,
                  channel:typing.Optional[int]=None,
+                 filter_kwargs:typing.Optional[dict]=None,
                  **kwargs):
         """
         Args:
             frequency (float): Center frequency of filter, in Hz
             duration (float): Duration of sound, in ms
             amplitude (float): Amplitude scaling of sound (absolute value 0-1, default is .01)
-            **kwargs: passed on to :class:`.timeseries.Gammatone`
+            filter_kwargs (dict): passed on to :class:`.timeseries.Gammatone`
         """
 
         super(Gammatone, self).__init__(duration, amplitude, channel, **kwargs)
@@ -393,9 +394,12 @@ class Gammatone(Noise):
         self.kwargs = kwargs
         if 'jack_client' in self.kwargs.keys():
             del self.kwargs['jack_client']
+        if filter_kwargs is None:
+            filter_kwargs = {}
+
 
         self.filter = autopilot.get('transform', 'Gammatone')(
-            self.frequency, self.fs, axis=0, **self.kwargs
+            self.frequency, self.fs, axis=0, **filter_kwargs
         )
 
         # superclass init calls its init sound, so we just call the gammatone filter part
