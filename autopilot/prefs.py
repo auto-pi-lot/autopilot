@@ -490,9 +490,10 @@ def get(key: typing.Union[str, None] = None):
             # try to get a default value
             try:
                 default_val = globals()['_DEFAULTS'][key]['default']
-                if key not in globals()['_WARNED']:
-                    globals()['_WARNED'].append(key)
-                    warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', DefaultPrefWarning)
+                if os.getenv('AUTOPILOT_WARN_DEFAULTS'):
+                    if key not in globals()['_WARNED']:
+                        globals()['_WARNED'].append(key)
+                        warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', DefaultPrefWarning)
                 return default_val
 
             # if you still can't find a value, None is an unambiguous signal for pref not set
