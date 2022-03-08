@@ -12,12 +12,13 @@ Supported Systems
 | OS             | * Pilot: raspiOS >=Buster (lite recommended)  |
 |                | * Terminal: Ubuntu >=16.04                    |
 +----------------+-----------------------------------------------+
-| Python Version | 3.7                                           |
+| Python Version | >=3.7,<3.10                                   |
 +----------------+-----------------------------------------------+
 | Raspberry Pi   | >=3b                                          |
 +----------------+-----------------------------------------------+
 
-Autopilot is **linux/mac** only, and supports **Python 3.7**.
+Autopilot is **linux/mac** only, and supports **Python 3.7 - 3.9** (3.10 will be supported after
+updating the terminal to use PySide 6).
 Some parts might accidentally work in Windows but we make no guarantees.
 
 We have tried to take care to make certain platform-specific dependencies not break the entire package,
@@ -81,50 +82,30 @@ The following system packages are required by ``PySide2`` (which no longer packa
       libxcb-xinerama0 \
       libxcb-xfixes0
 
-Creating a Virtual Environment
-------------------------------
-
-We recommend using autopilot within a virtual environment -- we primarily develop with `virtualenv` but `conda` also appears to work.
-
-First, install `virtualenv` (see the `virtualenv docs <https://virtualenv.pypa.io/en/latest/>`_)::
-
-    pip3 install virtualenv
-
-Then, create a venv. By convention, these virtual environments are stored in the directory `~/.venv`, but they can
-be located anywhere.
-
-**With `virtualenv`**::
-
-    mkdir ~/.venv
-    python3 -m virtualenv ~/.venv/autopilot
-
-**With conda**::
-
-    conda create --name autopilot python=3.7
-
-
-The virtual environment must be "activated" now and any time you work with autopilot
-(:mod:`.setup_autopilot` will detect which venv it is run from and source it in the launch script).
-
-**With `virtualenv`**::
-
-    source ~/.venv/autopilot/bin/activate
-
-**With conda**::
-
-    conda activate autopilot
-
-Either way, you should see that the command prompt begins with the string "(autopilot)".
-If you want to exit the virtual environment at any time, just type `deactivate`.
-
 Installing Autopilot
 ====================
 Now we're ready to install Autopilot on both the Pilot and Terminal devices. Follow the same instructions on both the Pi and the computer.
 
-Method 1: Installation with pip
--------------------------------
+We recommend using autopilot within a virtual environment. Since v0.5.0 autopilot has been packaged
+with `poetry <https://python-poetry.org/>`_ , which manages its own environment, but instructions for
+using ``virtualenv`` and ``conda`` are in the guide page :ref:`guide_venvs` .
 
-If you're just taking a look at Autopilot, the easiest way to get started is to install with pip! ::
+Optional dependencies
+----------------------
+
+Since autopilot is intended to be deployed as differentiable agents, we have separated the requirements
+into different groups of optional dependencies. In each of the following commands, use the appropriate
+package specifier like ``pip install auto-pi-lot[pilot]`` or ``poetry install -E pilot``
+
+* **pilot** - includes ``pigpio`` to control GPIO pins and other pi-specific requirements
+* **terminal** - includes ``PySide2`` and other terminal-specific requirements
+* **docs** - includes ``Sphinx`` et al.
+* **tests** - includes ``pytest`` et al.
+
+Method 1: Installation from PyPI
+--------------------------------
+
+If you're just taking a look at Autopilot, the easiest way to get started is to install it from PyPI! ::
 
     pip3 install auto-pi-lot
 
@@ -132,15 +113,28 @@ Method 2: Installation from source
 ----------------------------------
 
 If you want to start writing your own experiments and tinkering with Autopilot,
-we strongly recommend forking `the repository <https://github.com/wehr-lab/autopilot/>`_
-and developing directly in the library so your gorgeous insights can be integrated later.
+suggest you clone or fork `the repository <https://github.com/wehr-lab/autopilot/>`_ .
+One of the design goals of autopilot is to minimize the distinction between "developer" and "user,"
+so we like to encourage people to get their hands dirty with the source so your wonderful
+work can be integrated later.
 
-Clone the repository and install an "editable" version with `-e`, this makes it so python uses the source code in your
-cloned repository, rather than from the system/venv libraries.::
+First clone the repository::
 
     git clone https://github.com/wehr-lab/autopilot.git
     cd autopilot
-    pip3 install -e .
+
+**Install with poetry** - if you have poetry installed (``pip install poetry``), it is easiest to use it
+to manage your autopilot environment::
+
+    poetry shell
+    poetry install
+    # or if installing optional dependencies
+    # poetry install -E <optional>
+
+**Install with pip** - install an "editable" version with `-e`, this makes it so python uses the source code in your
+cloned repository, rather than from the system/venv libraries::
+
+    pip3 install -e . [<optional>]
 
 .. note::
 

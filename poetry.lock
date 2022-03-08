@@ -1,0 +1,2055 @@
+[[package]]
+name = "alabaster"
+version = "0.7.12"
+description = "A configurable sidebar-enabled Sphinx theme"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "altair"
+version = "4.2.0"
+description = "Altair: A declarative statistical visualization library for Python."
+category = "main"
+optional = true
+python-versions = ">=3.7"
+
+[package.dependencies]
+entrypoints = "*"
+jinja2 = "*"
+jsonschema = ">=3.0"
+numpy = "*"
+pandas = ">=0.18"
+toolz = "*"
+
+[package.extras]
+dev = ["black", "docutils", "ipython", "flake8", "pytest", "sphinx", "mistune (<2.0.0)", "m2r", "vega-datasets", "recommonmark"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "astroid"
+version = "2.9.3"
+description = "An abstract syntax tree for Python with inference support."
+category = "main"
+optional = true
+python-versions = ">=3.6.2"
+
+[package.dependencies]
+lazy-object-proxy = ">=1.4.0"
+typed-ast = {version = ">=1.4.0,<2.0", markers = "implementation_name == \"cpython\" and python_version < \"3.8\""}
+typing-extensions = {version = ">=3.10", markers = "python_version < \"3.10\""}
+wrapt = ">=1.11,<1.14"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "atomicwrites"
+version = "1.4.0"
+description = "Atomic file writes."
+category = "main"
+optional = true
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "attrs"
+version = "21.4.0"
+description = "Classes Without Boilerplate"
+category = "main"
+optional = true
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[package.extras]
+dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface", "furo", "sphinx", "sphinx-notfound-page", "pre-commit", "cloudpickle"]
+docs = ["furo", "sphinx", "zope.interface", "sphinx-notfound-page"]
+tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface", "cloudpickle"]
+tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "cloudpickle"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "autodocsumm"
+version = "0.2.7"
+description = "Extended sphinx autodoc including automatic autosummaries"
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.dependencies]
+Sphinx = ">=2.2,<5.0"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "babel"
+version = "2.9.1"
+description = "Internationalization utilities"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.dependencies]
+pytz = ">=2015.7"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "blosc2"
+version = "0.2.0"
+description = "Python wrapper for the C-Blosc2 library."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "bokeh"
+version = "2.4.2"
+description = "Interactive plots and applications in the browser from Python"
+category = "main"
+optional = true
+python-versions = ">=3.7"
+
+[package.dependencies]
+Jinja2 = ">=2.9"
+numpy = ">=1.11.3"
+packaging = ">=16.8"
+pillow = ">=7.1.0"
+PyYAML = ">=3.10"
+tornado = ">=5.1"
+typing-extensions = ">=3.10.0"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "certifi"
+version = "2021.10.8"
+description = "Python package for providing Mozilla's CA Bundle."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "cffi"
+version = "1.15.0"
+description = "Foreign Function Interface for Python calling C code."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+pycparser = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "charset-normalizer"
+version = "2.0.12"
+description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
+category = "main"
+optional = false
+python-versions = ">=3.5.0"
+
+[package.extras]
+unicode_backport = ["unicodedata2"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "colorama"
+version = "0.4.4"
+description = "Cross-platform colored terminal text."
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "colorcet"
+version = "3.0.0"
+description = "Collection of perceptually uniform colormaps"
+category = "main"
+optional = true
+python-versions = ">=2.7"
+
+[package.dependencies]
+param = ">=1.7.0"
+pyct = ">=0.4.4"
+
+[package.extras]
+all = ["bokeh", "flake8", "holoviews", "keyring", "matplotlib", "nbsite (>=0.6.1)", "nbsmoke (>=0.2.6)", "numpy", "param (>=1.7.0)", "pyct (>=0.4.4)", "pytest (>=2.8.5)", "pytest-cov", "pytest-mpl", "rfc3986", "setuptools (>=30.3.0)", "sphinx-holoviz-theme", "twine", "wheel"]
+build = ["param (>=1.7.0)", "pyct (>=0.4.4)", "setuptools (>=30.3.0)", "wheel"]
+doc = ["numpy", "holoviews", "matplotlib", "bokeh", "nbsite (>=0.6.1)", "sphinx-holoviz-theme"]
+examples = ["numpy", "holoviews", "matplotlib", "bokeh"]
+tests = ["flake8", "nbsmoke (>=0.2.6)", "pytest (>=2.8.5)", "pytest-cov", "twine", "rfc3986", "keyring"]
+tests_extra = ["flake8", "nbsmoke (>=0.2.6)", "pytest (>=2.8.5)", "pytest-cov", "twine", "rfc3986", "keyring", "pytest-mpl"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "coverage"
+version = "6.3.2"
+description = "Code coverage measurement for Python"
+category = "main"
+optional = true
+python-versions = ">=3.7"
+
+[package.dependencies]
+tomli = {version = "*", optional = true, markers = "extra == \"toml\""}
+
+[package.extras]
+toml = ["tomli"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "coveralls"
+version = "3.3.1"
+description = "Show coverage stats online via coveralls.io"
+category = "main"
+optional = true
+python-versions = ">= 3.5"
+
+[package.dependencies]
+coverage = ">=4.1,<6.0.0 || >6.1,<6.1.1 || >6.1.1,<7.0"
+docopt = ">=0.6.1"
+requests = ">=1.0.0"
+
+[package.extras]
+yaml = ["PyYAML (>=3.10)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "cycler"
+version = "0.11.0"
+description = "Composable style cycles"
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "docopt"
+version = "0.6.2"
+description = "Pythonic argument parser, that will make you smile"
+category = "main"
+optional = true
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "docutils"
+version = "0.17.1"
+description = "Docutils -- Python Documentation Utilities"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "entrypoints"
+version = "0.4"
+description = "Discover and load entry points from installed packages."
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "fonttools"
+version = "4.29.1"
+description = "Tools to manipulate font files"
+category = "main"
+optional = true
+python-versions = ">=3.7"
+
+[package.extras]
+all = ["fs (>=2.2.0,<3)", "lxml (>=4.0,<5)", "zopfli (>=0.1.4)", "lz4 (>=1.7.4.2)", "matplotlib", "sympy", "skia-pathops (>=0.5.0)", "brotlicffi (>=0.8.0)", "scipy", "brotli (>=1.0.1)", "munkres", "unicodedata2 (>=14.0.0)", "xattr"]
+graphite = ["lz4 (>=1.7.4.2)"]
+interpolatable = ["scipy", "munkres"]
+lxml = ["lxml (>=4.0,<5)"]
+pathops = ["skia-pathops (>=0.5.0)"]
+plot = ["matplotlib"]
+symfont = ["sympy"]
+type1 = ["xattr"]
+ufo = ["fs (>=2.2.0,<3)"]
+unicode = ["unicodedata2 (>=14.0.0)"]
+woff = ["zopfli (>=0.1.4)", "brotlicffi (>=0.8.0)", "brotli (>=1.0.1)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "idna"
+version = "3.3"
+description = "Internationalized Domain Names in Applications (IDNA)"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "imagesize"
+version = "1.3.0"
+description = "Getting image size from png/jpeg/jpeg2000/gif file"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "importlib-metadata"
+version = "4.11.1"
+description = "Read metadata from Python packages"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+typing-extensions = {version = ">=3.6.4", markers = "python_version < \"3.8\""}
+zipp = ">=0.5"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
+perf = ["ipython"]
+testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "packaging", "pyfakefs", "flufl.flake8", "pytest-perf (>=0.9.2)", "pytest-black (>=0.3.7)", "pytest-mypy (>=0.9.1)", "importlib-resources (>=1.3)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "importlib-resources"
+version = "5.4.0"
+description = "Read resources from Python packages"
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.dependencies]
+zipp = {version = ">=3.1.0", markers = "python_version < \"3.10\""}
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-black (>=0.3.7)", "pytest-mypy"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "iniconfig"
+version = "1.1.1"
+description = "iniconfig: brain-dead simple config-ini parsing"
+category = "main"
+optional = true
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "inputs"
+version = "0.5"
+description = "Cross-platform Python support for keyboards, mice and gamepads."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "isort"
+version = "5.10.1"
+description = "A Python utility / library to sort Python imports."
+category = "main"
+optional = true
+python-versions = ">=3.6.1,<4.0"
+
+[package.extras]
+colors = ["colorama (>=0.4.3,<0.5.0)"]
+requirements_deprecated_finder = ["pip-api", "pipreqs"]
+pipfile_deprecated_finder = ["pipreqs", "requirementslib"]
+plugins = ["setuptools"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "jack-client"
+version = "0.5.3"
+description = "JACK Audio Connection Kit (JACK) Client for Python"
+category = "main"
+optional = true
+python-versions = ">=3"
+
+[package.dependencies]
+CFFI = ">=1.0"
+
+[package.extras]
+numpy = ["numpy"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "jinja2"
+version = "3.0.3"
+description = "A very fast and expressive template engine."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+MarkupSafe = ">=2.0"
+
+[package.extras]
+i18n = ["Babel (>=2.7)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "joblib"
+version = "1.1.0"
+description = "Lightweight pipelining with Python functions"
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "jsonschema"
+version = "4.4.0"
+description = "An implementation of JSON Schema validation for Python"
+category = "main"
+optional = true
+python-versions = ">=3.7"
+
+[package.dependencies]
+attrs = ">=17.4.0"
+importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
+importlib-resources = {version = ">=1.4.0", markers = "python_version < \"3.9\""}
+pyrsistent = ">=0.14.0,<0.17.0 || >0.17.0,<0.17.1 || >0.17.1,<0.17.2 || >0.17.2"
+typing-extensions = {version = "*", markers = "python_version < \"3.8\""}
+
+[package.extras]
+format = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3987", "uri-template", "webcolors (>=1.11)"]
+format_nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-validator (>0.1.0)", "uri-template", "webcolors (>=1.11)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "kiwisolver"
+version = "1.3.2"
+description = "A fast implementation of the Cassowary constraint solver"
+category = "main"
+optional = true
+python-versions = ">=3.7"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "latexcodec"
+version = "2.0.1"
+description = "A lexer and codec to work with LaTeX code in Python."
+category = "main"
+optional = true
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.dependencies]
+six = ">=1.4.1"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "lazy-object-proxy"
+version = "1.7.1"
+description = "A fast and thorough lazy object proxy."
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "libsass"
+version = "0.18.0"
+description = "Sass for Python: A straightforward binding of libsass for Python."
+category = "main"
+optional = true
+python-versions = "*"
+
+[package.dependencies]
+six = "*"
+
+[package.extras]
+upload_appveyor_builds = ["twine (==1.11.0)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "livereload"
+version = "2.6.3"
+description = "Python LiveReload is an awesome tool for web developers"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = "*"
+tornado = {version = "*", markers = "python_version > \"2.7\""}
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "markupsafe"
+version = "2.1.0"
+description = "Safely add untrusted strings to HTML/XML markup."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "matplotlib"
+version = "3.5.1"
+description = "Python plotting package"
+category = "main"
+optional = true
+python-versions = ">=3.7"
+
+[package.dependencies]
+cycler = ">=0.10"
+fonttools = ">=4.22.0"
+kiwisolver = ">=1.0.1"
+numpy = ">=1.17"
+packaging = ">=20.0"
+pillow = ">=6.2.0"
+pyparsing = ">=2.2.1"
+python-dateutil = ">=2.7"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "mccabe"
+version = "0.6.1"
+description = "McCabe checker, plugin for flake8"
+category = "main"
+optional = true
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "npyscreen"
+version = "4.10.5"
+description = "Writing user interfaces without all that ugly mucking about in hyperspace"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "numexpr"
+version = "2.8.1"
+description = "Fast numerical expression evaluator for NumPy"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+numpy = ">=1.13.3"
+packaging = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "numpy"
+version = "1.21.5"
+description = "NumPy is the fundamental package for array computing with Python."
+category = "main"
+optional = false
+python-versions = ">=3.7,<3.11"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "packaging"
+version = "21.3"
+description = "Core utilities for Python packages"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+pyparsing = ">=2.0.2,<3.0.5 || >3.0.5"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pandas"
+version = "1.1.5"
+description = "Powerful data structures for data analysis, time series, and statistics"
+category = "main"
+optional = false
+python-versions = ">=3.6.1"
+
+[package.dependencies]
+numpy = ">=1.15.4"
+python-dateutil = ">=2.7.3"
+pytz = ">=2017.2"
+
+[package.extras]
+test = ["pytest (>=4.0.2)", "pytest-xdist", "hypothesis (>=3.58)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "param"
+version = "1.12.0"
+description = "Make your Python code clearer and more reliable by declaring Parameters."
+category = "main"
+optional = true
+python-versions = ">=2.7"
+
+[package.extras]
+all = ["aiohttp", "flake8", "graphviz", "myst-nb (==0.12.2)", "myst-parser", "nbconvert (<6.0)", "nbsite (>=0.6.1)", "pandas", "panel", "pydata-sphinx-theme", "pygraphviz", "pytest", "pytest-cov", "sphinx-copybutton"]
+doc = ["aiohttp", "graphviz", "myst-nb (==0.12.2)", "myst-parser", "nbconvert (<6.0)", "nbsite (>=0.6.1)", "pandas", "panel", "pydata-sphinx-theme", "pygraphviz", "sphinx-copybutton"]
+tests = ["flake8", "pytest", "pytest-cov"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pigpio"
+version = "1.78"
+description = "Raspberry Pi GPIO module"
+category = "main"
+optional = true
+python-versions = "*"
+develop = false
+
+[package.source]
+type = "git"
+url = "https://github.com/sneakers-the-rat/pigpio"
+reference = "master"
+resolved_reference = "ad974f99925ae709ef3fd175f54899888b0c6785"
+
+[[package]]
+name = "pillow"
+version = "9.0.1"
+description = "Python Imaging Library (Fork)"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "platformdirs"
+version = "2.5.1"
+description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
+category = "main"
+optional = true
+python-versions = ">=3.7"
+
+[package.extras]
+docs = ["Sphinx (>=4)", "furo (>=2021.7.5b38)", "proselint (>=0.10.2)", "sphinx-autodoc-typehints (>=1.12)"]
+test = ["appdirs (==1.4.4)", "pytest (>=6)", "pytest-cov (>=2.7)", "pytest-mock (>=3.6)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pluggy"
+version = "1.0.0"
+description = "plugin and hook calling mechanisms for python"
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.dependencies]
+importlib-metadata = {version = ">=0.12", markers = "python_version < \"3.8\""}
+
+[package.extras]
+dev = ["pre-commit", "tox"]
+testing = ["pytest", "pytest-benchmark"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "py"
+version = "1.11.0"
+description = "library with cross-python path, ini-parsing, io, code, log facilities"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pybtex"
+version = "0.24.0"
+description = "A BibTeX-compatible bibliography processor in Python"
+category = "main"
+optional = true
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*"
+
+[package.dependencies]
+latexcodec = ">=1.0.4"
+PyYAML = ">=3.01"
+six = "*"
+
+[package.extras]
+test = ["pytest"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pybtex-docutils"
+version = "1.0.1"
+description = "A docutils backend for pybtex."
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.dependencies]
+docutils = ">=0.8"
+pybtex = ">=0.16"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pycparser"
+version = "2.21"
+description = "C parser in Python"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pyct"
+version = "0.4.8"
+description = "Python package common tasks for users (e.g. copy examples, fetch data, ...)"
+category = "main"
+optional = true
+python-versions = ">=2.7"
+
+[package.dependencies]
+param = ">=1.7.0"
+
+[package.extras]
+build = ["setuptools", "param (>=1.7.0)"]
+cmd = ["pyyaml", "requests"]
+doc = ["nbsite", "sphinx-ioam-theme"]
+tests = ["flake8", "pytest"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pygments"
+version = "2.11.2"
+description = "Pygments is a syntax highlighting package written in Python."
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pylint"
+version = "2.12.2"
+description = "python code static checker"
+category = "main"
+optional = true
+python-versions = ">=3.6.2"
+
+[package.dependencies]
+astroid = ">=2.9.0,<2.10"
+colorama = {version = "*", markers = "sys_platform == \"win32\""}
+isort = ">=4.2.5,<6"
+mccabe = ">=0.6,<0.7"
+platformdirs = ">=2.2.0"
+toml = ">=0.9.2"
+typing-extensions = {version = ">=3.10.0", markers = "python_version < \"3.10\""}
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pyparsing"
+version = "3.0.7"
+description = "Python parsing module"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+diagrams = ["railroad-diagrams", "jinja2"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pyqtgraph"
+version = "0.12.3"
+description = "Scientific Graphics and GUI Library for Python"
+category = "main"
+optional = true
+python-versions = ">=3.7"
+
+[package.dependencies]
+numpy = ">=1.17.0"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pyrsistent"
+version = "0.18.1"
+description = "Persistent/Functional/Immutable data structures"
+category = "main"
+optional = true
+python-versions = ">=3.7"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pyside2"
+version = "5.15.2.1"
+description = "Python bindings for the Qt cross-platform application and UI framework"
+category = "main"
+optional = true
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <3.11"
+
+[package.dependencies]
+shiboken2 = "5.15.2.1"
+
+[package.source]
+type = "legacy"
+url = "https://www.pypi.org/simple"
+reference = "pypi2"
+
+[[package]]
+name = "pytest"
+version = "6.2.5"
+description = "pytest: simple powerful testing with Python"
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.dependencies]
+atomicwrites = {version = ">=1.0", markers = "sys_platform == \"win32\""}
+attrs = ">=19.2.0"
+colorama = {version = "*", markers = "sys_platform == \"win32\""}
+importlib-metadata = {version = ">=0.12", markers = "python_version < \"3.8\""}
+iniconfig = "*"
+packaging = "*"
+pluggy = ">=0.12,<2.0"
+py = ">=1.8.2"
+toml = "*"
+
+[package.extras]
+testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pytest-cov"
+version = "3.0.0"
+description = "Pytest plugin for measuring coverage."
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.dependencies]
+coverage = {version = ">=5.2.1", extras = ["toml"]}
+pytest = ">=4.6"
+
+[package.extras]
+testing = ["fields", "hunter", "process-tests", "six", "pytest-xdist", "virtualenv"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pytest-qt"
+version = "3.3.0"
+description = "pytest support for PyQt and PySide applications"
+category = "main"
+optional = true
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.dependencies]
+pytest = ">=3.0.0"
+
+[package.extras]
+dev = ["pre-commit", "tox"]
+doc = ["sphinx", "sphinx-rtd-theme"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "python-dateutil"
+version = "2.8.2"
+description = "Extensions to the standard Python datetime module"
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+
+[package.dependencies]
+six = ">=1.5"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pytz"
+version = "2021.3"
+description = "World timezone definitions, modern and historical"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pyyaml"
+version = "6.0"
+description = "YAML parser and emitter for Python"
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "pyzmq"
+version = "22.3.0"
+description = "Python bindings for 0MQ"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+cffi = {version = "*", markers = "implementation_name == \"pypy\""}
+py = {version = "*", markers = "implementation_name == \"pypy\""}
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "requests"
+version = "2.27.1"
+description = "Python HTTP for Humans."
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
+
+[package.dependencies]
+certifi = ">=2017.4.17"
+charset-normalizer = {version = ">=2.0.0,<2.1.0", markers = "python_version >= \"3\""}
+idna = {version = ">=2.5,<4", markers = "python_version >= \"3\""}
+urllib3 = ">=1.21.1,<1.27"
+
+[package.extras]
+socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
+use_chardet_on_py3 = ["chardet (>=3.0.2,<5)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "scikit-learn"
+version = "1.0.2"
+description = "A set of python modules for machine learning and data mining"
+category = "main"
+optional = true
+python-versions = ">=3.7"
+
+[package.dependencies]
+joblib = ">=0.11"
+numpy = ">=1.14.6"
+scipy = ">=1.1.0"
+threadpoolctl = ">=2.0.0"
+
+[package.extras]
+benchmark = ["matplotlib (>=2.2.3)", "pandas (>=0.25.0)", "memory-profiler (>=0.57.0)"]
+docs = ["matplotlib (>=2.2.3)", "scikit-image (>=0.14.5)", "pandas (>=0.25.0)", "seaborn (>=0.9.0)", "memory-profiler (>=0.57.0)", "sphinx (>=4.0.1)", "sphinx-gallery (>=0.7.0)", "numpydoc (>=1.0.0)", "Pillow (>=7.1.2)", "sphinx-prompt (>=1.3.0)", "sphinxext-opengraph (>=0.4.2)"]
+examples = ["matplotlib (>=2.2.3)", "scikit-image (>=0.14.5)", "pandas (>=0.25.0)", "seaborn (>=0.9.0)"]
+tests = ["matplotlib (>=2.2.3)", "scikit-image (>=0.14.5)", "pandas (>=0.25.0)", "pytest (>=5.0.1)", "pytest-cov (>=2.9.0)", "flake8 (>=3.8.2)", "black (>=21.6b0)", "mypy (>=0.770)", "pyamg (>=4.0.0)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "scikit-video"
+version = "1.1.11"
+description = "Video Processing in Python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+numpy = "*"
+pillow = "*"
+scipy = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "scipy"
+version = "1.7.3"
+description = "SciPy: Scientific Library for Python"
+category = "main"
+optional = false
+python-versions = ">=3.7,<3.11"
+
+[package.dependencies]
+numpy = ">=1.16.5,<1.23.0"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "shiboken2"
+version = "5.15.2.1"
+description = "Python / C++ bindings helper module"
+category = "main"
+optional = true
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <3.11"
+
+[package.source]
+type = "legacy"
+url = "https://www.pypi.org/simple"
+reference = "pypi2"
+
+[[package]]
+name = "six"
+version = "1.16.0"
+description = "Python 2 and 3 compatibility utilities"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "snowballstemmer"
+version = "2.2.0"
+description = "This package provides 29 stemmers for 28 languages generated from Snowball algorithms."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "sphinx"
+version = "4.4.0"
+description = "Python documentation generator"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+alabaster = ">=0.7,<0.8"
+babel = ">=1.3"
+colorama = {version = ">=0.3.5", markers = "sys_platform == \"win32\""}
+docutils = ">=0.14,<0.18"
+imagesize = "*"
+importlib-metadata = {version = ">=4.4", markers = "python_version < \"3.10\""}
+Jinja2 = ">=2.3"
+packaging = "*"
+Pygments = ">=2.0"
+requests = ">=2.5.0"
+snowballstemmer = ">=1.1"
+sphinxcontrib-applehelp = "*"
+sphinxcontrib-devhelp = "*"
+sphinxcontrib-htmlhelp = ">=2.0.0"
+sphinxcontrib-jsmath = "*"
+sphinxcontrib-qthelp = "*"
+sphinxcontrib-serializinghtml = ">=1.1.5"
+
+[package.extras]
+docs = ["sphinxcontrib-websupport"]
+lint = ["flake8 (>=3.5.0)", "isort", "mypy (>=0.931)", "docutils-stubs", "types-typed-ast", "types-requests"]
+test = ["pytest", "pytest-cov", "html5lib", "cython", "typed-ast"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "sphinx-autobuild"
+version = "2021.3.14"
+description = "Rebuild Sphinx documentation on changes, with live-reload in the browser."
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+colorama = "*"
+livereload = "*"
+sphinx = "*"
+
+[package.extras]
+test = ["pytest", "pytest-cov"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "sphinx-rtd-theme"
+version = "1.0.0"
+description = "Read the Docs theme for Sphinx"
+category = "main"
+optional = true
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+
+[package.dependencies]
+docutils = "<0.18"
+sphinx = ">=1.6"
+
+[package.extras]
+dev = ["bump2version", "sphinxcontrib-httpdomain", "transifex-client"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "sphinx-sass"
+version = "0.0.0"
+description = "Compile SASS and SCSS to CSS for Sphinx HTML documentation"
+category = "main"
+optional = true
+python-versions = ">=3.6"
+develop = false
+
+[package.dependencies]
+libsass = "0.18.0"
+Sphinx = "*"
+
+[package.extras]
+dev = ["astroid (==2.2.0)", "autopep8 (==1.4)", "cssutils (==1.0.2)", "libsass (==0.18.0)", "nox (==2018.9.14)", "pylint (==2.3.0)", "pytest-cov (==2.6.0)", "pytest (==3.8.0)", "sphinx-autobuild (==0.7.1)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/sneakers-the-rat/sphinx-sass"
+reference = "master"
+resolved_reference = "930fc4b84e40920ea47b44eec8c2070cf241a9a3"
+
+[[package]]
+name = "sphinxcontrib-applehelp"
+version = "1.0.2"
+description = "sphinxcontrib-applehelp is a sphinx extension which outputs Apple help books"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+lint = ["flake8", "mypy", "docutils-stubs"]
+test = ["pytest"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "sphinxcontrib-bibtex"
+version = "2.4.1"
+description = "Sphinx extension for BibTeX style citations."
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.dependencies]
+docutils = ">=0.8"
+pybtex = ">=0.20"
+pybtex-docutils = ">=1.0.0"
+Sphinx = ">=2.1"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "sphinxcontrib-devhelp"
+version = "1.0.2"
+description = "sphinxcontrib-devhelp is a sphinx extension which outputs Devhelp document."
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+lint = ["flake8", "mypy", "docutils-stubs"]
+test = ["pytest"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "sphinxcontrib-htmlhelp"
+version = "2.0.0"
+description = "sphinxcontrib-htmlhelp is a sphinx extension which renders HTML help files"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+lint = ["flake8", "mypy", "docutils-stubs"]
+test = ["pytest", "html5lib"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "sphinxcontrib-jsmath"
+version = "1.0.1"
+description = "A sphinx extension which renders display math in HTML via JavaScript"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+test = ["pytest", "flake8", "mypy"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "sphinxcontrib-qthelp"
+version = "1.0.3"
+description = "sphinxcontrib-qthelp is a sphinx extension which outputs QtHelp document."
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+lint = ["flake8", "mypy", "docutils-stubs"]
+test = ["pytest"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "sphinxcontrib-serializinghtml"
+version = "1.1.5"
+description = "sphinxcontrib-serializinghtml is a sphinx extension which outputs \"serialized\" HTML files (json and pickle)."
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+lint = ["flake8", "mypy", "docutils-stubs"]
+test = ["pytest"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "tables"
+version = "3.7.0"
+description = "Hierarchical datasets for Python"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+numexpr = ">=2.6.2"
+numpy = ">=1.19.0"
+packaging = "*"
+
+[package.extras]
+doc = ["sphinx (>=1.1)", "sphinx-rtd-theme", "numpydoc", "ipython"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "threadpoolctl"
+version = "3.1.0"
+description = "threadpoolctl"
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "toml"
+version = "0.10.2"
+description = "Python Library for Tom's Obvious, Minimal Language"
+category = "main"
+optional = true
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "tomli"
+version = "2.0.1"
+description = "A lil' TOML parser"
+category = "main"
+optional = true
+python-versions = ">=3.7"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "toolz"
+version = "0.11.2"
+description = "List processing tools and functional utilities"
+category = "main"
+optional = true
+python-versions = ">=3.5"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "tornado"
+version = "6.1"
+description = "Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed."
+category = "main"
+optional = false
+python-versions = ">= 3.5"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "tqdm"
+version = "4.62.3"
+description = "Fast, Extensible Progress Meter"
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
+
+[package.dependencies]
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
+
+[package.extras]
+dev = ["py-make (>=0.1.0)", "twine", "wheel"]
+notebook = ["ipywidgets (>=6)"]
+telegram = ["requests"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "typed-ast"
+version = "1.5.2"
+description = "a fork of Python 2 and 3 ast modules with type comment support"
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "typing-extensions"
+version = "4.1.1"
+description = "Backported and Experimental Type Hints for Python 3.6+"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "urllib3"
+version = "1.26.8"
+description = "HTTP library with thread-safe connection pooling, file post, and more."
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
+
+[package.extras]
+secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
+socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
+brotli = ["brotlipy (>=0.6.0)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "wrapt"
+version = "1.13.3"
+description = "Module for decorators, wrappers and monkey patching."
+category = "main"
+optional = true
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "zipp"
+version = "3.7.0"
+description = "Backport of pathlib-compatible object wrapper for zip files"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[extras]
+docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex", "scikit-learn", "altair", "bokeh", "colorcet", "sphinx-rtd-theme", "sphinx-sass", "pytest"]
+pilot = ["pigpio", "JACK-Client"]
+plotting = ["altair", "bokeh", "colorcet"]
+terminal = ["pyqtgraph", "PySide2"]
+tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt"]
+
+[metadata]
+lock-version = "1.1"
+python-versions = ">=3.7,<3.10"
+content-hash = "90f49e7f6abe1e6fbeaa31ae3ed85a6c666a26730c6821d067614f9e440edee5"
+
+[metadata.files]
+alabaster = [
+    {file = "alabaster-0.7.12-py2.py3-none-any.whl", hash = "sha256:446438bdcca0e05bd45ea2de1668c1d9b032e1a9154c2c259092d77031ddd359"},
+]
+altair = [
+    {file = "altair-4.2.0-py3-none-any.whl", hash = "sha256:ecada2fc9e84cb2650a3cf2b1edd97b745dc60b811759752e620b7cbb8d7e4e3"},
+]
+astroid = [
+    {file = "astroid-2.9.3-py3-none-any.whl", hash = "sha256:f094565baf85c40d6b47290e644815ee2bdbe337612b6ffc39e016ae960fe7e5"},
+]
+atomicwrites = [
+    {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
+]
+attrs = [
+    {file = "attrs-21.4.0-py2.py3-none-any.whl", hash = "sha256:fe43ed2c8b43d4b1f97b342b2a798b0ece766c86a249ac8bd8ae940f9e62f4ab"},
+]
+autodocsumm = [
+    {file = "autodocsumm-0.2.7-py3-none-any.whl", hash = "sha256:86b2b70cdeb7bc9677e9f0f8a2382709bc65cfef9d981cb5378d9c0a16306059"},
+]
+babel = [
+    {file = "Babel-2.9.1-py2.py3-none-any.whl", hash = "sha256:ab49e12b91d937cd11f0b67cb259a57ab4ad2b59ac7a3b41d6c06c0ac5b0def9"},
+]
+blosc2 = [
+    {file = "blosc2-0.2.0-cp35-cp35m-linux_armv6l.whl", hash = "sha256:f8ae8bbd344cb1f047178cec44e69c81643c64b4d323481c1cec5ff6f9e2be6c"},
+    {file = "blosc2-0.2.0-cp35-cp35m-linux_armv7l.whl", hash = "sha256:f8ae8bbd344cb1f047178cec44e69c81643c64b4d323481c1cec5ff6f9e2be6c"},
+    {file = "blosc2-0.2.0-cp37-cp37m-linux_armv6l.whl", hash = "sha256:d03a2704ef771f08786e8d55805d2acfba6dbe5a570fa6e07800f1e677db7c85"},
+    {file = "blosc2-0.2.0-cp37-cp37m-linux_armv7l.whl", hash = "sha256:d03a2704ef771f08786e8d55805d2acfba6dbe5a570fa6e07800f1e677db7c85"},
+    {file = "blosc2-0.2.0-cp39-cp39-linux_armv6l.whl", hash = "sha256:8d5ac10c251dd26fc23f0f825d7a8c6feeb7b25a877d304f4c9eb9c153e29acc"},
+    {file = "blosc2-0.2.0-cp39-cp39-linux_armv7l.whl", hash = "sha256:8d5ac10c251dd26fc23f0f825d7a8c6feeb7b25a877d304f4c9eb9c153e29acc"},
+]
+bokeh = [
+    {file = "bokeh-2.4.2-py3-none-any.whl", hash = "sha256:17b4a294c39e850cffbb532ff92f00da05fb68477f2b7a53c18c6a8a2081bffc"},
+]
+certifi = [
+    {file = "certifi-2021.10.8-py2.py3-none-any.whl", hash = "sha256:eaf5fd6a051cba81570919009491fc35069c99da0dd8d57304930ee7a5699fb0"},
+]
+cffi = [
+    {file = "cffi-1.15.0-cp35-cp35m-linux_armv6l.whl", hash = "sha256:9c39a248297b514b4074a3250291298c2daa40993998e36067f5f4b9e82c8e5a"},
+    {file = "cffi-1.15.0-cp35-cp35m-linux_armv7l.whl", hash = "sha256:9c39a248297b514b4074a3250291298c2daa40993998e36067f5f4b9e82c8e5a"},
+    {file = "cffi-1.15.0-cp37-cp37m-linux_armv6l.whl", hash = "sha256:2b4d29d69a6c852eb902b54f0a140f98ef20cb1fde000923e8f9aafd07fa7e70"},
+    {file = "cffi-1.15.0-cp37-cp37m-linux_armv7l.whl", hash = "sha256:2b4d29d69a6c852eb902b54f0a140f98ef20cb1fde000923e8f9aafd07fa7e70"},
+    {file = "cffi-1.15.0-cp39-cp39-linux_armv6l.whl", hash = "sha256:9733677bd97cecb003f62fc919a3bf6af0449e1e20a8cb8578c1fcbb0bd8881d"},
+    {file = "cffi-1.15.0-cp39-cp39-linux_armv7l.whl", hash = "sha256:9733677bd97cecb003f62fc919a3bf6af0449e1e20a8cb8578c1fcbb0bd8881d"},
+]
+charset-normalizer = [
+    {file = "charset_normalizer-2.0.12-py3-none-any.whl", hash = "sha256:4418fd831327416197e8458fdc804bb74f6945c0f0ee3fdc0cf504db905139a1"},
+]
+colorama = [
+    {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
+]
+colorcet = [
+    {file = "colorcet-3.0.0-py2.py3-none-any.whl", hash = "sha256:d51b77f2067c62c0f1c4bf2b780970b9c2c917a3a9a3e03f821d6d4567a0d4e5"},
+]
+coverage = [
+    {file = "coverage-6.3.2-cp37-cp37m-linux_armv6l.whl", hash = "sha256:040d812cb863940b26c18913c6c302ef8e8c34cde906e4fa682031ebcdc8b68c"},
+    {file = "coverage-6.3.2-cp37-cp37m-linux_armv7l.whl", hash = "sha256:040d812cb863940b26c18913c6c302ef8e8c34cde906e4fa682031ebcdc8b68c"},
+    {file = "coverage-6.3.2-cp39-cp39-linux_armv6l.whl", hash = "sha256:31f68786fcb8490ba09d1f0011670250721724dd7c782440ef935ccee68cc4d0"},
+    {file = "coverage-6.3.2-cp39-cp39-linux_armv7l.whl", hash = "sha256:31f68786fcb8490ba09d1f0011670250721724dd7c782440ef935ccee68cc4d0"},
+]
+coveralls = [
+    {file = "coveralls-3.3.1-py2.py3-none-any.whl", hash = "sha256:16205f701c66fd36c2b7f8bedfeaabbfa1fea5033e1e22de3217b5ca47d16082"},
+]
+cycler = [
+    {file = "cycler-0.11.0-py3-none-any.whl", hash = "sha256:cbaf3590e093c7281b1866e3fec2242f2430271ef235b1fd96bfb2dc89ac5fae"},
+]
+docopt = [
+    {file = "docopt-0.6.2-py2.py3-none-any.whl", hash = "sha256:15fde8252aa9f2804171014d50d069ffbf42c7a50b7d74bcbb82bfd5700fcfc2"},
+]
+docutils = [
+    {file = "docutils-0.17.1-py2.py3-none-any.whl", hash = "sha256:cf316c8370a737a022b72b56874f6602acf974a37a9fba42ec2876387549fc61"},
+]
+entrypoints = [
+    {file = "entrypoints-0.4-py3-none-any.whl", hash = "sha256:d1fb668421db084e9601b9c5ee928a2fc44ba598ce176df22be7f3d20824ce87"},
+]
+fonttools = [
+    {file = "fonttools-4.29.1-cp37-cp37m-linux_armv6l.whl", hash = "sha256:4fc0c047f0c1137320483808da817128d41f2f080bd095d61a30c350bf0a1b38"},
+    {file = "fonttools-4.29.1-cp37-cp37m-linux_armv7l.whl", hash = "sha256:4fc0c047f0c1137320483808da817128d41f2f080bd095d61a30c350bf0a1b38"},
+    {file = "fonttools-4.29.1-cp39-cp39-linux_armv6l.whl", hash = "sha256:f6425715f0eccb71914e9cb2adb2e2d4bf90d36b87812f5a770fbd19eb1b5d55"},
+    {file = "fonttools-4.29.1-cp39-cp39-linux_armv7l.whl", hash = "sha256:f6425715f0eccb71914e9cb2adb2e2d4bf90d36b87812f5a770fbd19eb1b5d55"},
+]
+idna = [
+    {file = "idna-3.3-py3-none-any.whl", hash = "sha256:a8c56282ad8491e5d10c5d44e9e4ce38e37a16bc03ebb54fdcaf9d05b8e0c309"},
+]
+imagesize = [
+    {file = "imagesize-1.3.0-py2.py3-none-any.whl", hash = "sha256:0b26ec5115ea8bf6f60f26467b3aca571203e8eab632367676400af113c80541"},
+]
+importlib-metadata = [
+    {file = "importlib_metadata-4.11.1-py3-none-any.whl", hash = "sha256:eadba1dae2659a993d1da84343a28f55b3b02dc60b5b7f61bd2fedc50ebd1651"},
+]
+importlib-resources = [
+    {file = "importlib_resources-5.4.0-py3-none-any.whl", hash = "sha256:7df7a2a1b965c36b05dddbf29a708d57e10d4ecb4a636e5dc25cd2f7e373d9d8"},
+]
+iniconfig = [
+    {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:8647b85c03813b8680f4ae9c9db2fd7293f8591ea536a10d73d90f6eb4b10aac"},
+]
+inputs = [
+    {file = "inputs-0.5-py2.py3-none-any.whl", hash = "sha256:13f894564e52134cf1e3862b1811da034875eb1f2b62e6021e3776e9669a96ec"},
+]
+isort = [
+    {file = "isort-5.10.1-py3-none-any.whl", hash = "sha256:eea14d9ea804d971049b4a1f35d1fde5a1988a3d6adc52a01f84f6ed4afca079"},
+]
+jack-client = [
+    {file = "JACK_Client-0.5.3-py3-none-any.whl", hash = "sha256:0214d9366e0a65bf0a99866990aae5a443afb3c283006d236d8cebcb769a59b8"},
+]
+jinja2 = [
+    {file = "Jinja2-3.0.3-py3-none-any.whl", hash = "sha256:0e1bdc65702c1085d9485108aca9724f8761f022c93ba86e18132bb9e51a8b6e"},
+]
+joblib = [
+    {file = "joblib-1.1.0-py2.py3-none-any.whl", hash = "sha256:52dd78527f9e977ebebee9853ad98dff046518281da37b54481392b6e74f7799"},
+]
+jsonschema = [
+    {file = "jsonschema-4.4.0-py3-none-any.whl", hash = "sha256:1c09b0c266384dce744e36089cc87937704ead7ea0beb626d0756bd817e29916"},
+]
+kiwisolver = [
+    {file = "kiwisolver-1.3.2-cp37-cp37m-linux_armv6l.whl", hash = "sha256:875e852ee1a88f08a6a165a36f682c61dcde471c6e6c163bc6a1fa920f934e33"},
+    {file = "kiwisolver-1.3.2-cp37-cp37m-linux_armv7l.whl", hash = "sha256:875e852ee1a88f08a6a165a36f682c61dcde471c6e6c163bc6a1fa920f934e33"},
+    {file = "kiwisolver-1.3.2-cp39-cp39-linux_armv6l.whl", hash = "sha256:87562979e388da7aeea5c9569d757aab3a89912b0eb8d93a72de08901e24ef01"},
+    {file = "kiwisolver-1.3.2-cp39-cp39-linux_armv7l.whl", hash = "sha256:87562979e388da7aeea5c9569d757aab3a89912b0eb8d93a72de08901e24ef01"},
+]
+latexcodec = [
+    {file = "latexcodec-2.0.1-py2.py3-none-any.whl", hash = "sha256:c277a193638dc7683c4c30f6684e3db728a06efb0dc9cf346db8bd0aa6c5d271"},
+]
+lazy-object-proxy = [
+    {file = "lazy_object_proxy-1.7.1-cp37-cp37m-linux_armv6l.whl", hash = "sha256:5f229a46fa65c91c91a604ab9e20933e53551d5976a5627cc5c47108d244dbf1"},
+    {file = "lazy_object_proxy-1.7.1-cp37-cp37m-linux_armv7l.whl", hash = "sha256:5f229a46fa65c91c91a604ab9e20933e53551d5976a5627cc5c47108d244dbf1"},
+    {file = "lazy_object_proxy-1.7.1-cp39-cp39-linux_armv6l.whl", hash = "sha256:70ac8c12c48873f932afe4413a69e6cbcb7723a092e80b1f73864cf09e1abf36"},
+    {file = "lazy_object_proxy-1.7.1-cp39-cp39-linux_armv7l.whl", hash = "sha256:70ac8c12c48873f932afe4413a69e6cbcb7723a092e80b1f73864cf09e1abf36"},
+]
+libsass = [
+    {file = "libsass-0.18.0-cp34-cp34m-linux_armv6l.whl", hash = "sha256:f0a4d1554d819a32ae1ea13ec48fef37d079c23b0cda603d97e061595059a335"},
+    {file = "libsass-0.18.0-cp34-cp34m-linux_armv7l.whl", hash = "sha256:f0a4d1554d819a32ae1ea13ec48fef37d079c23b0cda603d97e061595059a335"},
+    {file = "libsass-0.18.0-cp35-cp35m-linux_armv6l.whl", hash = "sha256:0d71cfc86bbfb67a3e0a6ac4b02d5ef92784832d16e5ada6b4c70e1fce6e1826"},
+    {file = "libsass-0.18.0-cp35-cp35m-linux_armv7l.whl", hash = "sha256:0d71cfc86bbfb67a3e0a6ac4b02d5ef92784832d16e5ada6b4c70e1fce6e1826"},
+    {file = "libsass-0.18.0-cp37-cp37m-linux_armv6l.whl", hash = "sha256:368735a1e0702c06d5ed47970c7f752e953535b74ba664c17deaac696692cdec"},
+    {file = "libsass-0.18.0-cp37-cp37m-linux_armv7l.whl", hash = "sha256:368735a1e0702c06d5ed47970c7f752e953535b74ba664c17deaac696692cdec"},
+    {file = "libsass-0.18.0-cp39-cp39-linux_armv6l.whl", hash = "sha256:7a793d68710ed19d6716f75224778aafa90263212b3f9060ca0694c5abc51f99"},
+    {file = "libsass-0.18.0-cp39-cp39-linux_armv7l.whl", hash = "sha256:7a793d68710ed19d6716f75224778aafa90263212b3f9060ca0694c5abc51f99"},
+]
+livereload = [
+    {file = "livereload-2.6.3-py2.py3-none-any.whl", hash = "sha256:73ea4d4b819218a10642e2bd2926cc92938bcd7dfabd6fea45a0cd6f7a7d6029"},
+]
+markupsafe = [
+    {file = "MarkupSafe-2.1.0-cp37-cp37m-linux_armv6l.whl", hash = "sha256:39e62bbd6852fe4655201a2d334a23426ad519f80dbe81bd8079fb0cc4fe6a0f"},
+    {file = "MarkupSafe-2.1.0-cp37-cp37m-linux_armv7l.whl", hash = "sha256:39e62bbd6852fe4655201a2d334a23426ad519f80dbe81bd8079fb0cc4fe6a0f"},
+    {file = "MarkupSafe-2.1.0-cp39-cp39-linux_armv6l.whl", hash = "sha256:47cd11e5cbd1f7beb2c6324d7876707b738ed8499723c89f8eb46806a448cb56"},
+    {file = "MarkupSafe-2.1.0-cp39-cp39-linux_armv7l.whl", hash = "sha256:47cd11e5cbd1f7beb2c6324d7876707b738ed8499723c89f8eb46806a448cb56"},
+]
+matplotlib = [
+    {file = "matplotlib-3.5.1-cp37-cp37m-linux_armv6l.whl", hash = "sha256:8c38a0b03175847ff7ad5438bd60ab752e72814b900e605b8676b038d4f39f09"},
+    {file = "matplotlib-3.5.1-cp37-cp37m-linux_armv7l.whl", hash = "sha256:8c38a0b03175847ff7ad5438bd60ab752e72814b900e605b8676b038d4f39f09"},
+    {file = "matplotlib-3.5.1-cp39-cp39-linux_armv6l.whl", hash = "sha256:75818f5dc8f146d9c54e0d929dbe723cdd6a87f52d086ce58a902a49490370a1"},
+    {file = "matplotlib-3.5.1-cp39-cp39-linux_armv7l.whl", hash = "sha256:75818f5dc8f146d9c54e0d929dbe723cdd6a87f52d086ce58a902a49490370a1"},
+]
+mccabe = [
+    {file = "mccabe-0.6.1-py2.py3-none-any.whl", hash = "sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42"},
+]
+npyscreen = [
+    {file = "npyscreen-4.10.5-py3-none-any.whl", hash = "sha256:435c014c3ce0068e2de512dc54bee564bd904d93d0f5403c201ac93a2683d763"},
+]
+numexpr = [
+    {file = "numexpr-2.8.1-cp35-cp35m-linux_armv6l.whl", hash = "sha256:be065ff61a35990d33cde3465ab1bc17d551dfed16cd07c4155f4f4a35865f6d"},
+    {file = "numexpr-2.8.1-cp35-cp35m-linux_armv7l.whl", hash = "sha256:be065ff61a35990d33cde3465ab1bc17d551dfed16cd07c4155f4f4a35865f6d"},
+    {file = "numexpr-2.8.1-cp37-cp37m-linux_armv6l.whl", hash = "sha256:75546fa07cf310dd7fa90f2a1eac78881f6ba61ca0942858ef6c133e14437625"},
+    {file = "numexpr-2.8.1-cp37-cp37m-linux_armv7l.whl", hash = "sha256:75546fa07cf310dd7fa90f2a1eac78881f6ba61ca0942858ef6c133e14437625"},
+    {file = "numexpr-2.8.1-cp39-cp39-linux_armv6l.whl", hash = "sha256:e197a8595839cfd923f84731a8f0724f58fd5891943ac221c3deecf5464e9277"},
+    {file = "numexpr-2.8.1-cp39-cp39-linux_armv7l.whl", hash = "sha256:e197a8595839cfd923f84731a8f0724f58fd5891943ac221c3deecf5464e9277"},
+]
+numpy = [
+    {file = "numpy-1.21.5-cp39-cp39-linux_armv6l.whl", hash = "sha256:ef1c0afd6bf82c2b90ac3295f1b71a3ce7ca1aea95e5b9a346174cfe749455ab"},
+    {file = "numpy-1.21.5-cp39-cp39-linux_armv7l.whl", hash = "sha256:ef1c0afd6bf82c2b90ac3295f1b71a3ce7ca1aea95e5b9a346174cfe749455ab"},
+]
+packaging = [
+    {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:36bb3108f8e33f88e52e7985b4068e2585b67e5b7b3a0fa2817f9852bc39d2ef"},
+]
+pandas = [
+    {file = "pandas-1.1.5-cp37-cp37m-linux_armv6l.whl", hash = "sha256:609e9a857ddd77736592c4ac8220ae259479ce940fe59d568cbaa3ae51a29be3"},
+    {file = "pandas-1.1.5-cp37-cp37m-linux_armv7l.whl", hash = "sha256:609e9a857ddd77736592c4ac8220ae259479ce940fe59d568cbaa3ae51a29be3"},
+    {file = "pandas-1.1.5-cp39-cp39-linux_armv6l.whl", hash = "sha256:9412afb1d90cb7c959fcf697d67d5948f78b5ba910f36b38184d5ba861aedf9f"},
+    {file = "pandas-1.1.5-cp39-cp39-linux_armv7l.whl", hash = "sha256:9412afb1d90cb7c959fcf697d67d5948f78b5ba910f36b38184d5ba861aedf9f"},
+]
+param = [
+    {file = "param-1.12.0-py2.py3-none-any.whl", hash = "sha256:bb088b21009b32a48cf1c2278d9cd2b2206ec3733f3db53a55f3db163d93d63a"},
+]
+pigpio = []
+pillow = [
+    {file = "Pillow-9.0.1-cp37-cp37m-linux_armv6l.whl", hash = "sha256:834cf8f41fae68122c73f7a0a89100477bb5c2b6828997b5f0f35cd48a8b3106"},
+    {file = "Pillow-9.0.1-cp37-cp37m-linux_armv7l.whl", hash = "sha256:834cf8f41fae68122c73f7a0a89100477bb5c2b6828997b5f0f35cd48a8b3106"},
+    {file = "Pillow-9.0.1-cp39-cp39-linux_armv6l.whl", hash = "sha256:03b060e92504fac5efee59a08b6080bbf84791a46407d5cea3ac2d12c353fedd"},
+    {file = "Pillow-9.0.1-cp39-cp39-linux_armv7l.whl", hash = "sha256:03b060e92504fac5efee59a08b6080bbf84791a46407d5cea3ac2d12c353fedd"},
+]
+platformdirs = [
+    {file = "platformdirs-2.5.1-py3-none-any.whl", hash = "sha256:1cbcd0d3febfbf69fceaedaa02bf485f6ed773573cf90423e6df11a694f44e1e"},
+]
+pluggy = [
+    {file = "pluggy-1.0.0-py2.py3-none-any.whl", hash = "sha256:f2d9abbfd1465ce5d1e261e51cc15afc87ede2ae079c7c7c8d894b1cc37ba123"},
+]
+py = [
+    {file = "py-1.11.0-py2.py3-none-any.whl", hash = "sha256:ec07ead4a92be3fe6be916f57ee869b9b4cb7ec17a0add2a5366cc7efa0521c8"},
+]
+pybtex = [
+    {file = "pybtex-0.24.0-py2.py3-none-any.whl", hash = "sha256:e1e0c8c69998452fea90e9179aa2a98ab103f3eed894405b7264e517cc2fcc0f"},
+]
+pybtex-docutils = [
+    {file = "pybtex_docutils-1.0.1-py3-none-any.whl", hash = "sha256:5f29a71a784224a69e5912f14a1ace56b2bce4d9f0e1ef4f23eb315132056195"},
+]
+pycparser = [
+    {file = "pycparser-2.21-py2.py3-none-any.whl", hash = "sha256:ab326306c89cc646bc81ba2337c513f967faf2b3457985e1c63180adf1ada044"},
+]
+pyct = [
+    {file = "pyct-0.4.8-py2.py3-none-any.whl", hash = "sha256:222e104d561b28cfdb56667d2ba10e5290b4466db66d0af38ab935577af85390"},
+]
+pygments = [
+    {file = "Pygments-2.11.2-py3-none-any.whl", hash = "sha256:b8381925964a21c81c75292e167b8c09e01a5a1719ca1c5641e0f8178873ed59"},
+]
+pylint = [
+    {file = "pylint-2.12.2-py3-none-any.whl", hash = "sha256:faf80aea248f25c7b872965f13d77c8bd1ef8db27cb408bf77bfe4dfd27248c0"},
+]
+pyparsing = [
+    {file = "pyparsing-3.0.7-py3-none-any.whl", hash = "sha256:9cac03df81a32c5a08393d4aaed42318304684e9abc1336deff3a84feb2e1260"},
+]
+pyqtgraph = [
+    {file = "pyqtgraph-0.12.3-py3-none-any.whl", hash = "sha256:682562f8cb1f50819f241679b67b76775f76791b8828de05eb4f7c3fcb4d8b04"},
+]
+pyrsistent = [
+    {file = "pyrsistent-0.18.1-cp37-cp37m-linux_armv6l.whl", hash = "sha256:8b9715bd2af95fe338d847461d514fed202cbcc94d7dd698b83082d1f19d2775"},
+    {file = "pyrsistent-0.18.1-cp37-cp37m-linux_armv7l.whl", hash = "sha256:8b9715bd2af95fe338d847461d514fed202cbcc94d7dd698b83082d1f19d2775"},
+    {file = "pyrsistent-0.18.1-cp39-cp39-linux_armv6l.whl", hash = "sha256:24215c805c66fcecafd5f9f3ee8f2a818cbb004c857cf4262be5f13f1a40a821"},
+    {file = "pyrsistent-0.18.1-cp39-cp39-linux_armv7l.whl", hash = "sha256:24215c805c66fcecafd5f9f3ee8f2a818cbb004c857cf4262be5f13f1a40a821"},
+]
+pyside2 = [
+    {file = "PySide2-5.15.2.1-5.15.2-cp27-cp27m-macosx_10_13_intel.whl", hash = "sha256:b5e1d92f26b0bbaefff67727ccbb2e1b577f2c0164b349b3d6e80febb4c5bde2"},
+    {file = "PySide2-5.15.2.1-5.15.2-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:235240b6ec8206d9fdf0232472c6ef3241783d480425e5b54796f06e39ed23da"},
+    {file = "PySide2-5.15.2.1-5.15.2-cp35.cp36.cp37.cp38.cp39.cp310-abi3-macosx_10_13_intel.whl", hash = "sha256:a9e2e6bbcb5d2ebb421e46e72244a0f4fe0943b2288115f80a863aacc1de1f06"},
+    {file = "PySide2-5.15.2.1-5.15.2-cp35.cp36.cp37.cp38.cp39.cp310-abi3-manylinux1_x86_64.whl", hash = "sha256:23886c6391ebd916e835fa1b5ae66938048504fd3a2934ae3189a96cd5ac0b46"},
+    {file = "PySide2-5.15.2.1-5.15.2-cp35.cp36.cp37.cp38.cp39.cp310-none-win32.whl", hash = "sha256:439509e53cfe05abbf9a99422a2cbad086408b0f9bf5e6f642ff1b13b1f8b055"},
+    {file = "PySide2-5.15.2.1-5.15.2-cp35.cp36.cp37.cp38.cp39.cp310-none-win_amd64.whl", hash = "sha256:af6b263fe63ba6dea7eaebae80aa7b291491fe66f4f0057c0aafe780cc83da9d"},
+]
+pytest = [
+    {file = "pytest-6.2.5-py3-none-any.whl", hash = "sha256:b0739f541bdb0648760adda3ecc43ebdd8334a8694a6fcbf56ff8af207fc00b8"},
+]
+pytest-cov = [
+    {file = "pytest_cov-3.0.0-py3-none-any.whl", hash = "sha256:ed9d58a2c8d54d985d7a9c985fba3a2061be5434a47e45524a35bd3c1a879d2c"},
+]
+pytest-qt = [
+    {file = "pytest_qt-3.3.0-py2.py3-none-any.whl", hash = "sha256:5f8928288f50489d83f5d38caf2d7d9fcd6e7cf769947902caa4661dc7c851e3"},
+]
+python-dateutil = [
+    {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
+]
+pytz = [
+    {file = "pytz-2021.3-py3-none-any.whl", hash = "sha256:3f0820049ea2e942b7852a85801bc97e29913d278baa5c984e1a4a2075d173d2"},
+]
+pyyaml = [
+    {file = "PyYAML-6.0-cp37-cp37m-linux_armv6l.whl", hash = "sha256:dddcabaafe0a7a1eb5725cb20c3c197a9041766962c097289f470a1430fde72d"},
+    {file = "PyYAML-6.0-cp37-cp37m-linux_armv7l.whl", hash = "sha256:dddcabaafe0a7a1eb5725cb20c3c197a9041766962c097289f470a1430fde72d"},
+    {file = "PyYAML-6.0-cp39-cp39-linux_armv6l.whl", hash = "sha256:03f43334d3a45d0fc40ca291a043438257abeb85e851cb154a32d159b3a49fdb"},
+    {file = "PyYAML-6.0-cp39-cp39-linux_armv7l.whl", hash = "sha256:03f43334d3a45d0fc40ca291a043438257abeb85e851cb154a32d159b3a49fdb"},
+]
+pyzmq = [
+    {file = "pyzmq-22.3.0-cp37-cp37m-linux_armv6l.whl", hash = "sha256:d616e75736d2a899400ca808819df286665d2175fba785c44c73b16be2736746"},
+    {file = "pyzmq-22.3.0-cp37-cp37m-linux_armv7l.whl", hash = "sha256:d616e75736d2a899400ca808819df286665d2175fba785c44c73b16be2736746"},
+    {file = "pyzmq-22.3.0-cp39-cp39-linux_armv6l.whl", hash = "sha256:d7480803268422b4c8343497392cf8bae23ee0599965c92afb3d900ca51b235c"},
+    {file = "pyzmq-22.3.0-cp39-cp39-linux_armv7l.whl", hash = "sha256:d7480803268422b4c8343497392cf8bae23ee0599965c92afb3d900ca51b235c"},
+]
+requests = [
+    {file = "requests-2.27.1-py2.py3-none-any.whl", hash = "sha256:1a44eef7d80448faea8129b00b15cd00bf8e5cfd96de807e86d4a37b01364b25"},
+]
+scikit-learn = [
+    {file = "scikit_learn-1.0.2-cp37-cp37m-linux_armv6l.whl", hash = "sha256:40933c9de93a98c046a2d8d4207ac65c9bc0ab354e7e637ab16f3115f1dfa081"},
+    {file = "scikit_learn-1.0.2-cp37-cp37m-linux_armv7l.whl", hash = "sha256:40933c9de93a98c046a2d8d4207ac65c9bc0ab354e7e637ab16f3115f1dfa081"},
+    {file = "scikit_learn-1.0.2-cp39-cp39-linux_armv6l.whl", hash = "sha256:dfe7c1124a5898afa2825b49c2ef8d929a5bdbcc66367e6c17932e2ec8b601d4"},
+    {file = "scikit_learn-1.0.2-cp39-cp39-linux_armv7l.whl", hash = "sha256:dfe7c1124a5898afa2825b49c2ef8d929a5bdbcc66367e6c17932e2ec8b601d4"},
+]
+scikit-video = [
+    {file = "scikit_video-1.1.11-py2.py3-none-any.whl", hash = "sha256:4fc131e509aaeeb0eecb6acb58b92a7ef905be5dbe27ed1d1ae089634b601f23"},
+]
+scipy = [
+    {file = "scipy-1.7.3-cp37-cp37m-linux_armv6l.whl", hash = "sha256:2fec5b97046d51212017a3246996fb3bc99fe3225949e3b6e1dbb1e1be0eb57c"},
+    {file = "scipy-1.7.3-cp37-cp37m-linux_armv7l.whl", hash = "sha256:2fec5b97046d51212017a3246996fb3bc99fe3225949e3b6e1dbb1e1be0eb57c"},
+    {file = "scipy-1.7.3-cp39-cp39-linux_armv6l.whl", hash = "sha256:a128bd9d674bb0565b200b906d20a452dfd2b52cac044b21103f580170525154"},
+    {file = "scipy-1.7.3-cp39-cp39-linux_armv7l.whl", hash = "sha256:a128bd9d674bb0565b200b906d20a452dfd2b52cac044b21103f580170525154"},
+]
+shiboken2 = [
+    {file = "shiboken2-5.15.2.1-5.15.2-cp27-cp27m-macosx_10_13_intel.whl", hash = "sha256:f890f5611ab8f48b88cfecb716da2ac55aef99e2923198cefcf781842888ea65"},
+    {file = "shiboken2-5.15.2.1-5.15.2-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:87079c07587859a525b9800d60b1be971338ce9b371d6ead81f15ee5a46d448b"},
+    {file = "shiboken2-5.15.2.1-5.15.2-cp35.cp36.cp37.cp38.cp39.cp310-abi3-macosx_10_13_intel.whl", hash = "sha256:ffd3d0ec3d508e592d7ee3885d27fee1f279a49989f734eb130f46d9501273a9"},
+    {file = "shiboken2-5.15.2.1-5.15.2-cp35.cp36.cp37.cp38.cp39.cp310-abi3-manylinux1_x86_64.whl", hash = "sha256:63debfcc531b6a2b4985aa9b71433d2ad3bac542acffc729cc0ecaa3854390c0"},
+    {file = "shiboken2-5.15.2.1-5.15.2-cp35.cp36.cp37.cp38.cp39.cp310-none-win32.whl", hash = "sha256:eb0da44b6fa60c6bd317b8f219e500595e94e0322b33ec5b4e9f406bedaee555"},
+    {file = "shiboken2-5.15.2.1-5.15.2-cp35.cp36.cp37.cp38.cp39.cp310-none-win_amd64.whl", hash = "sha256:a0d0fdeb12b72c8af349b9642ccc67afd783dca449309f45e78cda50272fd6b7"},
+]
+six = [
+    {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
+]
+snowballstemmer = [
+    {file = "snowballstemmer-2.2.0-py2.py3-none-any.whl", hash = "sha256:53823aa64ad78444911007d0f56ee775f1b8c1e34c32bdba744d8be02ce7bbf3"},
+]
+sphinx = [
+    {file = "Sphinx-4.4.0-py3-none-any.whl", hash = "sha256:e10d9098b3e8763e75b966c42e858377c88bde0989d8e8f73df3ae0d2bd85310"},
+]
+sphinx-autobuild = [
+    {file = "sphinx_autobuild-2021.3.14-py3-none-any.whl", hash = "sha256:8fe8cbfdb75db04475232f05187c776f46f6e9e04cacf1e49ce81bdac649ccac"},
+]
+sphinx-rtd-theme = [
+    {file = "sphinx_rtd_theme-1.0.0-py2.py3-none-any.whl", hash = "sha256:0002cf14f09596a671f44ec13d4be93054c7d72287928ec713d686bb26984625"},
+]
+sphinx-sass = []
+sphinxcontrib-applehelp = [
+    {file = "sphinxcontrib_applehelp-1.0.2-py2.py3-none-any.whl", hash = "sha256:806111e5e962be97c29ec4c1e7fe277bfd19e9652fb1a4392105b43e01af885a"},
+]
+sphinxcontrib-bibtex = [
+    {file = "sphinxcontrib_bibtex-2.4.1-py3-none-any.whl", hash = "sha256:d6c061b83d523a15fe7fd9e7d7c6ed696b6c4a1f936fc1b10986f06ba9b10a53"},
+]
+sphinxcontrib-devhelp = [
+    {file = "sphinxcontrib_devhelp-1.0.2-py2.py3-none-any.whl", hash = "sha256:8165223f9a335cc1af7ffe1ed31d2871f325254c0423bc0c4c7cd1c1e4734a2e"},
+]
+sphinxcontrib-htmlhelp = [
+    {file = "sphinxcontrib_htmlhelp-2.0.0-py2.py3-none-any.whl", hash = "sha256:d412243dfb797ae3ec2b59eca0e52dac12e75a241bf0e4eb861e450d06c6ed07"},
+]
+sphinxcontrib-jsmath = [
+    {file = "sphinxcontrib_jsmath-1.0.1-py2.py3-none-any.whl", hash = "sha256:2ec2eaebfb78f3f2078e73666b1415417a116cc848b72e5172e596c871103178"},
+]
+sphinxcontrib-qthelp = [
+    {file = "sphinxcontrib_qthelp-1.0.3-py2.py3-none-any.whl", hash = "sha256:bd9fc24bcb748a8d51fd4ecaade681350aa63009a347a8c14e637895444dfab6"},
+]
+sphinxcontrib-serializinghtml = [
+    {file = "sphinxcontrib_serializinghtml-1.1.5-py2.py3-none-any.whl", hash = "sha256:352a9a00ae864471d3a7ead8d7d79f5fc0b57e8b3f95e9867eb9eb28999b92fd"},
+]
+tables = [
+    {file = "tables-3.7.0-cp37-cp37m-linux_armv6l.whl", hash = "sha256:7aa2cb3026fa326e63a12f251b5f270829232db3438620deb9efa1bae4d97234"},
+    {file = "tables-3.7.0-cp37-cp37m-linux_armv7l.whl", hash = "sha256:7aa2cb3026fa326e63a12f251b5f270829232db3438620deb9efa1bae4d97234"},
+    {file = "tables-3.7.0-cp39-cp39-linux_armv6l.whl", hash = "sha256:540868cd9bcbca23f8195652309cb1a379cbb72a9b9720b37e2362bbbcef7635"},
+    {file = "tables-3.7.0-cp39-cp39-linux_armv7l.whl", hash = "sha256:540868cd9bcbca23f8195652309cb1a379cbb72a9b9720b37e2362bbbcef7635"},
+]
+threadpoolctl = [
+    {file = "threadpoolctl-3.1.0-py3-none-any.whl", hash = "sha256:fa64df69de1ad084aa9c115df683849a731553a5652540552f40d99b84a4c492"},
+]
+toml = [
+    {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
+]
+tomli = [
+    {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
+]
+toolz = [
+    {file = "toolz-0.11.2-py3-none-any.whl", hash = "sha256:cf351967514794d2dcdcdb0f365cb13561105fff7feb92cac3854c3cc27d8376"},
+]
+tornado = [
+    {file = "tornado-6.1-cp35-cp35m-linux_armv6l.whl", hash = "sha256:1dd2cceb32848749b17968042f6e41e385bc91d7bf1048b34f9f3a36644d7af1"},
+    {file = "tornado-6.1-cp35-cp35m-linux_armv7l.whl", hash = "sha256:1dd2cceb32848749b17968042f6e41e385bc91d7bf1048b34f9f3a36644d7af1"},
+    {file = "tornado-6.1-cp37-cp37m-linux_armv6l.whl", hash = "sha256:9f915a52eb7225add1017b8597fe2d5911565750acd703f2f0f412b3dc4bd4da"},
+    {file = "tornado-6.1-cp37-cp37m-linux_armv7l.whl", hash = "sha256:9f915a52eb7225add1017b8597fe2d5911565750acd703f2f0f412b3dc4bd4da"},
+    {file = "tornado-6.1-cp39-cp39-linux_armv6l.whl", hash = "sha256:e5d74a9829d1e3a7df7003490206af5f8a203350bdea529b6ed8dac3180599db"},
+    {file = "tornado-6.1-cp39-cp39-linux_armv7l.whl", hash = "sha256:e5d74a9829d1e3a7df7003490206af5f8a203350bdea529b6ed8dac3180599db"},
+]
+tqdm = [
+    {file = "tqdm-4.62.3-py2.py3-none-any.whl", hash = "sha256:ef1434e10318e154ab454fa8a4b39bd730f062822ada3daf1ff6a2782936dd1f"},
+]
+typed-ast = [
+    {file = "typed_ast-1.5.2-cp37-cp37m-linux_armv6l.whl", hash = "sha256:6f09ec8d1451e3fce25307a88d31c6d366c79c4e0dd66414b13bfe0fe210c5b1"},
+    {file = "typed_ast-1.5.2-cp37-cp37m-linux_armv7l.whl", hash = "sha256:6f09ec8d1451e3fce25307a88d31c6d366c79c4e0dd66414b13bfe0fe210c5b1"},
+    {file = "typed_ast-1.5.2-cp39-cp39-linux_armv6l.whl", hash = "sha256:40eb88746eea01a3702a436a12cc54ab37eb03c7206f5c9db12b88af358cb61f"},
+    {file = "typed_ast-1.5.2-cp39-cp39-linux_armv7l.whl", hash = "sha256:40eb88746eea01a3702a436a12cc54ab37eb03c7206f5c9db12b88af358cb61f"},
+]
+typing-extensions = [
+    {file = "typing_extensions-4.1.1-py3-none-any.whl", hash = "sha256:31b902ea3c3297255b2ce9b5d9335e6555068dd767d3c514f263c43d9411fcab"},
+]
+urllib3 = [
+    {file = "urllib3-1.26.8-py2.py3-none-any.whl", hash = "sha256:efbdd6e3ba8c0a5ff0eb83ce85a4e38a5a9101c61ff2b1f5e2c0190a6e1de1a1"},
+]
+wrapt = [
+    {file = "wrapt-1.13.3-cp35-cp35m-linux_armv6l.whl", hash = "sha256:a32f76ef391a3fc7f6f8de779ad9607c2769fb96693bcdc2c79449bc1a97cb28"},
+    {file = "wrapt-1.13.3-cp35-cp35m-linux_armv7l.whl", hash = "sha256:a32f76ef391a3fc7f6f8de779ad9607c2769fb96693bcdc2c79449bc1a97cb28"},
+    {file = "wrapt-1.13.3-cp37-cp37m-linux_armv6l.whl", hash = "sha256:0f1c728f7faa4909baf802060647c91582b3061d3aa9725277d47e206eed4362"},
+    {file = "wrapt-1.13.3-cp37-cp37m-linux_armv7l.whl", hash = "sha256:0f1c728f7faa4909baf802060647c91582b3061d3aa9725277d47e206eed4362"},
+    {file = "wrapt-1.13.3-cp39-cp39-linux_armv6l.whl", hash = "sha256:a92b3569a9ef00a853e51f5ca424d800fbe0393bd248036c68f7b23e69b498ef"},
+    {file = "wrapt-1.13.3-cp39-cp39-linux_armv7l.whl", hash = "sha256:a92b3569a9ef00a853e51f5ca424d800fbe0393bd248036c68f7b23e69b498ef"},
+]
+zipp = [
+    {file = "zipp-3.7.0-py3-none-any.whl", hash = "sha256:30667150440816def16f6343ca02de36dbb588142ae4d6ebbd92a1ac4a4a36b3"},
+]

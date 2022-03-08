@@ -1,2 +1,89 @@
+[tool.poetry]
+name = "auto-pi-lot"
+version = "0.4.3"
+description = "Distributed behavioral experiments"
+authors = ["Jonny Saunders <j@nny.fyi>"]
+license = "MPL-2.0"
+packages = [
+    { include = "autopilot" }
+]
+include = ['autopilot/setup/welcome_msg.txt']
+readme = "README.md"
+homepage = "https://docs.auto-pi-lot.com"
+repository = "https://github.com/wehr-lab/autopilot"
+classifiers = [
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Topic :: Scientific/Engineering"
+]
+
+
+[tool.poetry.dependencies]
+python = ">=3.7,<3.10"
+pyzmq = ">=20.0.0"
+npyscreen = "^4.10.5"
+tornado = "^6.1.0"
+inputs = "^0.5"
+requests = "^2.26.0"
+scikit-video = "^1.1.11"
+tqdm = "^4.62.3"
+numpy = "^1.19.0"
+scipy = "^1.6.0"
+pandas = "^1.1.0"
+tables = "^3.6.0"
+cffi = "^1.15.0"
+blosc2 = "^0.2.0"
+JACK-Client  = {version = "^0.5.3", optional = true}
+pigpio       = {git = "https://github.com/sneakers-the-rat/pigpio", branch="master", optional=true}
+pyqtgraph    = {version = "^0.12.3", optional = true}
+PySide2      = {version = "^5.15.2", optional = true}
+Sphinx       = {version = "^4.3.1", optional = true}
+autodocsumm  = {version = "^0.2.7", optional = true}
+matplotlib   = {version = "^3.5.1", optional = true}
+sphinxcontrib-bibtex = {version = "^2.4.1", optional = true}
+scikit-learn = {version = "^1.0.1", optional = true}
+altair       = {version = "^4.1.0", optional = true}
+bokeh        = {version = "^2.4.2", optional = true}
+colorcet     = {version = "^3.0.0", optional = true}
+sphinx-rtd-theme = {version = "^1.0.0", optional = true}
+sphinx-sass  = {git = "https://github.com/sneakers-the-rat/sphinx-sass", optional = true}
+pytest       = {version = "^6.2.5", optional = true}
+pytest-cov   = {version = "^3.0.0", optional = true}
+pylint       = {version = "^2.12.2", optional = true}
+coveralls    = {version = "^3.3.1", optional = true}
+pytest-qt    = {version = "~=3.3.0", optional = true}
+importlib-metadata = {version = "^4.9.0", python = "<3.8"}
+
+
+[tool.poetry.dev-dependencies]
+sphinx-autobuild = "^2021.3.14"
+
+[tool.poetry.extras]
+pilot = ["pigpio", "JACK-Client"]
+terminal = ["pyqtgraph", "PySide2"]
+docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex",
+        "scikit-learn", "altair", "bokeh", "colorcet", "sphinx-rtd-theme", "sphinx-sass", "pytest"]
+tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio"]
+plotting = ["altair", "bokeh", "colorcet"]
+
+[[tool.poetry.source]]
+name = "piwheels"
+url = "https://www.piwheels.org/simple"
+
+[[tool.poetry.source]]
+name = "pypi2"
+url = "https://www.pypi.org/simple"
+
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
