@@ -83,6 +83,7 @@ import warnings
 #from autopilot.core.loggers import init_logger
 from collections import OrderedDict as odict
 from autopilot.exceptions import DefaultPrefWarning
+from autopilot.root import Autopilot_Pref
 
 class Scopes(Enum):
     """
@@ -159,10 +160,56 @@ Logger used by prefs initialized by :func:`.core.loggers.init_logger`
 Initially None, created once prefs are populated because init_logger requires some prefs to be set (uh the logdir and level and stuff)
 """
 
-
 # not documenting, just so that the full function doesn't need to be put in for each directory
 # lol at this literal reanimated fossil halfway evolved between os.path and pathlib
 _basedir = Path(os.path.join(os.path.expanduser("~"), "autopilot"))
+
+class Common_Prefs(Autopilot_Pref):
+    """
+    Prefs common to all autopilot agents
+    """
+
+class Directory_Prefs(Autopilot_Pref):
+    """
+    Directories and paths that define the contents of the user directory.
+
+    In general, all paths should be beneath the `USER_DIR`
+    """
+
+    class Config:
+        env_prefix = "AUTOPILOT_DIRECTORY_"
+
+class Agent_Prefs(Autopilot_Pref):
+    """
+    Abstract prefs class for prefs that are specific to agents
+    """
+
+
+class Terminal_Prefs(Agent_Prefs):
+    """
+    Prefs for the :class:`~autopilot.core.terminal.Terminal`
+    """
+
+    class Config:
+        env_prefix = "AUTOPILOT_TERMINAL_"
+
+class Pilot_Prefs(Agent_Prefs):
+    """
+    Prefs for the :class:`~autopilot.core.pilot.Pilot`
+    """
+
+    class Config:
+        env_prefix = "AUTOPILOT_PILOT_"
+
+class Audio_Prefs(Autopilot_Pref):
+    """
+    Prefs to configure the audio server
+    """
+
+class Hardware_Pref(Autopilot_Pref):
+    """
+    Abstract class for hardware objects,
+    """
 
 
 _DEFAULTS = odict({
@@ -768,3 +815,6 @@ else:
     if not _INITIALIZED:
         init()
 
+_COMPATIBILITY_MAP = {
+
+}

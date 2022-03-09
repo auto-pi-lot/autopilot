@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "auto-pi-lot"
-version = "0.4.3"
+version = "0.4.5"
 description = "Distributed behavioral experiments"
 authors = ["Jonny Saunders <j@nny.fyi>"]
 license = "MPL-2.0"
@@ -43,6 +43,7 @@ pandas = "^1.1.0"
 tables = "^3.6.0"
 cffi = "^1.15.0"
 blosc2 = "^0.2.0"
+pydantic = "^1.9.0"
 JACK-Client  = {version = "^0.5.3", optional = true}
 pigpio       = {git = "https://github.com/sneakers-the-rat/pigpio", branch="master", optional=true}
 pyqtgraph    = {version = "^0.12.3", optional = true}
@@ -73,7 +74,7 @@ pilot = ["pigpio", "JACK-Client"]
 terminal = ["pyqtgraph", "PySide2"]
 docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex",
         "scikit-learn", "altair", "bokeh", "colorcet", "sphinx-rtd-theme", "sphinx-sass", "pytest"]
-tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio"]
+tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio", "PySide2", "pyqtgraph"]
 plotting = ["altair", "bokeh", "colorcet"]
 
 [[tool.poetry.source]]

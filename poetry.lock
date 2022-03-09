@@ -382,7 +382,7 @@ reference = "piwheels"
 
 [[package]]
 name = "importlib-metadata"
-version = "4.11.1"
+version = "4.11.2"
 description = "Read metadata from Python packages"
 category = "main"
 optional = false
@@ -393,7 +393,7 @@ typing-extensions = {version = ">=3.6.4", markers = "python_version < \"3.8\""}
 zipp = ">=0.5"
 
 [package.extras]
-docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
+docs = ["sphinx", "jaraco.packaging (>=9)", "rst.linker (>=1.9)"]
 perf = ["ipython"]
 testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "packaging", "pyfakefs", "flufl.flake8", "pytest-perf (>=0.9.2)", "pytest-black (>=0.3.7)", "pytest-mypy (>=0.9.1)", "importlib-resources (>=1.3)"]
 
@@ -919,6 +919,26 @@ url = "https://www.piwheels.org/simple"
 reference = "piwheels"
 
 [[package]]
+name = "pydantic"
+version = "1.9.0"
+description = "Data validation and settings management using python 3.6 type hinting"
+category = "main"
+optional = false
+python-versions = ">=3.6.1"
+
+[package.dependencies]
+typing-extensions = ">=3.7.4.3"
+
+[package.extras]
+dotenv = ["python-dotenv (>=0.10.4)"]
+email = ["email-validator (>=1.0.3)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
 name = "pygments"
 version = "2.11.2"
 description = "Pygments is a syntax highlighting package written in Python."
@@ -971,7 +991,7 @@ reference = "piwheels"
 
 [[package]]
 name = "pyqtgraph"
-version = "0.12.3"
+version = "0.12.4"
 description = "Scientific Graphics and GUI Library for Python"
 category = "main"
 optional = true
@@ -1569,7 +1589,7 @@ reference = "piwheels"
 
 [[package]]
 name = "tqdm"
-version = "4.62.3"
+version = "4.63.0"
 description = "Fast, Extensible Progress Meter"
 category = "main"
 optional = false
@@ -1667,12 +1687,12 @@ docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex", "scikit-l
 pilot = ["pigpio", "JACK-Client"]
 plotting = ["altair", "bokeh", "colorcet"]
 terminal = ["pyqtgraph", "PySide2"]
-tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt"]
+tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio", "PySide2", "pyqtgraph"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.10"
-content-hash = "90f49e7f6abe1e6fbeaa31ae3ed85a6c666a26730c6821d067614f9e440edee5"
+content-hash = "0b498d872844530f914e85e54d21608a8cb0e6f8ee58326fb7105ba674e5ff9a"
 
 [metadata.files]
 alabaster = [
@@ -1761,7 +1781,7 @@ imagesize = [
     {file = "imagesize-1.3.0-py2.py3-none-any.whl", hash = "sha256:0b26ec5115ea8bf6f60f26467b3aca571203e8eab632367676400af113c80541"},
 ]
 importlib-metadata = [
-    {file = "importlib_metadata-4.11.1-py3-none-any.whl", hash = "sha256:eadba1dae2659a993d1da84343a28f55b3b02dc60b5b7f61bd2fedc50ebd1651"},
+    {file = "importlib_metadata-4.11.2-py3-none-any.whl", hash = "sha256:6a674c870220b4e3a438eabfaa65d54e2a3563b3b4611d2075d9a7d82135fd4a"},
 ]
 importlib-resources = [
     {file = "importlib_resources-5.4.0-py3-none-any.whl", hash = "sha256:7df7a2a1b965c36b05dddbf29a708d57e10d4ecb4a636e5dc25cd2f7e373d9d8"},
@@ -1885,6 +1905,12 @@ pycparser = [
 pyct = [
     {file = "pyct-0.4.8-py2.py3-none-any.whl", hash = "sha256:222e104d561b28cfdb56667d2ba10e5290b4466db66d0af38ab935577af85390"},
 ]
+pydantic = [
+    {file = "pydantic-1.9.0-cp37-cp37m-linux_armv6l.whl", hash = "sha256:5a0b3b684222525d82e4d94c5884f3b01ad20fd783d9f45ca4119ab3e71375b9"},
+    {file = "pydantic-1.9.0-cp37-cp37m-linux_armv7l.whl", hash = "sha256:5a0b3b684222525d82e4d94c5884f3b01ad20fd783d9f45ca4119ab3e71375b9"},
+    {file = "pydantic-1.9.0-cp39-cp39-linux_armv6l.whl", hash = "sha256:1c700a4053c5784457c097567e17ea8b122991a1fbbce574731dc8544e70bdff"},
+    {file = "pydantic-1.9.0-cp39-cp39-linux_armv7l.whl", hash = "sha256:1c700a4053c5784457c097567e17ea8b122991a1fbbce574731dc8544e70bdff"},
+]
 pygments = [
     {file = "Pygments-2.11.2-py3-none-any.whl", hash = "sha256:b8381925964a21c81c75292e167b8c09e01a5a1719ca1c5641e0f8178873ed59"},
 ]
@@ -1895,7 +1921,7 @@ pyparsing = [
     {file = "pyparsing-3.0.7-py3-none-any.whl", hash = "sha256:9cac03df81a32c5a08393d4aaed42318304684e9abc1336deff3a84feb2e1260"},
 ]
 pyqtgraph = [
-    {file = "pyqtgraph-0.12.3-py3-none-any.whl", hash = "sha256:682562f8cb1f50819f241679b67b76775f76791b8828de05eb4f7c3fcb4d8b04"},
+    {file = "pyqtgraph-0.12.4-py3-none-any.whl", hash = "sha256:9083b72f57cbf21bcc7363a59d07779e5395d9896253b9d6613588f52a8a1e0d"},
 ]
 pyrsistent = [
     {file = "pyrsistent-0.18.1-cp37-cp37m-linux_armv6l.whl", hash = "sha256:8b9715bd2af95fe338d847461d514fed202cbcc94d7dd698b83082d1f19d2775"},
@@ -2028,7 +2054,7 @@ tornado = [
     {file = "tornado-6.1-cp39-cp39-linux_armv7l.whl", hash = "sha256:e5d74a9829d1e3a7df7003490206af5f8a203350bdea529b6ed8dac3180599db"},
 ]
 tqdm = [
-    {file = "tqdm-4.62.3-py2.py3-none-any.whl", hash = "sha256:ef1434e10318e154ab454fa8a4b39bd730f062822ada3daf1ff6a2782936dd1f"},
+    {file = "tqdm-4.63.0-py2.py3-none-any.whl", hash = "sha256:685bc678e21b27a48250521f3003fa1ecd7adbdf63586302d55ca189428415cb"},
 ]
 typed-ast = [
     {file = "typed_ast-1.5.2-cp37-cp37m-linux_armv6l.whl", hash = "sha256:6f09ec8d1451e3fce25307a88d31c6d366c79c4e0dd66414b13bfe0fe210c5b1"},
