@@ -768,6 +768,19 @@ url = "https://www.piwheels.org/simple"
 reference = "piwheels"
 
 [[package]]
+name = "parse"
+version = "1.19.0"
+description = "parse() is the opposite of format()"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
 name = "pigpio"
 version = "1.78"
 description = "Raspberry Pi GPIO module"
@@ -1692,7 +1705,7 @@ tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio", "
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.10"
-content-hash = "0b498d872844530f914e85e54d21608a8cb0e6f8ee58326fb7105ba674e5ff9a"
+content-hash = "62fcd65309dbe57ef65b609cecefb15df457422b060ecd4a24b90dfaba886934"
 
 [metadata.files]
 alabaster = [
@@ -1876,6 +1889,9 @@ pandas = [
 ]
 param = [
     {file = "param-1.12.0-py2.py3-none-any.whl", hash = "sha256:bb088b21009b32a48cf1c2278d9cd2b2206ec3733f3db53a55f3db163d93d63a"},
+]
+parse = [
+    {file = "parse-1.19.0-py3-none-any.whl", hash = "sha256:8679f8f0f649f842248ba97375346edc87904e9fa675528601041181f185c916"},
 ]
 pigpio = []
 pillow = [

@@ -6,6 +6,10 @@ if sys.version_info < (3,8):
     from importlib_metadata import version
 else:
     from importlib.metadata import version
+    # monkeypatch typing
+    import typing
+    from typing_extensions import Literal
+    typing.Literal = Literal
 
 __version__ = version("auto-pi-lot")
 

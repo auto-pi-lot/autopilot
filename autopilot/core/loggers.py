@@ -8,6 +8,12 @@ from logging.handlers import RotatingFileHandler
 from threading import Lock
 import warnings
 from rich.logging import RichHandler
+from dataclasses import dataclass
+from datetime import datetime
+from parse import parse
+import typing
+from typing import Literal
+from autopilot.root import Autopilot_Type
 
 from autopilot import prefs
 
@@ -18,6 +24,7 @@ List of instantiated loggers, used in :func:`.init_logger` to return existing lo
 
 _INIT_LOCK = Lock() # type: Lock
 
+LOGLEVELS = Literal['DEBUG', 'INFO', 'WARNING', 'ERROR']
 
 def init_logger(instance=None, module_name=None, class_name=None, object_name=None) -> logging.Logger:
     """
@@ -184,3 +191,156 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
         logger.info(f"Logger created: {logger_name}")
 
     return logger
+
+
+# --------------------------------------------------
+# Parsers and in-memory representation of logs
+# --------------------------------------------------
+
+test_str = "2022-03-07 16:56:48,954 - networking.node.Net_Node._T - DEBUG : RECEIVED: ID: _mesopi_9879; TO: T; SENDER: _mesopi; KEY: DATA; FLAGS: {'NOREPEAT': True}; VALUE: {'trial_num': 1197, 'timestamp': '2022-03-01T23:52:16.995387', 'frequency': 45255.0, 'amplitude': 0.1, 'ramp': 5.0, 'pilot': 'mesopi', 'subject': '0895'}"
+
+class ParseError(RuntimeError):
+    """
+    Error parsing a logfile
+    """
+
+def _convert_asc_timestamp(timestamp:str) -> datetime:
+    hunk, ms = timestamp.split(',')
+    ms += '000'
+    timestamp = '.'.join([hunk, ms])
+    return datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S.%f')
+
+@dataclass
+class Log_Format:
+    format: str
+    """A format string parseable by ``parse``"""
+    example: str
+    """An example string (that allows for testing)"""
+    conversions: typing.Optional[typing.Dict[str, typing.Callable]] = None
+    """A dictionary matching keys in the ``format`` string to callables for post-parsing coercion"""
+
+    def parse(self, log_entry:str) -> dict:
+        if self.conversions is None:
+            conversions = {}
+        else:
+            conversions = self.conversions
+
+        res = parse(self.format, log_entry, conversions)
+        if res is None:
+            raise ParseError(f'Could not parse {log_entry} with {self.format}')
+        else:
+            return res.named
+
+
+
+LOG_FORMATS = (
+    Log_Format(
+        format = '{timestamp:Timestamp} - {name} - {level} : {message}',
+        conversions = {
+            'Timestamp': _convert_asc_timestamp
+        },
+        example = "2022-03-07 16:56:48,954 - networking.node.Net_Node._T - DEBUG : RECEIVED: ID: _testpi_9879; TO: T; SENDER: _testpi; KEY: DATA; FLAGS: {'NOREPEAT': True}; VALUE: {'trial_num': 1197, 'timestamp': '2022-03-01T23:52:16.995387', 'frequency': 45255.0, 'amplitude': 0.1, 'ramp': 5.0, 'pilot': 'testpi', 'subject': '0895'}"
+    ),
+    Log_Format(
+        format = '[{timestamp:Timestamp}] {level} [{name}]: {message}',
+        conversions = {
+            'Timestamp': _convert_asc_timestamp
+        },
+        example = '[2022-03-09 16:13:43,224] INFO [networking.node]: parent, module-level logger created: networking.node'
+    )
+)
+"""
+Possible formats of logging messages (to allow change over versions) as a `parse string <https://github.com/r1chardj0n3s/parse>`_
+"""
+
+MESSAGE_FORMATS = {
+    'node_msg': '{action}: ID: {message_id}; TO: {to}; SENDER: {sender}; KEY: {key}; FLAGS: {flags}; VALUE: {value}'
+}
+"""
+Additional parsing patterns for logged messages
+
+* ``node_msg``: Logging messages from :class:`.networking.node.Net_Node`
+
+"""
+
+
+
+
+class LogEntry(Autopilot_Type):
+    """
+    Single entry in a log
+    """
+    timestamp: datetime
+    name: str
+    level: LOGLEVELS
+    message: typing.Union[str, dict]
+
+    @classmethod
+    def from_string(cls, entry:str) -> 'LogEntry':
+        """
+        Create a LogEntry by parsing a string.
+
+        Try to parse using any of the possible :ref:`.LOG_FORMATS`, raising a
+        :class:`.ParseError` if none are successful
+
+        Args:
+            entry (str): single line of a logging file
+
+        Returns:
+            :class:`.LogEntry`
+
+        Raises:
+            :class:`.ParseError` if no messages are parsed
+
+        """
+        for aformat in LOG_FORMATS:
+            try:
+                result = aformat.parse(entry)
+            except ParseError:
+                # fine, we're searching for one that works
+                continue
+
+            return cls(**result)
+
+class Log(Autopilot_Type):
+    """
+    Representation of a logfile in memory
+    """
+    entries: typing.List[LogEntry]
+
+    @classmethod
+    def from_logfile(cls, file: typing.Union[Path, str], include_backups:bool = True):
+        """
+        Load a logfile (and maybe its backups) from a logfile location
+
+        Args:
+            file (:class:`pathlib.Path`, str): If string, converted to Path. If relative (and relative file is not found),
+                then attempts to find relative to ``prefs.LOGLEVEL``
+            include_backups (bool): if ``True`` (default), try and load all of the backup logfiles (that have .1, .2, etc appended)
+
+        Returns:
+            :class:`.Log`
+        """
+        file = Path(file)
+        if not file.exists():
+            relfile = file.relative_to(prefs.get('LOGDIR'))
+            if not file.exists():
+                raise ParseError(f"Could not find input file either as an absolute path, or path relative to LOGDIR, got path {str(file)}")
+            file = relfile
+
+        with open(file, 'r') as lfile:
+            lines = lfile.readlines()
+        entries = [LogEntry.from_string(e) for e in lines]
+
+        if include_backups:
+            subfile = file.with_suffix(file.suffix+'.1')
+            while subfile.exists():
+                print(str(subfile))
+                with open(subfile, 'r') as sfile:
+                    lines = sfile.readlines()
+                entries.extend([LogEntry.from_string(e) for e in lines])
+                subfile = subfile.with_suffix('.' + str(int(subfile.suffix[1:])+1))
+
+        return cls(entries=entries)
+
+
