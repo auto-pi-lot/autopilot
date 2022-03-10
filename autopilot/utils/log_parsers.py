@@ -101,8 +101,9 @@ def extract_data(logfile:Path, include_backups:bool=True, output_dir:typing.Opti
             base_name = f"{s['header']['subject']}_{s['header']['timestamp'].strftime('%y%m%dT%H%M%S')}_session-{s['header']['session']}"
             header_json = s['header'].copy()
             header_json['timestamp'] = header_json['timestamp'].isoformat()
+            header_json['data_file'] = base_name + '.csv'
             with open(output_dir / (base_name + '.json'), 'w') as jfile:
-                json.dump(header_json, jfile)
+                json.dump(header_json, jfile, indent=4, separators=(',', ': '), sort_keys=True)
 
             s['data'].to_csv(output_dir / (base_name + '.csv'), index=False)
 

@@ -46,6 +46,7 @@ blosc2 = "^0.2.0"
 pydantic = "^1.9.0"
 parse = "^1.19.0"
 rich = "^11.2.0"
+validators = "^0.18.2"
 JACK-Client  = {version = "^0.5.3", optional = true}
 pigpio       = {git = "https://github.com/sneakers-the-rat/pigpio", branch="master", optional=true}
 pyqtgraph    = {version = "^0.12.3", optional = true}
