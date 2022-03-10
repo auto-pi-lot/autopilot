@@ -71,14 +71,14 @@ class Sound(Stim):
 
         literally::
 
-            np.ceil((self.duration/1000.)*self.fs).astype(np.int)
+            np.ceil((self.duration/1000.)*self.fs).astype(int)
 
         """
-        self.nsamples = np.ceil((self.duration / 1000.) * self.fs).astype(np.int)
+        self.nsamples = np.ceil((self.duration / 1000.) * self.fs).astype(int)
 
 
 ## Import the required modules
-if Backends['jack'].met:
+if Backends['jack'].met or 'pytest' in sys.modules:
     # This will warn if the jack library is not found
     from autopilot.stim.sound import jackclient
 
@@ -338,10 +338,10 @@ class Jack_Sound(Stim):
 
         literally::
 
-            np.ceil((self.duration/1000.)*self.fs).astype(np.int)
+            np.ceil((self.duration/1000.)*self.fs).astype(int)
 
         """
-        self.nsamples = np.ceil((self.duration / 1000.) * self.fs).astype(np.int)
+        self.nsamples = np.ceil((self.duration / 1000.) * self.fs).astype(int)
 
     def quantize_duration(self, ceiling=True):
         """
@@ -619,6 +619,7 @@ def get_sound_class(server_type: typing.Optional[str] = None) -> typing.Union[ty
     # if we're testing, set server_type to jack
     if 'pytest' in sys.modules:
         server_type = 'jack'
+        return Jack_Sound
 
     # check if requirements are met, if so, return the object. Otherwise return dummy.
     if server_type == 'jack' and Backends['jack'].met:

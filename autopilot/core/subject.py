@@ -10,15 +10,17 @@ models should the need arise.
 import os
 import sys
 import threading
-import tables
-from tables.nodes import filenode
 import datetime
 import json
-import pandas as pd
 import warnings
 import typing
-import warnings
 from copy import copy
+
+import pandas as pd
+import numpy as np
+import tables
+from tables.nodes import filenode
+
 import autopilot
 from autopilot import prefs
 from autopilot.stim.sound.sounds import STRING_PARAMS
@@ -26,12 +28,10 @@ from autopilot.core.loggers import init_logger
 
 import queue
 
-
 # suppress pytables natural name warnings
 warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
 
-import pdb
-import numpy as np
+
 
 
 class Subject(object):

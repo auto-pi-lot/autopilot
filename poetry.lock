@@ -306,6 +306,19 @@ url = "https://www.piwheels.org/simple"
 reference = "piwheels"
 
 [[package]]
+name = "decorator"
+version = "5.1.1"
+description = "Decorators for Humans"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
 name = "docopt"
 version = "0.6.2"
 description = "Pythonic argument parser, that will make you smile"
@@ -1704,6 +1717,26 @@ url = "https://www.piwheels.org/simple"
 reference = "piwheels"
 
 [[package]]
+name = "validators"
+version = "0.18.2"
+description = "Python Data Validation for Humans™."
+category = "main"
+optional = false
+python-versions = ">=3.4"
+
+[package.dependencies]
+decorator = ">=3.4.0"
+six = ">=1.4.0"
+
+[package.extras]
+test = ["pytest (>=2.2.3)", "flake8 (>=2.4.0)", "isort (>=4.2.2)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
 name = "wrapt"
 version = "1.13.3"
 description = "Module for decorators, wrappers and monkey patching."
@@ -1738,12 +1771,12 @@ docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex", "scikit-l
 pilot = ["pigpio", "JACK-Client"]
 plotting = ["altair", "bokeh", "colorcet"]
 terminal = ["pyqtgraph", "PySide2"]
-tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio", "PySide2", "pyqtgraph"]
+tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio", "PySide2", "pyqtgraph", "rich"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.10"
-content-hash = "01a9f894b3daa9f376d080294f80eee4b3e801793f808f46aea34257ec0a9314"
+content-hash = "39efca875dd805ccbd232288a10a0367c05f9c01c9f20536afdc399ffc0ceb78"
 
 [metadata.files]
 alabaster = [
@@ -1812,6 +1845,9 @@ coveralls = [
 ]
 cycler = [
     {file = "cycler-0.11.0-py3-none-any.whl", hash = "sha256:cbaf3590e093c7281b1866e3fec2242f2430271ef235b1fd96bfb2dc89ac5fae"},
+]
+decorator = [
+    {file = "decorator-5.1.1-py3-none-any.whl", hash = "sha256:6f519e77644a392d3054e528ba8db527df4246be581d4d43b14f0aacace79cbd"},
 ]
 docopt = [
     {file = "docopt-0.6.2-py2.py3-none-any.whl", hash = "sha256:15fde8252aa9f2804171014d50d069ffbf42c7a50b7d74bcbb82bfd5700fcfc2"},
@@ -2127,6 +2163,9 @@ typing-extensions = [
 ]
 urllib3 = [
     {file = "urllib3-1.26.8-py2.py3-none-any.whl", hash = "sha256:efbdd6e3ba8c0a5ff0eb83ce85a4e38a5a9101c61ff2b1f5e2c0190a6e1de1a1"},
+]
+validators = [
+    {file = "validators-0.18.2-py3-none-any.whl", hash = "sha256:0143dcca8a386498edaf5780cbd5960da1a4c85e0719f3ee5c9b41249c4fefbd"},
 ]
 wrapt = [
     {file = "wrapt-1.13.3-cp35-cp35m-linux_armv6l.whl", hash = "sha256:a32f76ef391a3fc7f6f8de779ad9607c2769fb96693bcdc2c79449bc1a97cb28"},
