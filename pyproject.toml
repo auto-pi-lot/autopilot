@@ -76,7 +76,7 @@ pilot = ["pigpio", "JACK-Client"]
 terminal = ["pyqtgraph", "PySide2"]
 docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex",
         "scikit-learn", "altair", "bokeh", "colorcet", "sphinx-rtd-theme", "sphinx-sass", "pytest", "rich"]
-tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio", "PySide2", "pyqtgraph"]
+tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio", "PySide2", "pyqtgraph", "rich"]
 plotting = ["altair", "bokeh", "colorcet"]
 
 [[tool.poetry.source]]

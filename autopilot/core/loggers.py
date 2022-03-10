@@ -197,8 +197,6 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 # Parsers and in-memory representation of logs
 # --------------------------------------------------
 
-test_str = "2022-03-07 16:56:48,954 - networking.node.Net_Node._T - DEBUG : RECEIVED: ID: _mesopi_9879; TO: T; SENDER: _mesopi; KEY: DATA; FLAGS: {'NOREPEAT': True}; VALUE: {'trial_num': 1197, 'timestamp': '2022-03-01T23:52:16.995387', 'frequency': 45255.0, 'amplitude': 0.1, 'ramp': 5.0, 'pilot': 'mesopi', 'subject': '0895'}"
-
 class ParseError(RuntimeError):
     """
     Error parsing a logfile
@@ -254,7 +252,8 @@ Possible formats of logging messages (to allow change over versions) as a `parse
 """
 
 MESSAGE_FORMATS = {
-    'node_msg': '{action}: ID: {message_id}; TO: {to}; SENDER: {sender}; KEY: {key}; FLAGS: {flags}; VALUE: {value}'
+    'node_msg_recv': '{action}: ID: {message_id}; TO: {to}; SENDER: {sender}; KEY: {key}; FLAGS: {flags}; VALUE: {value}',
+    'node_msg_sent': '{action} - ID: {message_id}; TO: {to}; SENDER: {sender}; KEY: {key}; FLAGS: {flags}; VALUE: {value}'
 }
 """
 Additional parsing patterns for logged messages
@@ -275,8 +274,36 @@ class LogEntry(Autopilot_Type):
     level: LOGLEVELS
     message: typing.Union[str, dict]
 
+    def parse_message(self, format:typing.List[str]):
+        """
+        Parse the message using a format string specified as a key in the :data:`.MESSAGE_FORMATS` dictionary (or a format string itself)
+
+        replaces the :attr:`.message` attribute.
+
+        If parsing unsuccessful, no exception is raised because there are often messages that are not parseable in the logs!
+
+        Args:
+            format (typing.List[str]): List of format strings to try!
+
+        Returns:
+
+        """
+        if isinstance(format, str):
+            format = [format]
+
+        format = [MESSAGE_FORMATS[f]if f in MESSAGE_FORMATS.keys() else f for f in format]
+
+        for f in format:
+            result = parse(f, self.message)
+            if result is not None:
+                self.message = result.named
+                return
+
+
     @classmethod
-    def from_string(cls, entry:str) -> 'LogEntry':
+    def from_string(cls,
+                    entry:str,
+                    parse_message:typing.Optional[typing.List[str]]=None) -> 'LogEntry':
         """
         Create a LogEntry by parsing a string.
 
@@ -285,6 +312,7 @@ class LogEntry(Autopilot_Type):
 
         Args:
             entry (str): single line of a logging file
+            parse_message (Optional[str]): Parse messages with the :data:`.MESSAGE_FORMATS` key or format string
 
         Returns:
             :class:`.LogEntry`
@@ -300,7 +328,13 @@ class LogEntry(Autopilot_Type):
                 # fine, we're searching for one that works
                 continue
 
-            return cls(**result)
+            entry = cls(**result)
+            if parse_message is not None:
+                entry.parse_message(parse_message)
+            return entry
+
+        # if we haven't returned anything, raise a parse error
+        raise ParseError(f'Couldnt parse entry with any known log formats: {entry}')
 
 class Log(Autopilot_Type):
     """
@@ -309,7 +343,10 @@ class Log(Autopilot_Type):
     entries: typing.List[LogEntry]
 
     @classmethod
-    def from_logfile(cls, file: typing.Union[Path, str], include_backups:bool = True):
+    def from_logfile(cls,
+                     file: typing.Union[Path, str],
+                     include_backups:bool = True,
+                     parse_messages: typing.Optional[typing.List[str]]=None ):
         """
         Load a logfile (and maybe its backups) from a logfile location
 
@@ -317,6 +354,7 @@ class Log(Autopilot_Type):
             file (:class:`pathlib.Path`, str): If string, converted to Path. If relative (and relative file is not found),
                 then attempts to find relative to ``prefs.LOGLEVEL``
             include_backups (bool): if ``True`` (default), try and load all of the backup logfiles (that have .1, .2, etc appended)
+            parse_messages (Optional[str]): Parse messages with the :data:`.MESSAGE_FORMATS` key or format string
 
         Returns:
             :class:`.Log`
@@ -330,15 +368,14 @@ class Log(Autopilot_Type):
 
         with open(file, 'r') as lfile:
             lines = lfile.readlines()
-        entries = [LogEntry.from_string(e) for e in lines]
+        entries = [LogEntry.from_string(e, parse_messages) for e in lines]
 
         if include_backups:
             subfile = file.with_suffix(file.suffix+'.1')
             while subfile.exists():
-                print(str(subfile))
                 with open(subfile, 'r') as sfile:
                     lines = sfile.readlines()
-                entries.extend([LogEntry.from_string(e) for e in lines])
+                entries.extend([LogEntry.from_string(e, parse_messages) for e in lines])
                 subfile = subfile.with_suffix('.' + str(int(subfile.suffix[1:])+1))
 
         return cls(entries=entries)
