@@ -1,6 +1,9 @@
 """
 Utility functions to parse logging files, extracting data, separating by ID, etc.
+
+See also :mod:`autopilot.core.loggers` and the :class:`autopilot.core.loggers.Log` class
 """
+
 import typing
 from pathlib import Path
 from ast import literal_eval
