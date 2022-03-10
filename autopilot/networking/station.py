@@ -9,7 +9,7 @@ import multiprocessing
 import base64
 import socket
 import struct
-import blosc
+import blosc2 as blosc
 from collections import deque
 from copy import copy
 from itertools import count

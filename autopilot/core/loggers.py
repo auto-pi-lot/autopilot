@@ -7,6 +7,7 @@ from pathlib import Path
 from logging.handlers import RotatingFileHandler
 from threading import Lock
 import warnings
+from rich.logging import RichHandler
 
 from autopilot import prefs
 
@@ -129,7 +130,7 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             parent_logger.setLevel(loglevel)
 
             # make formatter that includes name
-            log_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s : %(message)s")
+            log_formatter = logging.Formatter("[%(asctime)s] %(levelname)s [%(name)s]: %(message)s")
 
             ## file handler
             # base filename is the module_name + '.log
@@ -165,6 +166,15 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             fh.setLevel(loglevel)
             fh.setFormatter(log_formatter)
             parent_logger.addHandler(fh)
+
+            # rich logging handler for stdout
+            rich_handler = RichHandler(rich_tracebacks=True, markup=True)
+            rich_formatter = logging.Formatter(
+                "[bold green]\[%(name)s][/bold green] %(message)s",
+                datefmt='[%y-%m-%dT%H:%M:%S]'
+            )
+            rich_handler.setFormatter(rich_formatter)
+            parent_logger.addHandler(rich_handler)
 
             ## log creation
             globals()['_LOGGERS'].append(module_name)
