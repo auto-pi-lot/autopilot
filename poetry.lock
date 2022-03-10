@@ -237,6 +237,22 @@ url = "https://www.piwheels.org/simple"
 reference = "piwheels"
 
 [[package]]
+name = "commonmark"
+version = "0.9.1"
+description = "Python parser for the CommonMark Markdown spec"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+test = ["flake8 (==3.7.8)", "hypothesis (==3.55.3)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
 name = "coverage"
 version = "6.3.2"
 description = "Code coverage measurement for Python"
@@ -1197,6 +1213,28 @@ url = "https://www.piwheels.org/simple"
 reference = "piwheels"
 
 [[package]]
+name = "rich"
+version = "11.2.0"
+description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
+category = "main"
+optional = false
+python-versions = ">=3.6.2,<4.0.0"
+
+[package.dependencies]
+colorama = ">=0.4.0,<0.5.0"
+commonmark = ">=0.9.0,<0.10.0"
+pygments = ">=2.6.0,<3.0.0"
+typing-extensions = {version = ">=3.7.4,<5.0", markers = "python_version < \"3.8\""}
+
+[package.extras]
+jupyter = ["ipywidgets (>=7.5.1,<8.0.0)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
 name = "scikit-learn"
 version = "1.0.2"
 description = "A set of python modules for machine learning and data mining"
@@ -1696,7 +1734,7 @@ url = "https://www.piwheels.org/simple"
 reference = "piwheels"
 
 [extras]
-docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex", "scikit-learn", "altair", "bokeh", "colorcet", "sphinx-rtd-theme", "sphinx-sass", "pytest"]
+docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex", "scikit-learn", "altair", "bokeh", "colorcet", "sphinx-rtd-theme", "sphinx-sass", "pytest", "rich"]
 pilot = ["pigpio", "JACK-Client"]
 plotting = ["altair", "bokeh", "colorcet"]
 terminal = ["pyqtgraph", "PySide2"]
@@ -1705,7 +1743,7 @@ tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio", "
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.10"
-content-hash = "62fcd65309dbe57ef65b609cecefb15df457422b060ecd4a24b90dfaba886934"
+content-hash = "01a9f894b3daa9f376d080294f80eee4b3e801793f808f46aea34257ec0a9314"
 
 [metadata.files]
 alabaster = [
@@ -1759,6 +1797,9 @@ colorama = [
 ]
 colorcet = [
     {file = "colorcet-3.0.0-py2.py3-none-any.whl", hash = "sha256:d51b77f2067c62c0f1c4bf2b780970b9c2c917a3a9a3e03f821d6d4567a0d4e5"},
+]
+commonmark = [
+    {file = "commonmark-0.9.1-py2.py3-none-any.whl", hash = "sha256:da2f38c92590f83de410ba1a3cbceafbc74fee9def35f9251ba9a971d6d66fd9"},
 ]
 coverage = [
     {file = "coverage-6.3.2-cp37-cp37m-linux_armv6l.whl", hash = "sha256:040d812cb863940b26c18913c6c302ef8e8c34cde906e4fa682031ebcdc8b68c"},
@@ -1982,6 +2023,9 @@ pyzmq = [
 ]
 requests = [
     {file = "requests-2.27.1-py2.py3-none-any.whl", hash = "sha256:1a44eef7d80448faea8129b00b15cd00bf8e5cfd96de807e86d4a37b01364b25"},
+]
+rich = [
+    {file = "rich-11.2.0-py3-none-any.whl", hash = "sha256:d5f49ad91fb343efcae45a2b2df04a9755e863e50413623ab8c9e74f05aee52b"},
 ]
 scikit-learn = [
     {file = "scikit_learn-1.0.2-cp37-cp37m-linux_armv6l.whl", hash = "sha256:40933c9de93a98c046a2d8d4207ac65c9bc0ab354e7e637ab16f3115f1dfa081"},

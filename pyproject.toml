@@ -45,6 +45,7 @@ cffi = "^1.15.0"
 blosc2 = "^0.2.0"
 pydantic = "^1.9.0"
 parse = "^1.19.0"
+rich = "^11.2.0"
 JACK-Client  = {version = "^0.5.3", optional = true}
 pigpio       = {git = "https://github.com/sneakers-the-rat/pigpio", branch="master", optional=true}
 pyqtgraph    = {version = "^0.12.3", optional = true}
@@ -74,7 +75,7 @@ sphinx-autobuild = "^2021.3.14"
 pilot = ["pigpio", "JACK-Client"]
 terminal = ["pyqtgraph", "PySide2"]
 docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex",
-        "scikit-learn", "altair", "bokeh", "colorcet", "sphinx-rtd-theme", "sphinx-sass", "pytest"]
+        "scikit-learn", "altair", "bokeh", "colorcet", "sphinx-rtd-theme", "sphinx-sass", "pytest", "rich"]
 tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio", "PySide2", "pyqtgraph"]
 plotting = ["altair", "bokeh", "colorcet"]
 
