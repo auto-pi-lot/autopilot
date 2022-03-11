@@ -15,6 +15,11 @@ import json
 import warnings
 import typing
 from copy import copy
+from typing import Optional, Union
+from abc import abstractmethod
+from contextlib import contextmanager
+from pathlib import Path
+import pickle
 
 import pandas as pd
 import numpy as np
@@ -25,14 +30,328 @@ import autopilot
 from autopilot import prefs
 from autopilot.stim.sound.sounds import STRING_PARAMS
 from autopilot.core.loggers import init_logger
+from autopilot.root import Autopilot_Type
 
 import queue
 
 # suppress pytables natural name warnings
 warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
 
+class History_Table(tables.IsDescription):
+    """
+    Class to describe parameter and protocol change history
+
+    Attributes:
+        time (str): timestamps
+        type (str): Type of change - protocol, parameter, step
+        name (str): Name - Which parameter was changed, name of protocol, manual vs. graduation step change
+        value (str): Value - What was the parameter/protocol/etc. changed to, step if protocol.
+    """
+
+    time = tables.StringCol(256)
+    type = tables.StringCol(256)
+    name = tables.StringCol(256)
+    value = tables.StringCol(4028)
+    
+class Hash_Table(tables.IsDescription):
+    """
+    Class to describe table for hash history
+
+    Attributes:
+        time (str): Timestamps
+        hash (str): Hash of the currently checked out commit of the git repository.
+    """
+    time = tables.StringCol(256)
+    hash = tables.StringCol(40)
+
+class Weight_Table(tables.IsDescription):
+    """
+    Class to describe table for weight history
+
+    Attributes:
+        start (float): Pre-task mass
+        stop (float): Post-task mass
+        date (str): Timestamp in simple format
+        session (int): Session number
+    """
+    start = tables.Float32Col()
+    stop  = tables.Float32Col()
+    date  = tables.StringCol(256)
+    session = tables.Int32Col()
+
+# --------------------------------------------------
+# Classes to describe structure of subject files
+# --------------------------------------------------
+
+class H5F_Node(Autopilot_Type):
+    """
+    Base class for H5F Nodes
+    """
+    path:str
+    title:Optional[str]=''
+    filters:Optional[tables.filters.Filters]=None
+    attrs:Optional[dict]=None
+
+    @property
+    def parent(self) -> str:
+        """
+        The parent node under which this node hangs.
+
+        Eg. if ``self.path`` is ``/this/is/my/path``, then
+        parent will be ``/this/is/my``
+
+        Returns:
+            str
+        """
+        return '/'.join(self.path.split('/')[:-1])
+
+    @property
+    def name(self) -> str:
+        """
+        Our path without :attr:`.parent`
+
+        Returns:
+            str
+        """
+        return self.path.split('/')[-1]
+
+    @abstractmethod
+    def make(self, h5f:tables.file.File):
+        """
+        Abstract method to make whatever this node is
+        """
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
+
+
+class H5F_Group(H5F_Node):
+    """
+    Description of a pytables group and its location
+    """
+
+    def make(self, h5f:tables.file.File):
+        """
+        Make the group, if it doesn't already exist.
+
+        If it exists, do nothing
+
+        Args:
+            h5f (:class:`tables.file.File`): The file to create the table in
+        """
+
+        try:
+            node = h5f.get_node(self.path)
+            # if no exception, already exists
+            if not isinstance(node, tables.group.Group):
+                raise ValueError(f'{self.path} already exists, but it isnt a group! instead its a {type(node)}')
+        except tables.exceptions.NoSuchNodeError:
+            group = h5f.create_group(self.parent, self.name,
+                             title=self.title, createparents=True,
+                             filters=self.filters)
+            if self.attrs is not None:
+                group._v_attrs.update(self.attrs)
+
+
+
+class H5F_Table(H5F_Node):
+    description: tables.description.MetaIsDescription
+    expectedrows:int=10000
+
+    def make(self,  h5f:tables.file.File):
+        """
+        Make this table according to its description
+
+        Args:
+            h5f (:class:`tables.file.File`): The file to create the table in
+        """
+        try:
+            node = h5f.get_node(self.path)
+            if not isinstance(node, tables.table.Table):
+                raise ValueError(f'{self.path} already exists, but it isnt a Table! instead its a {type(node)}')
+        except tables.exceptions.NoSuchNodeError:
+            tab = h5f.create_table(self.parent, self.name, self.description,
+                             title=self.title, filters=self.filters,
+                             createparents=True,expectedrows=self.expectedrows)
+            if self.attrs is not None:
+                tab._v_attrs.update(self.attrs)
+
+    class Config:
+        fields = {'description': {'exclude': True}}
+
+class _Hash_Table(H5F_Table):
+    def __init__(self, **data):
+        super().__init__(description=Hash_Table, **data)
+
+class _History_Table(H5F_Table):
+    def __init__(self, **data):
+        super().__init__(description=History_Table, **data)
+
+class _Weight_Table(H5F_Table):
+    def __init__(self, **data):
+        super().__init__(description=Weight_Table, **data)
+
+
+class Subject_Structure(Autopilot_Type):
+    """
+    Structure of the :class:`.Subject` class's hdf5 file
+    """
+    data = H5F_Group(path='/data', filters=tables.Filters(complevel=6, complib='blosc:lz4'))
+    history = H5F_Group(path='/history')
+    past_protocols = H5F_Group(path='/history/past_protocols', title='Past Protocol Files')
+    info = H5F_Group(path='/info', title="Biographical Info")
+    hashes = _Hash_Table(path = '/history/hashes', title="Git commit hash history")
+    history_table = _History_Table(path = '/history/history', title="Change History")
+    weight_table = _Weight_Table(path = '/history/weights', title= "Subject Weights")
+
+    def make(self, h5f:tables.file.File):
+        """
+        Make all the nodes!
+
+        Args:
+            h5f (:class:`tables.file.File`): The h5f file to make the groups in!
+        """
+        for _, node in self.dict():
+            node.make(h5f)
+
+
+
+class Protocol_Group(H5F_Group):
+    """
+    The group and subgroups for a given protocol.
+
+    For each protocol, a main group is created that has the name of the protocol,
+    and then subgroups are created for each of its steps.
+
+    Within each step group, a table is made for TrialData, and tables are created
+    as-needed for continuous data.
+
+    For Example::
+
+        / data
+        |--- protocol_name
+            |--- S##_step_name
+            |   |--- trial_data
+            |   |--- continuous_data
+            |--- ... additional steps
+
+    """
+    protocol_name: str
+    protocol: typing.List[dict]
+    groups: typing.List[H5F_Group]
+    tabs: typing.List[H5F_Table]
+    steps: typing.List[H5F_Group]
+    trial_tabs: typing.List[H5F_Table]
+
+    def __init__(self,
+                 protocol_name: str,
+                 protocol: typing.List[dict],
+                 structure:Subject_Structure=Subject_Structure(),
+                 **data):
+        """
+        Override default __init__ method to populate a task's groups
+
+        A custom :class:`.Subject_Structure` can be passed if a nonstandard layout
+        is being used. Groups will be created beneath :attr:`.Subject_Structure.data`
+
+        """
+        path = '/'.join([structure.data.path, protocol_name])
+        groups = []
+        steps = []
+        trial_tabs = []
+        _tables = []
+
+        for i, step in enumerate(protocol):
+            # group for this step
+            step_name = step['step_name']
+            group_name = f"S{i:02d}_{step_name}"
+            group_path = '/'.join([path, group_name])
+            group = H5F_Group(path=group_path)
+            groups.append(group)
+            steps.append(group)
+
+            # group for continuous data
+            groups.append(H5F_Group(path='/'.join([group_path, 'continuous_data'])))
+
+            # make trialData table if present
+            task_class = autopilot.get_task(step['task_type'])
+            if hasattr(task_class, 'TrialData'):
+                trial_tab = self._trial_table(
+                    trial_descriptor=task_class.TrialData,
+                    step=step, group_path=group_path
+                )
+
+            else:
+                class BaseDescriptor(tables.IsDescription):
+                    session = tables.Int32Col()
+                    trial_num = tables.Int32Col()
+
+                trial_tab = self._trial_table(
+                    trial_descriptor=BaseDescriptor,
+                    step=step, group_path=group_path
+                )
+            _tables.append(trial_tab)
+            trial_tabs.append(trial_tab)
+
+        super().__init__(
+            protocol_name=protocol_name,
+            protocol=protocol,
+            groups=groups,
+            tabs=_tables,
+            steps=steps,
+            trial_tabs=trial_tabs,
+            **data)
+
+    def make(self, h5f:tables.file.File):
+        for group in self.groups:
+            group.make(h5f)
+        for tab in self.tabs:
+            tab.make(h5f)
+
+    def _trial_table(self, trial_descriptor:tables.IsDescription, step, group_path) -> H5F_Table:
+        # add a session column, everyone needs a session column
+        if 'session' not in trial_descriptor.columns.keys():
+            trial_descriptor.columns.update({'session': tables.Int32Col()})
+        # same thing with trial_num
+        if 'trial_num' not in trial_descriptor.columns.keys():
+            trial_descriptor.columns.update({'trial_num': tables.Int32Col()})
+        if 'stim' in step.keys():
+            trial_descriptor = self._make_stim_descriptors(step['stim'], trial_descriptor)
+
+        return H5F_Table(path='/'.join([group_path, 'trial_data']),
+                         description=trial_descriptor)
+
+    def _make_stim_descriptors(self, stim:dict, descriptor:tables.IsDescription) -> tables.IsDescription:
+        # FIXME: this sucks. fix when tasks and stimuli have better models.
+        if 'groups' in stim.keys():
+            # managers have stim nested within groups, but this is still really ugly
+            sound_params = {}
+            for g in stim['groups']:
+                for side, sounds in g['sounds'].items():
+                    for sound in sounds:
+                        for k, v in sound.items():
+                            if k in STRING_PARAMS:
+                                sound_params[k] = tables.StringCol(1024)
+                            else:
+                                sound_params[k] = tables.Float64Col()
+            descriptor.columns.update(sound_params)
+
+        elif 'sounds' in stim.keys():
+            # for now we just assume they're floats
+            sound_params = {}
+            for side, sounds in stim['sounds'].items():
+                # each side has a list of sounds
+                for sound in sounds:
+                    for k, v in sound.items():
+                        if k in STRING_PARAMS:
+                            sound_params[k] = tables.StringCol(1024)
+                        else:
+                            sound_params[k] = tables.Float64Col()
+            descriptor.columns.update(sound_params)
+
+        return descriptor
 
 class Subject(object):
     """
@@ -68,7 +387,7 @@ class Subject(object):
         current_trial (int): number of current trial
         running (bool): Flag that signals whether the subject is currently running a task or not.
         data_queue (:class:`queue.Queue`): Queue to dump data while running task
-        thread (:class:`threading.Thread`): thread used to keep file open while running task
+        _thread (:class:`threading.Thread`): thread used to keep file open while running task
         did_graduate (:class:`threading.Event`): Event used to signal if the subject has graduated the current step
         STRUCTURE (list): list of tuples with order:
 
@@ -83,8 +402,13 @@ class Subject(object):
 
 
 
-    def __init__(self, name: str=None, dir: str=None, file: str=None,
-                 new: bool=False, biography: dict=None):
+    def __init__(self,
+                 name: str=None,
+                 dir: Optional[Path] = None,
+                 file: Optional[Path] = None,
+                 new: bool=False,
+                 biography: dict=None,
+                 structure: Subject_Structure = Subject_Structure()):
         """
         Args:
             name (str): subject ID
@@ -92,62 +416,47 @@ class Subject(object):
             file (str): load a subject from a filename. if `None`, ignored.
             new (bool): if True, a new file is made (a new file is made if one does not exist anyway)
             biography (dict): If making a new subject file, a dictionary with biographical data can be passed
+            structure (:class:`.Subject_Structure`): Structure to use with this subject.
         """
-        # try to get name first off for logger
+
+        self.structure = structure
+
+        self._lock = threading.Lock()
+
+        # --------------------------------------------------
+        # Find subject .h5 file
+        # --------------------------------------------------
+
+        if file:
+            file = Path(file)
+            if not name:
+                name = file.stem
+
+        else:
+            if not name:
+                raise FileNotFoundError('Need to either pass a name or a file, how else would we find the .h5 file?')
+
+            if dir:
+                dir = Path(dir)
+            else:
+                dir = Path(prefs.get('DATADIR'))
+
+            file = dir / (name + '.h5')
+
         self.name = name
         self.logger = init_logger(self)
+        self.file = file
 
-        self.STRUCTURE = [
-            ('/data', '/', 'data', 'group'),
-            ('/history', '/', 'history' 'group'),
-            ('/history/hashes', '/history', 'hashes', self.Hash_Table),
-            ('/history/history', '/history', 'history', self.History_Table),
-            ('/history/weights', '/history', 'weights', self.Weight_Table),
-            ('/history/past_protocols', '/history', 'past_protocols', 'group'),
-            ('/info', '/', 'info', 'group')
-        ]
-
-        # use a filter to compress continuous data
-        self.continuous_filter = tables.Filters(complib='blosc', complevel=6)
-
-        self.lock = threading.Lock()
-
-        if not dir:
-            try:
-                dir = prefs.get('DATADIR')
-            except AttributeError:
-                dir = os.path.split(file)[0]
-
-        if not name:
-            if not file:
-                raise Exception('Need to either have a name or a file, how else would we find the .h5 file?')
-            if not os.path.isfile(file):
-                raise Exception('no file was found at passed file: {}'.format(file))
-            self.file = file
+        if new or not self.file.exists():
+            new = True
+            self.structure = structure
+            self.new_subject_file(biography, structure)
         else:
-            if file:
-                self.logger.warning('file passed, but so was name, defaulting to using name + dir')
+            with self._h5f as h5f:
+                self.structure.make(h5f)
 
-            self.name = str(name)
-            self.file = os.path.join(dir, name + '.h5')
-            if new or not os.path.isfile(self.file):
-                # set new to true in case new'd from absence of file
-                new = True
-                self.new_subject_file(biography)
-
-        # before we open, make sure we have the stuff we need
-        self.ensure_structure()
 
         h5f = self.open_hdf()
-
-        if not name:
-            try:
-                self.name = h5f.root.info._v_attrs['name']
-            except KeyError:
-                self.logger.warning('No Name attribute saved, trying to recover from filename')
-                self.name = os.path.splitext(os.path.split(file)[-1])[0]
-
-
 
         # If subject has a protocol, load it to a dict
         self.current = None
@@ -180,7 +489,7 @@ class Subject(object):
 
         # We use a threading queue to dump data into a kept-alive h5f file
         self.data_queue = None
-        self.thread = None
+        self._thread = None
         self.did_graduate = threading.Event()
 
         # Every time we are initialized we stash the git hash
@@ -195,6 +504,42 @@ class Subject(object):
 
         # we have to always open and close the h5f
         self.close_hdf(h5f)
+
+    @property
+    def info(self) -> dict:
+        """
+        Subject biographical information
+
+        Returns:
+            dict
+        """
+        with self._h5f as h5f:
+            info = h5f.get_node(self.structure.info.path)
+            return dict(info._v_attrs)
+
+    @property
+    def _h5f(self) -> tables.file.File:
+        """
+        Context manager for access to hdf5 file.
+
+        Examples:
+
+            with self._h5f as h5f:
+                # ... do hdf5 stuff
+
+        Returns:
+            function wrapped with contextmanager that will open the hdf file
+        """
+        @contextmanager
+        def _h5f_context() -> tables.file.File:
+            self._lock.acquire()
+            try:
+                yield tables.open_file(str(self.file), mode='r+')
+            finally:
+                self._lock.release()
+        return _h5f_context
+
+
 
     def open_hdf(self, mode='r+'):
         """
@@ -220,7 +565,7 @@ class Subject(object):
             :class:`tables.File`: Opened hdf file.
         """
         # TODO: Use a decorator around methods instead of explicitly calling
-        with self.lock:
+        with self._lock:
             return tables.open_file(self.file, mode=mode)
 
     def close_hdf(self, h5f):
@@ -232,11 +577,11 @@ class Subject(object):
         Args:
             h5f (:class:`tables.File`): the hdf file opened by :meth:`~.Subject.open_hdf`
         """
-        with self.lock:
+        with self._lock:
             h5f.flush()
             h5f.close()
 
-    def new_subject_file(self, biography):
+    def new_subject_file(self, biography, structure:Subject_Structure):
         """
         Create a new subject file and make the general filestructure.
 
@@ -249,62 +594,21 @@ class Subject(object):
         # If a file already exists, we open it for appending so we don't lose data.
         # For now we are assuming that the existing file has the basic structure,
         # but that's probably a bad assumption for full reliability
-        if os.path.isfile(self.file):
+        if self.file.exists():
             h5f = self.open_hdf(mode='a')
         else:
             h5f = self.open_hdf(mode='w')
 
-            # Make Basic file structure
-            h5f.create_group("/","data","Trial Record Data")
-            h5f.create_group("/","info","Biographical Info")
-            history_group = h5f.create_group("/","history","History")
-
-            # When a whole protocol is changed, we stash the old protocol as a filenode in the past_protocols group
-            h5f.create_group("/history", "past_protocols",'Past Protocol Files')
-
-            # Also canonical to the basic file structure is the 'current' filenode which stores the current protocol,
-            # but since we want to be able to tell that a protocol hasn't been assigned yet we don't instantiate it here
-            # See http://www.pytables.org/usersguide/filenode.html
-            # filenode.new_node(h5f, where="/", name="current")
-
-            # We keep track of changes to parameters, promotions, etc. in the history table
-            h5f.create_table(history_group, 'history', self.History_Table, "Change History")
-
-            # Make table for weights
-            h5f.create_table(history_group, 'weights', self.Weight_Table, "Subject Weights")
-
-            # And another table to stash the git hash every time we're open.
-            h5f.create_table(history_group, 'hashes', self.Hash_Table, "Git commit hash history")
+        structure.make(h5f)
 
         # Save biographical information as node attributes
         if biography:
+            info_node = h5f.get_node(structure.info.path)
             for k, v in biography.items():
-                h5f.root.info._v_attrs[k] = v
+                info_node._v_attrs[k] = v
 
         h5f.root.info._v_attrs['name'] = self.name
         h5f.root.info._v_attrs['session'] = 0
-
-
-        self.close_hdf(h5f)
-
-    def ensure_structure(self):
-        """
-        Ensure that our h5f has the appropriate baseline structure as defined in `self.STRUCTURE`
-
-        Checks that all groups and tables are made, makes them if not
-        """
-        h5f = self.open_hdf()
-
-        for node in self.STRUCTURE:
-            try:
-                node = h5f.get_node(node[0])
-            except tables.exceptions.NoSuchNodeError:
-                # try to make it
-                if isinstance(node[3], str):
-                    if node[3] == 'group':
-                        h5f.create_group(node[1], node[2])
-                elif issubclass(node[3], tables.IsDescription):
-                    h5f.create_table(node[1], node[2], description=node[3])
 
         self.close_hdf(h5f)
 
@@ -322,7 +626,7 @@ class Subject(object):
             h5f.root.info._v_attrs[k] = v
         _ = self.close_hdf(h5f)
 
-    def update_history(self, type, name, value, step=None):
+    def update_history(self, type, name:str, value:typing.Any, step=None):
         """
         Update the history table when changes are made to the subject's protocol.
 
@@ -381,17 +685,9 @@ class Subject(object):
 
         _ = self.close_hdf(h5f)
 
-
-    # def update_params(self, param, value):
-    #     """
-    #     Args:
-    #         param:
-    #         value:
-    #     """
-    #     # TODO: this
-    #     pass
-
-    def assign_protocol(self, protocol, step_n=0):
+    def assign_protocol(self, protocol:typing.Union[Path, str, typing.List[dict]],
+                        step_n:int=0,
+                        protocol_name:Optional[str]=None):
         """
         Assign a protocol to the subject.
 
@@ -403,43 +699,52 @@ class Subject(object):
         Updates the history table.
 
         Args:
-            protocol (str): the protocol to be assigned. Can be one of
+            protocol (Path, str, dict): the protocol to be assigned. Can be one of
 
                 * the name of the protocol (its filename minus .json) if it is in `prefs.get('PROTOCOLDIR')`
                 * filename of the protocol (its filename with .json) if it is in the `prefs.get('PROTOCOLDIR')`
                 * the full path and filename of the protocol.
+                * The protocol dictionary serialized to a string
+                * the protocol as a list of dictionaries
 
             step_n (int): Which step is being assigned?
+            protocol_name (str): If passing ``protocol`` as a dict, have to give a name to the protocol
         """
         # Protocol will be passed as a .json filename in prefs.get('PROTOCOLDIR')
 
         h5f = self.open_hdf()
 
-        ## Assign new protocol
-        if not protocol.endswith('.json'):
-            protocol = protocol + '.json'
+        if isinstance(protocol, str):
+            # check if it's just a json encoded dictionary
+            try:
+                protocol = json.loads(protocol)
+            except json.decoder.JSONDecodeError:
+                # try it as a path
+                if not protocol.endswith('.json'):
+                    protocol += '.json'
+                protocol = Path(protocol)
 
-        # try prepending the protocoldir if we were passed just the name
-        if not os.path.exists(protocol):
-            fullpath = os.path.join(prefs.get('PROTOCOLDIR'), protocol)
-            if not os.path.exists(fullpath):
-                raise Exception('Could not find either {} or {}'.format(protocol, fullpath))
-            protocol = fullpath
+        if isinstance(protocol, Path):
+            if not protocol.exists():
+                protocol = protocol.relative_to(prefs.get('PROTOCOLDIR'))
+            if not protocol.exists():
+                raise FileNotFoundError(f"Could not find protocol file {protocol}!")
 
-        # Set name and step
-        # Strip off path and extension to get the protocol name
-        protocol_name = os.path.splitext(protocol)[0].split(os.sep)[-1]
+            protocol_name = protocol.stem
 
-        # check if this is the same protocol so we don't reset session number
+            with open(protocol, 'r') as pfile:
+                protocol = json.load(pfile)
+
+
+        elif isinstance(protocol, list):
+            if protocol_name is None:
+                raise ValueError(f"If passed protocol as a list of dictionaries, need to also pass protocol_name")
+
+
+        # check if this is the same protocol as we already have so we don't reset session number
         same_protocol = False
         if (protocol_name == self.protocol_name) and (step_n == self.step):
             same_protocol = True
-
-        # Load protocol to dict
-        with open(protocol) as protocol_file:
-            prot_dict = json.load(protocol_file)
-
-        # pdb.set_trace()
 
         # Check if there is an existing protocol, archive it if there is.
         if "/current" in h5f:
@@ -449,15 +754,13 @@ class Subject(object):
 
         # Make filenode and save as serialized json
         current_node = filenode.new_node(h5f, where='/', name='current')
-        current_node.write(json.dumps(prot_dict).encode('utf-8'))
+        current_node.write(json.dumps(protocol).encode('utf-8'))
         h5f.flush()
 
         # save some protocol attributes
-        self.current = prot_dict
-
+        self.current = protocol
         current_node.attrs['protocol_name'] = protocol_name
         self.protocol_name = protocol_name
-
         current_node.attrs['step'] = step_n
         self.step = int(step_n)
 
@@ -467,93 +770,13 @@ class Subject(object):
             h5f.root.info._v_attrs['session'] = 0
             self.session = 0
 
-        # Make file group for protocol
-        if "/data/{}".format(protocol_name) not in h5f:
-            current_group = h5f.create_group('/data', protocol_name)
-        else:
-            current_group = h5f.get_node('/data', protocol_name)
-
-
-        # Create groups for each step
-        # There are two types of data - continuous and trialwise.
-        # Each gets a single table within a group: since each step should have
-        # consistent data requirements over time and hdf5 doesn't need to be in
-        # memory, we can just keep appending to keep things simple.
-        for i, step in enumerate(self.current):
-            # First we get the task class for this step
-            task_class = autopilot.get_task(step['task_type'])
-            step_name = step['step_name']
-            # group name is S##_'step_name'
-            group_name = "S{:02d}_{}".format(i, step_name)
-
-            if group_name not in current_group:
-                step_group = h5f.create_group(current_group, group_name)
-            else:
-                step_group = current_group._f_get_child(group_name)
-
-            # The task class *should* have at least one PyTables DataTypes descriptor
-            try:
-                if task_class.TrialData is not None:
-                    trial_descriptor = task_class.TrialData
-                    # add a session column, everyone needs a session column
-                    if 'session' not in trial_descriptor.columns.keys():
-                        trial_descriptor.columns.update({'session': tables.Int32Col()})
-                    # same thing with trial_num
-                    if 'trial_num' not in trial_descriptor.columns.keys():
-                        trial_descriptor.columns.update({'trial_num': tables.Int32Col()})
-                    # if this task has sounds, make columns for them
-                    # TODO: Make stim managers return a list of properties for their sounds
-                    if 'stim' in step.keys():
-                        if 'groups' in step['stim'].keys():
-                            # managers have stim nested within groups, but this is still really ugly
-                            sound_params = {}
-                            for g in step['stim']['groups']:
-                                for side, sounds in g['sounds'].items():
-                                    for sound in sounds:
-                                        for k, v in sound.items():
-                                            if k in STRING_PARAMS:
-                                                sound_params[k] = tables.StringCol(1024)
-                                            else:
-                                                sound_params[k] = tables.Float64Col()
-                            trial_descriptor.columns.update(sound_params)
-
-                        elif 'sounds' in step['stim'].keys():
-                            # for now we just assume they're floats
-                            sound_params = {}
-                            for side, sounds in step['stim']['sounds'].items():
-                                # each side has a list of sounds
-                                for sound in sounds:
-                                    for k, v in sound.items():
-                                        if k in STRING_PARAMS:
-                                            sound_params[k] = tables.StringCol(1024)
-                                        else:
-                                            sound_params[k] = tables.Float64Col()
-                            trial_descriptor.columns.update(sound_params)
-
-                    h5f.create_table(step_group, "trial_data", trial_descriptor)
-                else:
-                    self.logger.warning('No trial data descriptor found, making default table with session and trial_num')
-                    h5f.create_table(step_group, "trial_data", {'session': tables.Int32Col(), 'trial_num': tables.Int32Col()})
-            except tables.NodeError:
-                # we already have made this table, that's fine
-                pass
-            try:
-                # if we have continuous data, make a folder for each data stream.
-                # each session will make its own subfolder,
-                # which contains tables for each of the streams for that session
-                if hasattr(task_class, "ContinuousData"):
-                    cont_group = h5f.create_group(step_group, "continuous_data")
-
-                    # save data names as attributes
-                    data_names = tuple(task_class.ContinuousData.keys())
-
-                    cont_group._v_attrs['data'] = data_names
-                    #cont_descriptor = task_class.ContinuousData
-                    #cont_descriptor.columns.update({'session': tables.Int32Col()})
-                    #h5f.create_table(step_group, "continuous_data", cont_descriptor)
-            except tables.NodeError:
-                # already made it
-                pass
+        # make protocol structure!
+        protocol_structure = Protocol_Group(
+            protocol_name=protocol_name,
+            protocol=protocol,
+            structure=self.structure
+        )
+        protocol_structure.make(h5f)
 
         _ = self.close_hdf(h5f)
 
@@ -597,10 +820,6 @@ class Subject(object):
             warnings.warn("protocol_name attribute couldn't be accessed, using timestamp to stash protocol")
             archive_name = self.get_timestamp(simple=True)
 
-        # TODO: When would we want to prefer the .h5f copy over the live one?
-        #current_node = filenode.open_node(h5f.root.current)
-        #old_protocol = current_node.readall()
-
         archive_node = filenode.new_node(h5f, where='/history/past_protocols', name=archive_name)
         archive_node.write(json.dumps(self.current).encode('utf-8'))
 
@@ -625,10 +844,6 @@ class Subject(object):
             self.logger.exception(f"{e}")
             raise e
 
-
-        trial_table = None
-        cont_table = None
-
         # get step history
         try:
             step_df = self.get_step_history(use_history=True)
@@ -638,13 +853,15 @@ class Subject(object):
 
         h5f = self.open_hdf()
 
+        protocol_groups = Protocol_Group(
+            protocol_name = self.protocol_name,
+            protocol = self.current,
+            structure = self.structure
+        )
+        group_name = protocol_groups.steps[self.step].path
+
         # Get current task parameters and handles to tables
         task_params = self.current[self.step]
-        step_name = task_params['step_name']
-
-        # file structure is '/data/protocol_name/##_step_name/tables'
-        group_name = "/data/{}/S{:02d}_{}".format(self.protocol_name, self.step, step_name)
-        #try:
 
         # tasks without TrialData will have some default table, so this should always be present
         trial_table = h5f.get_node(group_name, 'trial_data')
@@ -652,7 +869,6 @@ class Subject(object):
         ##################################3
         # first try and find some timestamp column to filter past data we give to the graduation object
         # in case the subject has been stepped back down to a previous stage, for example
-        # FIXME: Hardcoding parameter names, should have a guaranteed 'trial_timestamp' column for each trial
         slice_start = 0
         try:
             ts_cols = [col for col in trial_table.colnames if 'timestamp' in col]
@@ -710,19 +926,13 @@ class Subject(object):
 
         # prepare continuous data group and tables
         task_class = autopilot.get_task(task_params['task_type'])
-        cont_group = None
         if hasattr(task_class, 'ContinuousData'):
             cont_group = h5f.get_node(group_name, 'continuous_data')
             try:
                 session_group = h5f.create_group(cont_group, "session_{}".format(self.session))
             except tables.NodeError:
-                session_group = h5f.get_node(cont_group, "session_{}".format(self.session))
-            # don't create arrays for each dtype here, we will create them as we receive data
+                pass # fine, already made it
 
-        # if (trial_table is None) and (cont_group is None):
-        #     raise Exception("No data tables exist for step {}! Is there a Trial or Continuous data descriptor in the task class?".format(self.step))
-
-        # TODO: Spawn graduation checking object!
         self.graduation = None
         if 'graduation' in task_params.keys():
             try:
@@ -765,8 +975,8 @@ class Subject(object):
 
         # spawn thread to accept data
         self.data_queue = queue.Queue()
-        self.thread = threading.Thread(target=self.data_thread, args=(self.data_queue,))
-        self.thread.start()
+        self._thread = threading.Thread(target=self.data_thread, args=(self.data_queue,))
+        self._thread.start()
         self.running = True
 
         # return a task parameter dictionary
@@ -859,7 +1069,7 @@ class Subject(object):
                             cont_tables[k] = h5f.create_table(session_group, k, description={
                                 k: tables.Col.from_atom(col_atom),
                                 'timestamp': tables.Col.from_atom(timestamp_atom)
-                            }, filters=self.continuous_filter)
+                            })
 
                             cont_rows[k] = cont_tables[k].row
 
@@ -952,9 +1162,9 @@ class Subject(object):
         puts 'END' in the data_queue, which causes :meth:`~.Subject.data_thread` to end.
         """
         self.data_queue.put('END')
-        self.thread.join(5)
+        self._thread.join(5)
         self.running = False
-        if self.thread.is_alive():
+        if self._thread.is_alive():
             self.logger.warning('Data thread did not exit')
 
     def to_csv(self, path, task='current', step='all'):
@@ -1309,45 +1519,7 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
         name = self.current[step]['step_name']
         self.update_history('step', name, step)
 
-    class History_Table(tables.IsDescription):
-        """
-        Class to describe parameter and protocol change history
 
-        Attributes:
-            time (str): timestamps
-            type (str): Type of change - protocol, parameter, step
-            name (str): Name - Which parameter was changed, name of protocol, manual vs. graduation step change
-            value (str): Value - What was the parameter/protocol/etc. changed to, step if protocol.
-        """
 
-        time = tables.StringCol(256)
-        type = tables.StringCol(256)
-        name = tables.StringCol(256)
-        value = tables.StringCol(4028)
 
-    class Weight_Table(tables.IsDescription):
-        """
-        Class to describe table for weight history
-
-        Attributes:
-            start (float): Pre-task mass
-            stop (float): Post-task mass
-            date (str): Timestamp in simple format
-            session (int): Session number
-        """
-        start = tables.Float32Col()
-        stop  = tables.Float32Col()
-        date  = tables.StringCol(256)
-        session = tables.Int32Col()
-
-    class Hash_Table(tables.IsDescription):
-        """
-        Class to describe table for hash history
-
-        Attributes:
-            time (str): Timestamps
-            hash (str): Hash of the currently checked out commit of the git repository.
-        """
-        time = tables.StringCol(256)
-        hash = tables.StringCol(40)
 
