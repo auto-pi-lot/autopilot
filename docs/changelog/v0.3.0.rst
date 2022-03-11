@@ -116,10 +116,10 @@ Major Updates
   I will *not attempt to keep Autopilot compatible with Python 2*, but no decision has been made about compatibility
   with other versions of Python 3. Until then, expect that Autopilot will attempt to keep up with major version changes.
   The switch also let up update PySide (Qt library used for the GUI) to PySide2, which uses Qt5 and has a whole raft of other improvements.
-* **Continuous Data Handling** - The :class:`~.core.subject.Subject` class and :mod:`~.core.networking` modules have been improved
+* **Continuous Data Handling** - The :class:`~.data.subject.Subject` class and :mod:`~.core.networking` modules have been improved
   to handle continuous data (eg. streaming data, generally non-trialwise or non-event-sampled data). Continuous data
   can be set in a Task description either with a ``tables`` column descriptor as trial data is, but also can be set as
-  ``'infer'``, for which the :class:`~.core.subject.Subject` class will wait until it receives the first data and
+  ``'infer'``, for which the :class:`~.data.subject.Subject` class will wait until it receives the first data and
   automatically create a ``tables`` column depending on its type and shape. While previously we intended to nudge users
   to be explicit about declaring their data, this was necessary to allow for data that might be variable in type and shape
   to be included in a Task -- eg. it should be possible to record video data without needing to specify the resolution
@@ -273,9 +273,9 @@ Bugfixes
   quickly enough would resend it, resulting in two tasks being started -- but this would happen whenever two ``START`` messages were sent
   to a pilot. This was fixed with a simple check of :attr:`.Pilot.state` before a task is initialized. Similar bugs were fixed in
   :class:`~.plots.Plot` objects.
-* The :class:`~.core.subject.Subject` class would sometimes fail to get and increment the trial session. This has been fixed
+* The :class:`~.data.subject.Subject` class would sometimes fail to get and increment the trial session. This has been fixed
   by saving the session number as an attribute in the ``info`` node.
-* The :class:`~.core.subject.Subject` class would reset the session counter even when the same task was being reassigned (eg. if updated), now
+* The :class:`~.data.subject.Subject` class would reset the session counter even when the same task was being reassigned (eg. if updated), now
   it preserves session number if the protocol name is unchanged.
 * The :meth:`~.Terminal.update_protocols` method didn't report which subjects had their protocols updated, and so if there was some
   exception when setting new protocols it happened silently, making it so a user would never know their task was never updated.

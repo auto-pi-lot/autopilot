@@ -82,7 +82,7 @@ TrialData
         timestamp_off = tables.StringCol(26)
 
 ``TrialData`` declares the data that will be returned for each "trial" -- or complete set of executed task
-stages. It is used by the :class:`~autopilot.core.subject.Subject` object to make a data table with the
+stages. It is used by the :class:`~autopilot.data.subject.Subject` object to make a data table with the
 correct data types. Declare each piece of data using a pytables Column descriptor
 (see https://www.pytables.org/usersguide/libref/declarative_classes.html#col-sub-classes for available
 data types, and the pytables guide: https://www.pytables.org/usersguide/tutorials.html for more information)

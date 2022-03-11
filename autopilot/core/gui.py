@@ -16,7 +16,6 @@ the method must be decorated with `@gui_event` which will call perform the updat
     This will be corrected before v1.0
 
 """
-import sys
 import typing
 import os
 import json
@@ -31,25 +30,21 @@ import pyqtgraph as pg
 import pandas as pd
 import itertools
 import threading
-from queue import Empty, Full
 import multiprocessing as mp
-import logging
 from operator import ior
 from functools import reduce
-from collections import abc
 
 # adding autopilot parent directory to path
 import autopilot
-from autopilot.core.subject import Subject
+from autopilot.data.subject import Subject
 from autopilot import prefs
-from autopilot.stim.sound import sounds
 from autopilot.networking import Net_Node
 from functools import wraps
 from autopilot.utils.invoker import InvokeEvent, get_invoker
 from autopilot.core import styles
 from autopilot.core.plots import Video
 from autopilot.core.loggers import init_logger
-from autopilot.utils import plugins, registry, wiki
+from autopilot.utils import plugins, registry
 
 _MAPS = {
     'dialog': {
@@ -104,7 +99,7 @@ class Control_Panel(QtWidgets.QWidget):
 
     Attributes:
         subjects (dict): A dictionary with subject ID's as keys and
-                :class:`core.subject.Subject` objects as values. Shared with the
+                :class:`data.subject.Subject` objects as values. Shared with the
                 Terminal object to manage access conflicts.
         start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): See :py:attr:`.Control_Panel.start_fn`
         pilots (dict): A dictionary with pilot ID's as keys and nested dictionaries

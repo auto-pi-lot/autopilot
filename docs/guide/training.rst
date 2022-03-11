@@ -220,7 +220,7 @@ An example for our speech task can be found in :mod:`autopilot.tasks.protocol_sc
 Creating a Subject
 ==================
 
-A :class:`~autopilot.core.subject.Subject` stores the data, protocol, and history of a subject.
+A :class:`~autopilot.data.subject.Subject` stores the data, protocol, and history of a subject.
 Each subject is implicitly assigned to a Pilot by virtue of the structure of the ``pilot_db.json`` file, but they can be switched by editing that file.
 
 1. Create a subject by clicking the ``+`` button in the control panel of a particular Pilot

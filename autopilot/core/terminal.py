@@ -15,7 +15,7 @@ import threading
 from collections import OrderedDict as odict
 import numpy as np
 
-from PySide2 import QtCore, QtGui, QtSvg, QtWidgets
+from PySide2 import QtCore, QtGui, QtWidgets
 
 from autopilot import prefs
 from autopilot.core import styles
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # init prefs for module access
     prefs.init(prefs_file)
 
-from autopilot.core.subject import Subject
+from autopilot.data.subject import Subject
 from autopilot.core.plots import Plot_Widget
 from autopilot.networking import Net_Node, Terminal_Station
 from autopilot.utils.invoker import get_invoker
@@ -56,8 +56,6 @@ try:
     IMPORTED_VIZ = True
 except ImportError as e:
     VIZ_ERROR = str(e)
-import pdb
-
 
 # TODO: Be more complete about generating logs
 # TODO: Make exit graceful
