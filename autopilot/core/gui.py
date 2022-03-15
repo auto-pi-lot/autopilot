@@ -785,9 +785,6 @@ class New_Subject_Wizard(QtWidgets.QDialog):
             Like :class:`.Biography_Tab` , these are not the actual instance attributes.
             Values are stored in a `values` dictionary.
 
-        Attributes:
-            protocol (str): the name of the assigned protocol, filename without .json extension
-            step (int): current step to assign.
         """
         def __init__(self):
             QtWidgets.QWidget.__init__(self)
