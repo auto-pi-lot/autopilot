@@ -49,7 +49,7 @@ SCRIPTS = odict({
         'text': 'install system packages necessary for autopilot Pilots? (required if they arent already)',
         'commands': [
             "sudo apt-get update",
-            "sudo apt-get install -y build-essential cmake git python3-dev libatlas-base-dev libsamplerate0-dev libsndfile1-dev libreadline-dev libasound-dev i2c-tools libportmidi-dev liblo-dev libhdf5-dev libzmq-dev libffi-dev",
+            "sudo apt-get install -y build-essential cmake git python3-dev libatlas-base-dev libsamplerate0-dev libsndfile1-dev libreadline-dev libasound-dev i2c-tools libportmidi-dev liblo-dev libhdf5-dev libzmq3-dev libffi-dev",
         ]
     },
     'env_terminal': {
@@ -125,7 +125,7 @@ SCRIPTS = odict({
         'type': 'bool',
         'text': 'Install jack audio from source, try this if youre having compatibility or runtime issues with jack (required if AUDIOSERVER == jack)',
         'commands': [
-            "git clone git://github.com/jackaudio/jack2 --depth 1",
+            "git clone https://github.com/jackaudio/jack2 --depth 1",
             "cd jack2",
             "./waf configure --alsa=yes --libdir=/usr/lib/arm-linux-gnueabihf/",
             "./waf build -j6",
