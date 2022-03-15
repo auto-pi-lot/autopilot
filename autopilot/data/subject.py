@@ -6,7 +6,6 @@ Currently named subject, but will likely be refactored to include other data
 models should the need arise.
 
 """
-# TODO: store pilot in biography
 import threading
 import datetime
 import json
@@ -38,6 +37,36 @@ warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
 # --------------------------------------------------
 # Classes to describe structure of subject files
 # --------------------------------------------------
+
+
+
+class Subject_Structure(Autopilot_Type):
+    """
+    Structure of the :class:`.Subject` class's hdf5 file
+
+    .. todo::
+
+        Convert this into an abstract representation of data rather than literally hdf5 tables
+
+    """
+    data = H5F_Group(path='/data', filters=tables.Filters(complevel=6, complib='blosc:lz4'))
+    history = H5F_Group(path='/history')
+    past_protocols = H5F_Group(path='/history/past_protocols', title='Past Protocol Files')
+    info = H5F_Group(path='/info', title="Biographical Info")
+    hashes = _Hash_Table(path = '/history/hashes', title="Git commit hash history")
+    history_table = _History_Table(path = '/history/history', title="Change History")
+    weight_table = _Weight_Table(path = '/history/weights', title= "Subject Weights")
+
+    def make(self, h5f:tables.file.File):
+        """
+        Make all the nodes!
+
+        Args:
+            h5f (:class:`tables.file.File`): The h5f file to make the groups in!
+        """
+        for _, node in self.dict():
+            node.make(h5f)
+
 
 
 class Subject(object):
@@ -1206,25 +1235,3 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
         name = self.current[step]['step_name']
         self.update_history('step', name, step)
 
-
-class Subject_Structure(Autopilot_Type):
-    """
-    Structure of the :class:`.Subject` class's hdf5 file
-    """
-    data = H5F_Group(path='/data', filters=tables.Filters(complevel=6, complib='blosc:lz4'))
-    history = H5F_Group(path='/history')
-    past_protocols = H5F_Group(path='/history/past_protocols', title='Past Protocol Files')
-    info = H5F_Group(path='/info', title="Biographical Info")
-    hashes = _Hash_Table(path = '/history/hashes', title="Git commit hash history")
-    history_table = _History_Table(path = '/history/history', title="Change History")
-    weight_table = _Weight_Table(path = '/history/weights', title= "Subject Weights")
-
-    def make(self, h5f:tables.file.File):
-        """
-        Make all the nodes!
-
-        Args:
-            h5f (:class:`tables.file.File`): The h5f file to make the groups in!
-        """
-        for _, node in self.dict():
-            node.make(h5f)

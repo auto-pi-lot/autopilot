@@ -40,3 +40,26 @@ class Data(Autopilot_Type):
 
         * A ``Value`` -- the
     """
+
+class Schema(Autopilot_Type):
+    """
+    A special type of type intended to be a representation of an
+    abstract structure/schema of data, rather than a live container of
+    data objects themselves. This class is used for constructing data containers,
+    translating between formats, etc. rather than momentary data handling
+    """
+
+
+class Group(Autopilot_Type):
+    """
+    A generic representation of a "Group" if present in a given interface.
+    Useful for when, for example in a given container format you want to
+    make an empty group that will be filled later, or one that has to be
+    present for syntactic correctness.
+    """
+
+class Node(Autopilot_Type):
+    """
+    :class:`.Group`, but for nodes.
+    """
+

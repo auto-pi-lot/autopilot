@@ -1,12 +1,19 @@
 """
 Interfaces for pytables and hdf5 generally
 """
+import typing
 from abc import abstractmethod
 from typing import Optional
+
+if typing.TYPE_CHECKING:
+    from datetime import datetime
 
 import tables
 
 from autopilot import Autopilot_Type
+from autopilot.data.interfaces.base import Interface, Interface_Mapset, Interface_Map
+
+_datetime_conversion: typing.Callable[[datetime], str] = lambda x: x.isoformat()
 
 
 class H5F_Node(Autopilot_Type):
@@ -103,3 +110,25 @@ class H5F_Table(H5F_Node):
 
     class Config:
         fields = {'description': {'exclude': True}}
+
+
+
+Tables_Mapset = Interface_Mapset(
+    bool = tables.BoolCol(),
+    int = tables.Int64Col(),
+    float = tables.Float64Col(),
+    str = Interface_Map(
+        equals=tables.StringCol,
+        args=[1024]
+    ),
+    bytes = Interface_Map(
+        equals=tables.StringCol,
+        args=[1024]
+    ),
+    datetime = Interface_Map(
+        equals=tables.StringCol,
+        args=[1024],
+        conversion = _datetime_conversion
+    ),
+    group = H5F_Group
+)

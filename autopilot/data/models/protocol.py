@@ -12,7 +12,7 @@ class Step_Group(H5F_Group):
     """
     An hdf5 group for an individual step within a protocol.
     """
-    
+
 
 
 class Protocol_Group(H5F_Group):
