@@ -11,6 +11,7 @@ from pathlib import Path
 import pkgutil
 import ast
 import typing
+from typing import Optional, List
 from threading import Thread
 import numpy as np
 
@@ -259,6 +260,26 @@ def find_key_value(dicts:typing.List[dict], key:str, value:str, single=True):
         matches = matches[0]
 
     return matches
+
+def walk_dicts(adict, keys:Optional[List]=None) -> tuple:
+    """
+    Recursively yield key/value pairs, returning keys as tuples corresponding to the
+    recursive keys in the dict
+
+    Args:
+        adict (dict): dict to walk over
+
+    Yields:
+        tuple of key value pairs
+    """
+    for k, v in adict.items():
+        if keys is not None:
+            keys.append(k)
+        if isinstance(v, dict):
+            walk_dicts(v, keys)
+        else:
+            yield k, v
+
 
 
 class NumpyEncoder(json.JSONEncoder):

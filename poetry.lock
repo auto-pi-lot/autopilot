@@ -72,7 +72,7 @@ name = "attrs"
 version = "21.4.0"
 description = "Classes Without Boilerplate"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [package.extras]
@@ -359,7 +359,7 @@ reference = "piwheels"
 
 [[package]]
 name = "fonttools"
-version = "4.29.1"
+version = "4.30.0"
 description = "Tools to manipulate font files"
 category = "main"
 optional = true
@@ -377,6 +377,44 @@ type1 = ["xattr"]
 ufo = ["fs (>=2.2.0,<3)"]
 unicode = ["unicodedata2 (>=14.0.0)"]
 woff = ["zopfli (>=0.1.4)", "brotlicffi (>=0.8.0)", "brotli (>=1.0.1)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "h5py"
+version = "2.10.0"
+description = "Read and write HDF5 files from Python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+numpy = ">=1.7"
+six = "*"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "hdmf"
+version = "2.5.8"
+description = "A package for standardizing hierarchical object data"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+h5py = ">=2.9,<3"
+jsonschema = ">=2.6.0,<4"
+numpy = ">=1.16,<1.21"
+pandas = ">=1.0.5,<2"
+"ruamel.yaml" = ">=0.15,<1"
+scipy = ">=1.1,<2"
 
 [package.source]
 type = "legacy"
@@ -411,7 +449,7 @@ reference = "piwheels"
 
 [[package]]
 name = "importlib-metadata"
-version = "4.11.2"
+version = "4.11.3"
 description = "Read metadata from Python packages"
 category = "main"
 optional = false
@@ -425,26 +463,6 @@ zipp = ">=0.5"
 docs = ["sphinx", "jaraco.packaging (>=9)", "rst.linker (>=1.9)"]
 perf = ["ipython"]
 testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "packaging", "pyfakefs", "flufl.flake8", "pytest-perf (>=0.9.2)", "pytest-black (>=0.3.7)", "pytest-mypy (>=0.9.1)", "importlib-resources (>=1.3)"]
-
-[package.source]
-type = "legacy"
-url = "https://www.piwheels.org/simple"
-reference = "piwheels"
-
-[[package]]
-name = "importlib-resources"
-version = "5.4.0"
-description = "Read resources from Python packages"
-category = "main"
-optional = true
-python-versions = ">=3.6"
-
-[package.dependencies]
-zipp = {version = ">=3.1.0", markers = "python_version < \"3.10\""}
-
-[package.extras]
-docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [package.source]
 type = "legacy"
@@ -549,22 +567,21 @@ reference = "piwheels"
 
 [[package]]
 name = "jsonschema"
-version = "4.4.0"
+version = "3.2.0"
 description = "An implementation of JSON Schema validation for Python"
 category = "main"
-optional = true
-python-versions = ">=3.7"
+optional = false
+python-versions = "*"
 
 [package.dependencies]
 attrs = ">=17.4.0"
 importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
-importlib-resources = {version = ">=1.4.0", markers = "python_version < \"3.9\""}
-pyrsistent = ">=0.14.0,<0.17.0 || >0.17.0,<0.17.1 || >0.17.1,<0.17.2 || >0.17.2"
-typing-extensions = {version = "*", markers = "python_version < \"3.8\""}
+pyrsistent = ">=0.14.0"
+six = ">=1.11.0"
 
 [package.extras]
-format = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3987", "uri-template", "webcolors (>=1.11)"]
-format_nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-validator (>0.1.0)", "uri-template", "webcolors (>=1.11)"]
+format = ["idna", "jsonpointer (>1.13)", "rfc3987", "strict-rfc3339", "webcolors"]
+format_nongpl = ["idna", "jsonpointer (>1.13)", "webcolors", "rfc3986-validator (>0.1.0)", "rfc3339-validator"]
 
 [package.source]
 type = "legacy"
@@ -573,11 +590,14 @@ reference = "piwheels"
 
 [[package]]
 name = "kiwisolver"
-version = "1.3.2"
+version = "1.4.0"
 description = "A fast implementation of the Cassowary constraint solver"
 category = "main"
 optional = true
 python-versions = ">=3.7"
+
+[package.dependencies]
+typing-extensions = {version = "*", markers = "python_version < \"3.8\""}
 
 [package.source]
 type = "legacy"
@@ -651,7 +671,7 @@ reference = "piwheels"
 
 [[package]]
 name = "markupsafe"
-version = "2.1.0"
+version = "2.1.1"
 description = "Safely add untrusted strings to HTML/XML markup."
 category = "main"
 optional = false
@@ -730,11 +750,11 @@ reference = "piwheels"
 
 [[package]]
 name = "numpy"
-version = "1.21.5"
+version = "1.20.3"
 description = "NumPy is the fundamental package for array computing with Python."
 category = "main"
 optional = false
-python-versions = ">=3.7,<3.11"
+python-versions = ">=3.7"
 
 [package.source]
 type = "legacy"
@@ -1016,6 +1036,26 @@ url = "https://www.piwheels.org/simple"
 reference = "piwheels"
 
 [[package]]
+name = "pynwb"
+version = "2.5.1"
+description = "Package for working with Neurodata stored in the NWB format"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+h5py = ">=2.9,<3"
+hdmf = ">=2.5.6,<3"
+numpy = ">=1.16,<1.21"
+pandas = ">=1.0.5,<2"
+python-dateutil = ">=2.7,<3"
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
 name = "pyparsing"
 version = "3.0.7"
 description = "Python parsing module"
@@ -1052,7 +1092,7 @@ name = "pyrsistent"
 version = "0.18.1"
 description = "Persistent/Functional/Immutable data structures"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.7"
 
 [package.source]
@@ -1241,6 +1281,39 @@ typing-extensions = {version = ">=3.7.4,<5.0", markers = "python_version < \"3.8
 
 [package.extras]
 jupyter = ["ipywidgets (>=7.5.1,<8.0.0)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "ruamel.yaml"
+version = "0.17.21"
+description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order"
+category = "main"
+optional = false
+python-versions = ">=3"
+
+[package.dependencies]
+"ruamel.yaml.clib" = {version = ">=0.2.6", markers = "platform_python_implementation == \"CPython\" and python_version < \"3.11\""}
+
+[package.extras]
+docs = ["ryd"]
+jinja2 = ["ruamel.yaml.jinja2 (>=0.2)"]
+
+[package.source]
+type = "legacy"
+url = "https://www.piwheels.org/simple"
+reference = "piwheels"
+
+[[package]]
+name = "ruamel.yaml.clib"
+version = "0.2.6"
+description = "C version of reader, parser and emitter for ruamel.yaml derived from libyaml"
+category = "main"
+optional = false
+python-versions = ">=3.5"
 
 [package.source]
 type = "legacy"
@@ -1776,7 +1849,7 @@ tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio", "
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.10"
-content-hash = "39efca875dd805ccbd232288a10a0367c05f9c01c9f20536afdc399ffc0ceb78"
+content-hash = "ad20f56e7c5a34716ee362ec6da69e6a09e4d516d60d5ef51cfa2fe2c7fec0ba"
 
 [metadata.files]
 alabaster = [
@@ -1859,10 +1932,23 @@ entrypoints = [
     {file = "entrypoints-0.4-py3-none-any.whl", hash = "sha256:d1fb668421db084e9601b9c5ee928a2fc44ba598ce176df22be7f3d20824ce87"},
 ]
 fonttools = [
-    {file = "fonttools-4.29.1-cp37-cp37m-linux_armv6l.whl", hash = "sha256:4fc0c047f0c1137320483808da817128d41f2f080bd095d61a30c350bf0a1b38"},
-    {file = "fonttools-4.29.1-cp37-cp37m-linux_armv7l.whl", hash = "sha256:4fc0c047f0c1137320483808da817128d41f2f080bd095d61a30c350bf0a1b38"},
-    {file = "fonttools-4.29.1-cp39-cp39-linux_armv6l.whl", hash = "sha256:f6425715f0eccb71914e9cb2adb2e2d4bf90d36b87812f5a770fbd19eb1b5d55"},
-    {file = "fonttools-4.29.1-cp39-cp39-linux_armv7l.whl", hash = "sha256:f6425715f0eccb71914e9cb2adb2e2d4bf90d36b87812f5a770fbd19eb1b5d55"},
+    {file = "fonttools-4.30.0-cp37-cp37m-linux_armv6l.whl", hash = "sha256:09d0417c8c8d7d1325c0d28e25da0aeb9b285a7b2657b2a73c6836403139beaa"},
+    {file = "fonttools-4.30.0-cp37-cp37m-linux_armv7l.whl", hash = "sha256:09d0417c8c8d7d1325c0d28e25da0aeb9b285a7b2657b2a73c6836403139beaa"},
+    {file = "fonttools-4.30.0-cp39-cp39-linux_armv6l.whl", hash = "sha256:9e78a1b6e599f875b5690a53d33c81c29c8188ec13bfb29d488c57cfd33b9b30"},
+    {file = "fonttools-4.30.0-cp39-cp39-linux_armv7l.whl", hash = "sha256:9e78a1b6e599f875b5690a53d33c81c29c8188ec13bfb29d488c57cfd33b9b30"},
+]
+h5py = [
+    {file = "h5py-2.10.0-cp34-cp34m-linux_armv6l.whl", hash = "sha256:c9617f33273b740c786c80792e04d068eeff6171a08cefe44057184a8ac6225d"},
+    {file = "h5py-2.10.0-cp34-cp34m-linux_armv7l.whl", hash = "sha256:c9617f33273b740c786c80792e04d068eeff6171a08cefe44057184a8ac6225d"},
+    {file = "h5py-2.10.0-cp35-cp35m-linux_armv6l.whl", hash = "sha256:172f7f3a5da8b18d1aa7a2dc994e51eaee4e3d572b3f63712bdf215045a88c76"},
+    {file = "h5py-2.10.0-cp35-cp35m-linux_armv7l.whl", hash = "sha256:172f7f3a5da8b18d1aa7a2dc994e51eaee4e3d572b3f63712bdf215045a88c76"},
+    {file = "h5py-2.10.0-cp37-cp37m-linux_armv6l.whl", hash = "sha256:3734f3af6d58f38c84e1b965c02da9f0466356d832bb32ecfffcbe5aad886453"},
+    {file = "h5py-2.10.0-cp37-cp37m-linux_armv7l.whl", hash = "sha256:3734f3af6d58f38c84e1b965c02da9f0466356d832bb32ecfffcbe5aad886453"},
+    {file = "h5py-2.10.0-cp39-cp39-linux_armv6l.whl", hash = "sha256:39b6b060ea7903f982daa920564c6c5e19d7110a32d4b800ce840e9f2be973eb"},
+    {file = "h5py-2.10.0-cp39-cp39-linux_armv7l.whl", hash = "sha256:39b6b060ea7903f982daa920564c6c5e19d7110a32d4b800ce840e9f2be973eb"},
+]
+hdmf = [
+    {file = "hdmf-2.5.8-py2.py3-none-any.whl", hash = "sha256:dfd9225bc3c344f5d38c4945c45de2430834d2374c23eff2f66f69c9ea03ed52"},
 ]
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:a8c56282ad8491e5d10c5d44e9e4ce38e37a16bc03ebb54fdcaf9d05b8e0c309"},
@@ -1871,10 +1957,7 @@ imagesize = [
     {file = "imagesize-1.3.0-py2.py3-none-any.whl", hash = "sha256:0b26ec5115ea8bf6f60f26467b3aca571203e8eab632367676400af113c80541"},
 ]
 importlib-metadata = [
-    {file = "importlib_metadata-4.11.2-py3-none-any.whl", hash = "sha256:6a674c870220b4e3a438eabfaa65d54e2a3563b3b4611d2075d9a7d82135fd4a"},
-]
-importlib-resources = [
-    {file = "importlib_resources-5.4.0-py3-none-any.whl", hash = "sha256:7df7a2a1b965c36b05dddbf29a708d57e10d4ecb4a636e5dc25cd2f7e373d9d8"},
+    {file = "importlib_metadata-4.11.3-py3-none-any.whl", hash = "sha256:5e300b6caa5420c74577bd2158a3f148aee2b4048e43a3562c7f808d95e17b4f"},
 ]
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:8647b85c03813b8680f4ae9c9db2fd7293f8591ea536a10d73d90f6eb4b10aac"},
@@ -1895,13 +1978,13 @@ joblib = [
     {file = "joblib-1.1.0-py2.py3-none-any.whl", hash = "sha256:52dd78527f9e977ebebee9853ad98dff046518281da37b54481392b6e74f7799"},
 ]
 jsonschema = [
-    {file = "jsonschema-4.4.0-py3-none-any.whl", hash = "sha256:1c09b0c266384dce744e36089cc87937704ead7ea0beb626d0756bd817e29916"},
+    {file = "jsonschema-3.2.0-py2.py3-none-any.whl", hash = "sha256:4e5b3cf8216f577bee9ce139cbe72eca3ea4f292ec60928ff24758ce626cd163"},
 ]
 kiwisolver = [
-    {file = "kiwisolver-1.3.2-cp37-cp37m-linux_armv6l.whl", hash = "sha256:875e852ee1a88f08a6a165a36f682c61dcde471c6e6c163bc6a1fa920f934e33"},
-    {file = "kiwisolver-1.3.2-cp37-cp37m-linux_armv7l.whl", hash = "sha256:875e852ee1a88f08a6a165a36f682c61dcde471c6e6c163bc6a1fa920f934e33"},
-    {file = "kiwisolver-1.3.2-cp39-cp39-linux_armv6l.whl", hash = "sha256:87562979e388da7aeea5c9569d757aab3a89912b0eb8d93a72de08901e24ef01"},
-    {file = "kiwisolver-1.3.2-cp39-cp39-linux_armv7l.whl", hash = "sha256:87562979e388da7aeea5c9569d757aab3a89912b0eb8d93a72de08901e24ef01"},
+    {file = "kiwisolver-1.4.0-cp37-cp37m-linux_armv6l.whl", hash = "sha256:d97c14be2a21f9016870c70c570d02c825f5532b61d002b584fa6d5efea51580"},
+    {file = "kiwisolver-1.4.0-cp37-cp37m-linux_armv7l.whl", hash = "sha256:d97c14be2a21f9016870c70c570d02c825f5532b61d002b584fa6d5efea51580"},
+    {file = "kiwisolver-1.4.0-cp39-cp39-linux_armv6l.whl", hash = "sha256:a185f389bf66a0f42b31fd812e95f756f76190c2ce07f727758f2d25d5c9c4cb"},
+    {file = "kiwisolver-1.4.0-cp39-cp39-linux_armv7l.whl", hash = "sha256:a185f389bf66a0f42b31fd812e95f756f76190c2ce07f727758f2d25d5c9c4cb"},
 ]
 latexcodec = [
     {file = "latexcodec-2.0.1-py2.py3-none-any.whl", hash = "sha256:c277a193638dc7683c4c30f6684e3db728a06efb0dc9cf346db8bd0aa6c5d271"},
@@ -1926,10 +2009,10 @@ livereload = [
     {file = "livereload-2.6.3-py2.py3-none-any.whl", hash = "sha256:73ea4d4b819218a10642e2bd2926cc92938bcd7dfabd6fea45a0cd6f7a7d6029"},
 ]
 markupsafe = [
-    {file = "MarkupSafe-2.1.0-cp37-cp37m-linux_armv6l.whl", hash = "sha256:39e62bbd6852fe4655201a2d334a23426ad519f80dbe81bd8079fb0cc4fe6a0f"},
-    {file = "MarkupSafe-2.1.0-cp37-cp37m-linux_armv7l.whl", hash = "sha256:39e62bbd6852fe4655201a2d334a23426ad519f80dbe81bd8079fb0cc4fe6a0f"},
-    {file = "MarkupSafe-2.1.0-cp39-cp39-linux_armv6l.whl", hash = "sha256:47cd11e5cbd1f7beb2c6324d7876707b738ed8499723c89f8eb46806a448cb56"},
-    {file = "MarkupSafe-2.1.0-cp39-cp39-linux_armv7l.whl", hash = "sha256:47cd11e5cbd1f7beb2c6324d7876707b738ed8499723c89f8eb46806a448cb56"},
+    {file = "MarkupSafe-2.1.1-cp37-cp37m-linux_armv6l.whl", hash = "sha256:04ecce2077c9c531334c847b604835e8e909f73d1fe596ceae30c8046ca90686"},
+    {file = "MarkupSafe-2.1.1-cp37-cp37m-linux_armv7l.whl", hash = "sha256:04ecce2077c9c531334c847b604835e8e909f73d1fe596ceae30c8046ca90686"},
+    {file = "MarkupSafe-2.1.1-cp39-cp39-linux_armv6l.whl", hash = "sha256:635983650c67c69118fe07c52f799b789d17edb9051777476b646278602d47dd"},
+    {file = "MarkupSafe-2.1.1-cp39-cp39-linux_armv7l.whl", hash = "sha256:635983650c67c69118fe07c52f799b789d17edb9051777476b646278602d47dd"},
 ]
 matplotlib = [
     {file = "matplotlib-3.5.1-cp37-cp37m-linux_armv6l.whl", hash = "sha256:8c38a0b03175847ff7ad5438bd60ab752e72814b900e605b8676b038d4f39f09"},
@@ -1952,8 +2035,10 @@ numexpr = [
     {file = "numexpr-2.8.1-cp39-cp39-linux_armv7l.whl", hash = "sha256:e197a8595839cfd923f84731a8f0724f58fd5891943ac221c3deecf5464e9277"},
 ]
 numpy = [
-    {file = "numpy-1.21.5-cp39-cp39-linux_armv6l.whl", hash = "sha256:ef1c0afd6bf82c2b90ac3295f1b71a3ce7ca1aea95e5b9a346174cfe749455ab"},
-    {file = "numpy-1.21.5-cp39-cp39-linux_armv7l.whl", hash = "sha256:ef1c0afd6bf82c2b90ac3295f1b71a3ce7ca1aea95e5b9a346174cfe749455ab"},
+    {file = "numpy-1.20.3-cp37-cp37m-linux_armv6l.whl", hash = "sha256:d840d80623c96696fab0d15489f49425bec1c0f47f3bf0b3362ce0c75dbad993"},
+    {file = "numpy-1.20.3-cp37-cp37m-linux_armv7l.whl", hash = "sha256:d840d80623c96696fab0d15489f49425bec1c0f47f3bf0b3362ce0c75dbad993"},
+    {file = "numpy-1.20.3-cp39-cp39-linux_armv6l.whl", hash = "sha256:4c020adbaa398721cd5e30c5aab52b505efcd35c3b0156e800245c1274c96962"},
+    {file = "numpy-1.20.3-cp39-cp39-linux_armv7l.whl", hash = "sha256:4c020adbaa398721cd5e30c5aab52b505efcd35c3b0156e800245c1274c96962"},
 ]
 packaging = [
     {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:36bb3108f8e33f88e52e7985b4068e2585b67e5b7b3a0fa2817f9852bc39d2ef"},
@@ -2010,6 +2095,9 @@ pygments = [
 pylint = [
     {file = "pylint-2.12.2-py3-none-any.whl", hash = "sha256:faf80aea248f25c7b872965f13d77c8bd1ef8db27cb408bf77bfe4dfd27248c0"},
 ]
+pynwb = [
+    {file = "pynwb-2.5.1-py2.py3-none-any.whl", hash = "sha256:24c55850ccf6c2f288a6903c0b425902c541733343e0dee6f9e88a043b9a386c"},
+]
 pyparsing = [
     {file = "pyparsing-3.0.7-py3-none-any.whl", hash = "sha256:9cac03df81a32c5a08393d4aaed42318304684e9abc1336deff3a84feb2e1260"},
 ]
@@ -2062,6 +2150,17 @@ requests = [
 ]
 rich = [
     {file = "rich-11.2.0-py3-none-any.whl", hash = "sha256:d5f49ad91fb343efcae45a2b2df04a9755e863e50413623ab8c9e74f05aee52b"},
+]
+"ruamel.yaml" = [
+    {file = "ruamel.yaml-0.17.21-py3-none-any.whl", hash = "sha256:5a81d994d11f98c7e7288636ea5bef647359641353411cebf8d2cce3a4a12385"},
+]
+"ruamel.yaml.clib" = [
+    {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-linux_armv6l.whl", hash = "sha256:09c589bc916ac7bbabfe92c4cba2a0fe57c0f33a8b3a23a2baa2750a89709876"},
+    {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-linux_armv7l.whl", hash = "sha256:09c589bc916ac7bbabfe92c4cba2a0fe57c0f33a8b3a23a2baa2750a89709876"},
+    {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-linux_armv6l.whl", hash = "sha256:123699ac488ac1bb0447a283d38ec0cc5a787f4f1076fd5513e47e108548b212"},
+    {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-linux_armv7l.whl", hash = "sha256:123699ac488ac1bb0447a283d38ec0cc5a787f4f1076fd5513e47e108548b212"},
+    {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-linux_armv6l.whl", hash = "sha256:72c6d7d42e86f824080f8284b0362f3473cff3f6986184c5829203fbc957702f"},
+    {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-linux_armv7l.whl", hash = "sha256:72c6d7d42e86f824080f8284b0362f3473cff3f6986184c5829203fbc957702f"},
 ]
 scikit-learn = [
     {file = "scikit_learn-1.0.2-cp37-cp37m-linux_armv6l.whl", hash = "sha256:40933c9de93a98c046a2d8d4207ac65c9bc0ab354e7e637ab16f3115f1dfa081"},

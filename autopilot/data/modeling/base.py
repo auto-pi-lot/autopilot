@@ -1,7 +1,8 @@
 """
 Base classes for data models -- the ``Data`` class itself.
 """
-
+import typing
+from typing import Optional, List
 from autopilot.root import Autopilot_Type
 
 class Data(Autopilot_Type):
@@ -41,6 +42,12 @@ class Data(Autopilot_Type):
         * A ``Value`` -- the
     """
 
+class Table(Data):
+    """To be made into a table!"""
+
+class Attributes(Data):
+    """A set of attributes that's intended to be singular, rather than made into a table."""
+
 class Schema(Autopilot_Type):
     """
     A special type of type intended to be a representation of an
@@ -57,9 +64,13 @@ class Group(Autopilot_Type):
     make an empty group that will be filled later, or one that has to be
     present for syntactic correctness.
     """
+    args: Optional[list] = None
+    kwargs: Optional[dict] = None
+
 
 class Node(Autopilot_Type):
     """
     :class:`.Group`, but for nodes.
     """
-
+    args: Optional[list] = None
+    kwargs: Optional[dict] = None

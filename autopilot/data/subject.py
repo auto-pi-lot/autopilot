@@ -22,9 +22,9 @@ import tables
 from tables.nodes import filenode
 
 import autopilot
-from autopilot import prefs, Autopilot_Type
-from autopilot.data.interfaces.tables import H5F_Group
-from autopilot.data.types import _Hash_Table, _History_Table, _Weight_Table
+from autopilot import prefs
+from autopilot.data.models.subject import Subject_Structure
+from autopilot.data.models.biography import Biography
 from autopilot.data.models.protocol import Protocol_Group
 from autopilot.core.loggers import init_logger
 
@@ -37,36 +37,6 @@ warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
 # --------------------------------------------------
 # Classes to describe structure of subject files
 # --------------------------------------------------
-
-
-
-class Subject_Structure(Autopilot_Type):
-    """
-    Structure of the :class:`.Subject` class's hdf5 file
-
-    .. todo::
-
-        Convert this into an abstract representation of data rather than literally hdf5 tables
-
-    """
-    data = H5F_Group(path='/data', filters=tables.Filters(complevel=6, complib='blosc:lz4'))
-    history = H5F_Group(path='/history')
-    past_protocols = H5F_Group(path='/history/past_protocols', title='Past Protocol Files')
-    info = H5F_Group(path='/info', title="Biographical Info")
-    hashes = _Hash_Table(path = '/history/hashes', title="Git commit hash history")
-    history_table = _History_Table(path = '/history/history', title="Change History")
-    weight_table = _Weight_Table(path = '/history/weights', title= "Subject Weights")
-
-    def make(self, h5f:tables.file.File):
-        """
-        Make all the nodes!
-
-        Args:
-            h5f (:class:`tables.file.File`): The h5f file to make the groups in!
-        """
-        for _, node in self.dict():
-            node.make(h5f)
-
 
 
 class Subject(object):
@@ -115,6 +85,7 @@ class Subject(object):
         node locations (eg. '/data') to types, either 'group' for groups or a
             :class:`tables.IsDescriptor` for tables.
     """
+    _VERSION = 1
 
 
 
@@ -123,7 +94,7 @@ class Subject(object):
                  dir: Optional[Path] = None,
                  file: Optional[Path] = None,
                  new: bool=False,
-                 biography: dict=None,
+                 biography: Biography=None,
                  structure: Subject_Structure = Subject_Structure()):
         """
         Args:
@@ -132,7 +103,7 @@ class Subject(object):
             file (str): load a subject from a filename. if `None`, ignored.
             new (bool): if True, a new file is made (a new file is made if one does not exist anyway)
             biography (dict): If making a new subject file, a dictionary with biographical data can be passed
-            structure (:class:`.Subject_Structure`): Structure to use with this subject.
+            structure (:class:`.Subject_Schema`): Structure to use with this subject.
         """
 
         self.structure = structure
@@ -222,7 +193,7 @@ class Subject(object):
         self.close_hdf(h5f)
 
     @property
-    def info(self) -> dict:
+    def info(self) -> Biography:
         """
         Subject biographical information
 
@@ -231,7 +202,7 @@ class Subject(object):
         """
         with self._h5f as h5f:
             info = h5f.get_node(self.structure.info.path)
-            return dict(info._v_attrs)
+            return Biography(**info._v_attrs)
 
     @property
     def _h5f(self) -> tables.file.File:
@@ -297,7 +268,25 @@ class Subject(object):
             h5f.flush()
             h5f.close()
 
-    def new_subject_file(self, biography, structure: Subject_Structure):
+    @classmethod
+    def new(cls, biography:Biography,
+            structure: Optional[Subject_Structure] = Subject_Structure()) -> Subject:
+        """
+        Create a new subject file, make its structure, and populate its :class:`~.data.models.biography.Biography` .
+
+
+        Args:
+            biography (:class:`~.data.models.biography.Biography`): A collection of biographical information
+                about the subject! Stored as attributes within `/info`
+            structure (Optional[:class:`~.models.subject.Subject_Structure`]): The structure of tables and groups to
+                use when creating this Subject. **Note:** This is not currently saved with the subject file,
+                so if using a nonstandard structure, it needs to be passed every time on init. Sorry!
+
+        Returns:
+            :class:`.Subject` , Newly Created.
+        """
+
+    def new_subject_file(self, biography:Biography, structure: Subject_Structure):
         """
         Create a new subject file and make the general filestructure.
 
@@ -320,7 +309,7 @@ class Subject(object):
         # Save biographical information as node attributes
         if biography:
             info_node = h5f.get_node(structure.info.path)
-            for k, v in biography.items():
+            for k, v in biography.dict():
                 info_node._v_attrs[k] = v
 
         h5f.root.info._v_attrs['name'] = self.name

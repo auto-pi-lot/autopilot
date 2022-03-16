@@ -108,3 +108,64 @@ Sketch of the problem:
         task_continuous -> nwb_create_intervals
     }
 """
+
+from autopilot.root import Autopilot_Type
+from autopilot.data.models.biography import Biography
+import typing
+from typing import List, Optional
+from pathlib import Path
+if typing.TYPE_CHECKING:
+    from autopilot.data.subject import Subject
+
+from pynwb import NWBFile
+from pynwb.file import Subject as NWBSubject
+
+
+
+
+def make_subject(bio:Biography) -> NWBSubject:
+    """
+    Make an NWB subject object from a biography
+
+    .. todo::
+
+        make this more flexible based on a mapping
+
+    """
+    samename = ['description', 'sex', 'species']
+    kwargs = {k:getattr(bio, k) for k in samename}
+    # get the ones with trivial differences
+    kwargs['subject_id'] = bio.id
+    kwargs['date_of_birth'] = bio.dob
+    kwargs['age'] = str(bio.age)
+
+    if bio.genotype is not None:
+        kwargs.update({
+            'genotype': str(bio.genotype.genes),
+            'strain': bio.genotype.strain
+        })
+
+    if bio.baselines is not None:
+        kwargs['weight'] = bio.baselines.mass / 1000
+
+    return NWBSubject(**kwargs)
+
+
+class NWB_Interface(Autopilot_Type):
+    biography: Biography
+
+    def make(self, sub: 'Subject', out_dir: Path) -> NWBFile:
+        assert(out_dir.is_dir())
+
+        # get biography object from subject
+        bio = make_subject(sub.info)
+
+        # TODO: Get rest of tables as dataframes and use
+        # .add_scratch to add them
+
+        # for each session, create a BehavioralEvents object and create_timeseries
+        # for each of the columns.
+        # try to extract stim params and
+
+
+

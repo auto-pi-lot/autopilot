@@ -3,7 +3,8 @@ Interfaces for pytables and hdf5 generally
 """
 import typing
 from abc import abstractmethod
-from typing import Optional
+from typing import Optional, List
+from datetime import datetime
 
 if typing.TYPE_CHECKING:
     from datetime import datetime
@@ -11,7 +12,8 @@ if typing.TYPE_CHECKING:
 import tables
 
 from autopilot import Autopilot_Type
-from autopilot.data.interfaces.base import Interface, Interface_Mapset, Interface_Map
+from autopilot.data.interfaces.base import Interface, Interface_Mapset, Interface_Map, Interface
+from autopilot.data.modeling.base import Table
 
 _datetime_conversion: typing.Callable[[datetime], str] = lambda x: x.isoformat()
 
@@ -62,6 +64,7 @@ class H5F_Group(H5F_Node):
     """
     Description of a pytables group and its location
     """
+    children: Optional[List[H5F_Node]] = None
 
     def make(self, h5f:tables.file.File):
         """
@@ -84,6 +87,10 @@ class H5F_Group(H5F_Node):
                              filters=self.filters)
             if self.attrs is not None:
                 group._v_attrs.update(self.attrs)
+
+        if self.children is not None:
+            for c in self.children:
+                c.make(h5f)
 
 
 class H5F_Table(H5F_Node):
@@ -112,11 +119,10 @@ class H5F_Table(H5F_Node):
         fields = {'description': {'exclude': True}}
 
 
-
 Tables_Mapset = Interface_Mapset(
-    bool = tables.BoolCol(),
-    int = tables.Int64Col(),
-    float = tables.Float64Col(),
+    bool = tables.BoolCol,
+    int = tables.Int64Col,
+    float = tables.Float64Col,
     str = Interface_Map(
         equals=tables.StringCol,
         args=[1024]
@@ -132,3 +138,31 @@ Tables_Mapset = Interface_Mapset(
     ),
     group = H5F_Group
 )
+
+class Tables_Interface(Interface):
+    map = Tables_Mapset
+
+    def make(self, h5f:tables.file.File) -> bool:
+        pass
+
+
+def model_to_table(table: Table) -> tables.IsDescription:
+    """
+    Make a table description from the type annotations in a model
+
+    Args:
+        table (:class:`.modeling.base.Table`): Table description
+
+    Returns:
+        :class:`tables.IsDescription`
+    """
+    # get column descriptions
+    cols = {}
+    for key, field in table.__fields__.items():
+        type_str = field.type_.__name__
+        cols[key] = Tables_Mapset.get(type_str)
+
+    description = type(table.__name__, (tables.IsDescription,), cols) # type: tables.IsDescription
+    return description
+
+

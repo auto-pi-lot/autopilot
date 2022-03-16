@@ -4,7 +4,7 @@ import tables
 
 import autopilot
 from autopilot.data.interfaces.tables import H5F_Group, H5F_Table
-from autopilot.data.subject import Subject_Structure
+# from autopilot.data.models.subject import Subject_Schema
 from autopilot.stim.sound.sounds import STRING_PARAMS
 
 
@@ -49,16 +49,12 @@ class Protocol_Group(H5F_Group):
     def __init__(self,
                  protocol_name: str,
                  protocol: typing.List[dict],
-                 structure: Subject_Structure = Subject_Structure(),
                  **data):
         """
         Override default __init__ method to populate a task's groups
 
-        A custom :class:`.Subject_Structure` can be passed if a nonstandard layout
-        is being used. Groups will be created beneath :attr:`.Subject_Structure.data`
-
         """
-        path = '/'.join([structure.data.path, protocol_name])
+        path = '/data'
         groups = []
         steps = []
         trial_tabs = []

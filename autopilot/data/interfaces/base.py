@@ -3,6 +3,7 @@ import typing
 from typing import Union, Type, Optional
 from autopilot.root import Autopilot_Type
 from autopilot.data.modeling.base import Schema, Group, Node
+from pydantic import Field
 
 class Interface_Map(Autopilot_Type):
     """
@@ -44,15 +45,31 @@ class Interface_Mapset(Autopilot_Type):
     group: Optional[Union[Interface_Map, Type]]
     node: Optional[Union[Interface_Map, Type]]
 
+    def get(self, key):
+        ret = getattr(self, key)
+        if isinstance(ret, Interface_Map):
+            args = ret.args
+            if args is None:
+                args = []
+            kwargs = ret.kwargs
+            if kwargs is None:
+                kwargs = {}
+            return ret.equals(*args, **kwargs)
+        else:
+            return ret()
 
 
 
-class Interface(Schema):
+
+class Interface(Autopilot_Type):
+    """
+    Create a representation of a given Schema
+    """
     map: Interface_Mapset
-    schema: Schema
+    schema_: Schema = Field(..., alias='schema')
 
     @abstractmethod
-    def make(self) -> bool:
+    def make(self, input:typing.Any) -> bool:
         """
         Make a given schema using the interface mapping given.
 
