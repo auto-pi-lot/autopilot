@@ -17,3 +17,11 @@ class Mass(Autopilot_Unit, float):
     """
     Base Unit: Grams
     """
+
+    @property
+    def kg(self) -> float:
+        return self.real/1000
+
+    @property
+    def mg(self) -> float:
+        return self.real*1000

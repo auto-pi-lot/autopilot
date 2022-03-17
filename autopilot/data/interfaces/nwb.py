@@ -121,9 +121,7 @@ from pynwb import NWBFile
 from pynwb.file import Subject as NWBSubject
 
 
-
-
-def make_subject(bio:Biography) -> NWBSubject:
+def make_biography(bio:Biography) -> NWBSubject:
     """
     Make an NWB subject object from a biography
 
@@ -158,7 +156,7 @@ class NWB_Interface(Autopilot_Type):
         assert(out_dir.is_dir())
 
         # get biography object from subject
-        bio = make_subject(sub.info)
+        bio = make_biography(sub.info)
 
         # TODO: Get rest of tables as dataframes and use
         # .add_scratch to add them

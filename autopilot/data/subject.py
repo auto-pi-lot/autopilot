@@ -23,7 +23,7 @@ from tables.nodes import filenode
 
 import autopilot
 from autopilot import prefs
-from autopilot.data.models.subject import Subject_Structure
+from autopilot.data.models.subject import Subject_Structure, Task_Status
 from autopilot.data.models.biography import Biography
 from autopilot.data.models.protocol import Protocol_Group
 from autopilot.core.loggers import init_logger
@@ -32,7 +32,6 @@ import queue
 
 # suppress pytables natural name warnings
 warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
-
 
 # --------------------------------------------------
 # Classes to describe structure of subject files
@@ -192,19 +191,9 @@ class Subject(object):
         # we have to always open and close the h5f
         self.close_hdf(h5f)
 
-    @property
-    def info(self) -> Biography:
-        """
-        Subject biographical information
-
-        Returns:
-            dict
-        """
-        with self._h5f as h5f:
-            info = h5f.get_node(self.structure.info.path)
-            return Biography(**info._v_attrs)
 
     @property
+    @contextmanager
     def _h5f(self) -> tables.file.File:
         """
         Context manager for access to hdf5 file.
@@ -217,14 +206,33 @@ class Subject(object):
         Returns:
             function wrapped with contextmanager that will open the hdf file
         """
-        @contextmanager
-        def _h5f_context() -> tables.file.File:
-            self._lock.acquire()
+
+        # @contextmanager
+        # def _h5f_context() -> tables.file.File:
+        with self._lock:
             try:
-                yield tables.open_file(str(self.file), mode='r+')
+                h5f = tables.open_file(str(self.file), mode="r+")
+                yield h5f
             finally:
-                self._lock.release()
-        return _h5f_context
+                h5f.close()
+        # return _h5f_context()
+
+
+    @property
+    def info(self) -> Biography:
+        """
+        Subject biographical information
+
+        Returns:
+            dict
+        """
+        with self._h5f as h5f:
+            info = h5f.get_node(self.structure.info.path)
+            biodict = {}
+            for k in info._v_attrs._f_list():
+                biodict[k] = info._v_attrs[k]
+
+        return Biography(**biodict)
 
 
 
@@ -269,8 +277,11 @@ class Subject(object):
             h5f.close()
 
     @classmethod
-    def new(cls, biography:Biography,
-            structure: Optional[Subject_Structure] = Subject_Structure()) -> Subject:
+    def new(cls,
+            bio:Biography,
+            structure: Optional[Subject_Structure] = Subject_Structure(),
+            path: Optional[Path] = None,
+            ) -> 'Subject':
         """
         Create a new subject file, make its structure, and populate its :class:`~.data.models.biography.Biography` .
 
@@ -281,10 +292,50 @@ class Subject(object):
             structure (Optional[:class:`~.models.subject.Subject_Structure`]): The structure of tables and groups to
                 use when creating this Subject. **Note:** This is not currently saved with the subject file,
                 so if using a nonstandard structure, it needs to be passed every time on init. Sorry!
+            path (Optional[:class:`pathlib.Path`]): Path of created file. If ``None``, make a file within
+                the ``DATADIR`` within the user directory (typically ``~/autopilot/data``) using the subject ID as the filename.
+                (eg. ``~/autopilot/data/{id}.h5``)
 
         Returns:
             :class:`.Subject` , Newly Created.
         """
+        if path is None:
+            path = Path(prefs.get('DATADIR')).resolve() / (bio.id + '.h5')
+        else:
+            path = Path(path)
+            assert path.suffix == '.h5'
+
+        if path.exists():
+            raise FileExistsError(f"A subject file for {bio.id} already exists at {path}!")
+
+        h5f = tables.open_file(filename=str(path), mode='w')
+
+        # make basic structure
+        structure.make(h5f)
+
+        info_node = h5f.get_node(structure.info.path)
+        for k, v in bio.dict().items():
+            info_node._v_attrs[k] = v
+
+        # compatibility - double `id` as name
+        info_node._v_attrs['name'] = bio.id
+
+        # create initial values for task status
+        task_node = h5f.get_node(structure.task.path)
+        for k, v in Task_Status().dict().items():
+            task_node._v_attrs[k] = v
+
+        h5f.close()
+
+        return Subject(name=bio.id, file=path)
+
+
+
+
+
+
+
+
 
     def new_subject_file(self, biography:Biography, structure: Subject_Structure):
         """
@@ -312,8 +363,7 @@ class Subject(object):
             for k, v in biography.dict():
                 info_node._v_attrs[k] = v
 
-        h5f.root.info._v_attrs['name'] = self.name
-        h5f.root.info._v_attrs['session'] = 0
+
 
         self.close_hdf(h5f)
 

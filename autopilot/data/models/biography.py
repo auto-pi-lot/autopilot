@@ -21,7 +21,7 @@ We are following the Neurodata Without Borders suggestions here, but note that t
 are not prescriptive and will be happily expanded whenever needed.
 """
 
-ZYGOSITY = Literal['Heterozygous', 'Homozygous']
+ZYGOSITY = Literal['heterozygous', 'homozygous']
 
 class Enclosure(Data):
     """
@@ -29,7 +29,7 @@ class Enclosure(Data):
     """
     box: Optional[typing.Union[str, int]] = Field(None, description="The number or name of the box this subject lives in, if any")
     building: Optional[str] = Field(None, description="The name of the building that the subject is housed in")
-    room: Optional[str] = Field(None, description="The room number that the animal is housed in")
+    room: Optional[Union[str,int]] = Field(None, description="The room number that the animal is housed in")
 
 
 class Breeding(Data):

@@ -143,6 +143,11 @@ class _Weight_Table(H5F_Table):
         super().__init__(description=Weight_Table, **data)
 
 
+class Task_Status(Attributes):
+    current_trial: int = 0
+    session: int = 0
+    task: typing.Optional[dict] = None
+
 
 class Subject_Structure(Schema):
     """
@@ -150,6 +155,7 @@ class Subject_Structure(Schema):
     """
     info = H5F_Group(path='/info', title="Subject Biographical Information")
     data = H5F_Group(path='/data', filters=tables.Filters(complevel=6, complib='blosc:lz4'))
+    task = H5F_Group(path='/task', title="Metadata for the currently assigned task")
     history = H5F_Group(path='/history', children=[
         H5F_Group(path='/history/past_protocols', title='Past Protocol Files'),
         _Hash_Table(path='/history/hashes', title="Git commit hash history"),
