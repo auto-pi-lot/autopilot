@@ -47,6 +47,8 @@ from autopilot.networking import Net_Node, Terminal_Station
 from autopilot.utils.invoker import get_invoker
 from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog, Stream_Video, Plugins
 from autopilot.core.loggers import init_logger
+from autopilot.gui.widgets.model import Model_Filler_Dialogue
+from autopilot.data.models.biography import Biography
 
 # Try to import viz, but continue if that doesn't work
 IMPORTED_VIZ = False
@@ -264,10 +266,12 @@ class Terminal(QtWidgets.QMainWindow):
         # Add "New Pilot" and "New Protocol" actions to File menu
         new_pilot_act = QtWidgets.QAction("New &Pilot", self, triggered=self.new_pilot)
         new_prot_act  = QtWidgets.QAction("New Pro&tocol", self, triggered=self.new_protocol)
+        new_subject = QtWidgets.QAction("New &Subject", self, triggered=self.new_subject)
         #batch_create_subjects = QtWidgets.QAction("Batch &Create subjects", self, triggered=self.batch_subjects)
         # TODO: Update pis
         self.file_menu.addAction(new_pilot_act)
         self.file_menu.addAction(new_prot_act)
+        self.file_menu.addAction(new_subject)
         #self.file_menu.addAction(batch_create_subjects)
 
         # Create a Tools menu
@@ -740,6 +744,10 @@ class Terminal(QtWidgets.QMainWindow):
                 protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), placeholder_name + '.json')
                 with open(protocol_file, 'w') as pfile_open:
                     json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
+
+    def new_subject(self):
+        new_subject = Model_Filler_Dialogue(Biography)
+        new_subject.exec_()
 
     def subject_weights(self):
         """

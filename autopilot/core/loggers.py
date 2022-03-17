@@ -96,9 +96,6 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 
                 module_name = f"{_module_name}_{str(p_num).zfill(2)}"
 
-
-
-
         # get name of object if it has one
         if hasattr(instance, 'id'):
             object_name = str(instance.id)
@@ -145,55 +142,68 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             # base filename is the module_name + '.log
             base_filename = Path(prefs.get('LOGDIR')) / (module_name + '.log')
 
-            # if directory doesn't exist, try to make it
-            if not base_filename.parent.exists():
-                base_filename.parent.mkdir(parents=True, exist_ok=True)
-
-            try:
-                fh = RotatingFileHandler(
-                    str(base_filename),
-                    mode='a',
-                    maxBytes=int(prefs.get('LOGSIZE')),
-                    backupCount=int(prefs.get('LOGNUM'))
-                )
-            except PermissionError as e:
-                # catch permissions errors, try to chmod our way out of it
-                try:
-                    for mod_file in Path(base_filename).parent.glob(f"{Path(base_filename).stem}*"):
-                        os.chmod(mod_file, 0o777)
-                        warnings.warn(f'Couldnt access {mod_file}, changed permissions to 0o777')
-
-                    fh = RotatingFileHandler(
-                        base_filename,
-                        mode='a',
-                        maxBytes=int(prefs.get('LOGSIZE')),
-                        backupCount=int(prefs.get('LOGNUM'))
-                    )
-                except Exception as f:
-                    raise PermissionError(f'Couldnt open logfile {base_filename}, and couldnt chmod our way out of it.\n'+'-'*20+f'\ngot errors:\n{e}\n\n{f}\n'+'-'*20)
-
+            fh = _file_handler(base_filename)
             fh.setLevel(loglevel)
             fh.setFormatter(log_formatter)
             parent_logger.addHandler(fh)
 
             # rich logging handler for stdout
-            rich_handler = RichHandler(rich_tracebacks=True, markup=True)
-            rich_formatter = logging.Formatter(
-                "[bold green]\[%(name)s][/bold green] %(message)s",
-                datefmt='[%y-%m-%dT%H:%M:%S]'
-            )
-            rich_handler.setFormatter(rich_formatter)
-            parent_logger.addHandler(rich_handler)
+            parent_logger.addHandler(_rich_handler())
+
+            # if our parent is the rootlogger, disable propagation to avoid printing to stdout
+            if isinstance(parent_logger.parent, logging.RootLogger):
+                parent_logger.propagate = False
 
             ## log creation
             globals()['_LOGGERS'].append(module_name)
             parent_logger.info(f'parent, module-level logger created: {module_name}')
 
         logger = logging.getLogger(logger_name)
+        # logger.addHandler(_rich_handler())
         logger.info(f"Logger created: {logger_name}")
 
     return logger
 
+
+def _rich_handler() -> RichHandler:
+    rich_handler = RichHandler(rich_tracebacks=True, markup=True)
+    rich_formatter = logging.Formatter(
+        "[bold green]\[%(name)s][/bold green] %(message)s",
+        datefmt='[%y-%m-%dT%H:%M:%S]'
+    )
+    rich_handler.setFormatter(rich_formatter)
+    return rich_handler
+
+def _file_handler(base_filename: Path) -> RotatingFileHandler:
+    # if directory doesn't exist, try to make it
+    if not base_filename.parent.exists():
+        base_filename.parent.mkdir(parents=True, exist_ok=True)
+
+    try:
+        fh = RotatingFileHandler(
+            str(base_filename),
+            mode='a',
+            maxBytes=int(prefs.get('LOGSIZE')),
+            backupCount=int(prefs.get('LOGNUM'))
+        )
+    except PermissionError as e:
+        # catch permissions errors, try to chmod our way out of it
+        try:
+            for mod_file in Path(base_filename).parent.glob(f"{Path(base_filename).stem}*"):
+                os.chmod(mod_file, 0o777)
+                warnings.warn(f'Couldnt access {mod_file}, changed permissions to 0o777')
+
+            fh = RotatingFileHandler(
+                base_filename,
+                mode='a',
+                maxBytes=int(prefs.get('LOGSIZE')),
+                backupCount=int(prefs.get('LOGNUM'))
+            )
+        except Exception as f:
+            raise PermissionError(
+                f'Couldnt open logfile {base_filename}, and couldnt chmod our way out of it.\n' + '-' * 20 + f'\ngot errors:\n{e}\n\n{f}\n' + '-' * 20)
+
+    return fh
 
 # --------------------------------------------------
 # Parsers and in-memory representation of logs
