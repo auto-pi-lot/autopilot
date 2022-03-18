@@ -56,6 +56,16 @@ class Table(Data):
         from autopilot.data.interfaces.tables import model_to_table
         return model_to_table(cls)
 
+    @classmethod
+    def from_pytables_description(cls, description:typing.Type[tables.IsDescription]) -> 'Table':
+        """
+        Create an instance of a table from a pytables description
+        """
+        from autopilot.data.interfaces.tables import table_to_model
+        return table_to_model(description, cls)
+
+
+
 
 class Attributes(Data):
     """A set of attributes that's intended to be singular, rather than made into a table."""

@@ -4,10 +4,9 @@ Interfaces for pytables and hdf5 generally
 import typing
 from abc import abstractmethod
 from typing import Optional, List
-from datetime import datetime
+from pydantic import create_model
 
-if typing.TYPE_CHECKING:
-    from datetime import datetime
+from datetime import datetime
 
 import tables
 
@@ -27,6 +26,10 @@ class H5F_Node(Autopilot_Type):
     title:Optional[str]=''
     filters:Optional[tables.filters.Filters]=None
     attrs:Optional[dict]=None
+
+    def __init__(self, **data):
+        self._init_logger()
+        super().__init__(**data)
 
     @property
     def parent(self) -> str:
@@ -86,12 +89,14 @@ class H5F_Group(H5F_Node):
             group = h5f.create_group(self.parent, self.name,
                              title=self.title, createparents=True,
                              filters=self.filters)
+            self._logger.debug(f"Made group {'/'.join([self.parent, self.name])}")
             if self.attrs is not None:
                 group._v_attrs.update(self.attrs)
 
         if self.children is not None:
             for c in self.children:
                 c.make(h5f)
+        h5f.flush()
 
 
 class H5F_Table(H5F_Node):
@@ -109,12 +114,66 @@ class H5F_Table(H5F_Node):
             node = h5f.get_node(self.path)
             if not isinstance(node, tables.table.Table):
                 raise ValueError(f'{self.path} already exists, but it isnt a Table! instead its a {type(node)}')
+            elif node.description._v_names != list(self.description.columns.keys()):
+                self._logger.warning(f"Found existing table with columns {node.description._v_names}, but requested a table with {list(self.description.columns.keys())}, remaking.")
+                self._remake_table(h5f)
+
         except tables.exceptions.NoSuchNodeError:
             tab = h5f.create_table(self.parent, self.name, self.description,
                              title=self.title, filters=self.filters,
                              createparents=True,expectedrows=self.expectedrows)
+            self._logger.debug(f"Made table {'/'.join([self.parent, self.name])}")
             if self.attrs is not None:
                 tab._v_attrs.update(self.attrs)
+        h5f.flush()
+
+    def _remake_table(self, h5f:tables.file.File):
+        """Remake an existing table, preserving original data. Mostly for adding new columns"""
+        # existing table
+        old_tab = h5f.get_node(self.path)
+
+        # new table
+        tmp_name = f"{self.name}_tmp"
+        new_tab = h5f.create_table(self.parent, tmp_name, self.description,
+                                   title=self.title, filters=self.filters,
+                                   createparents=True,expectedrows=self.expectedrows)
+
+        # check which columns to read and whether we should keep the old table
+        old_cols = old_tab.colnames
+        new_cols = new_tab.colnames
+        remove_old = False
+        would_lose = list(set(old_cols)-set(new_cols))
+        to_keep = list(set(old_cols).union(new_cols))
+        backup_name = f'{self.name}_bak--0'
+        if len(would_lose) > 0:
+            while backup_name in old_tab._v_parent._v_children.keys():
+                name_pieces = backup_name.split('--')
+                backup_name = '--'.join([*name_pieces[:-1],str(int(name_pieces[-1])+1)])
+
+            self._logger.warning(f"Updating table would delete columns {would_lose}, keeping as {backup_name}")
+
+        else:
+            remove_old = True
+
+        # create new rows
+        for i in range(old_tab.nrows):
+            new_tab.row.append()
+        new_tab.flush()
+
+        # copy columns
+        for add_column in to_keep:
+            getattr(new_tab.cols, add_column)[:] = getattr(old_tab.cols, add_column)[:]
+        new_tab.flush()
+
+        # move or delete old table
+        if remove_old:
+            self._logger.debug(f'Removing table {old_tab}')
+            old_tab.remove()
+        else:
+            old_tab.move(self.parent, backup_name)
+
+        # move new table
+        new_tab.move(self.parent, self.name)
 
     class Config:
         fields = {'description': {'exclude': True}}
@@ -167,3 +226,39 @@ def model_to_table(table: typing.Type['Table']) -> typing.Type[tables.IsDescript
     return description
 
 
+_NUMPY_TO_BUILTIN = {
+    'b': bool,
+    'i': int,
+    'u': int,
+    'f': float,
+    'c': complex,
+    'M': datetime,
+    'O': str,
+    'S': str,
+    'U': str
+}
+"""
+Mapping between dtype.kind and builtin types
+
+see https://numpy.org/doc/stable/reference/generated/numpy.dtype.kind.html#numpy.dtype.kind
+
+"""
+
+def table_to_model(description: typing.Type[tables.IsDescription], cls:typing.Type['Table']) -> 'Table':
+    """
+    Make a pydantic :class:`.modeling.base.Table` from a :class:`tables.IsDescription`
+
+    Args:
+        description (:class:`tables.IsDescription`): to convert
+        cls (:class:`.modeling.base.Table`): Subclass of Table to make
+
+    Returns:
+        Subclass of Table
+    """
+    description_dict = {}
+    for key, col in description.columns.items():
+        python_type = _NUMPY_TO_BUILTIN[col.dtype.kind]
+        description_dict[key] = (python_type, ...)
+
+    model = create_model(cls.__name__, __base__=cls, **description_dict)
+    return model

@@ -7,7 +7,7 @@ from autopilot.data.models import biography
 from autopilot.data.subject import Subject
 from autopilot import prefs
 
-from .fixtures import dummy_biography
+from .fixtures import dummy_biography, default_dirs
 
 def test_new(dummy_biography: biography.Biography, default_dirs):
     """

@@ -2,7 +2,7 @@ import typing
 from typing import Optional, Type
 
 import tables
-from pydantic import Field
+from pydantic import Field, create_model
 
 import autopilot
 from autopilot.root import Autopilot_Type
@@ -10,6 +10,7 @@ from autopilot.data.interfaces.tables import H5F_Group, H5F_Table
 from autopilot.data.modeling.base import Table
 # from autopilot.data.models.subject import Subject_Schema
 from autopilot.stim.sound.sounds import STRING_PARAMS
+
 
 class Task_Params(Autopilot_Type):
     """
@@ -40,18 +41,20 @@ class Step_Group(H5F_Group):
     step: int
     path: str
     trial_data: Optional[Type[Trial_Data]] = Trial_Data
-    continuous_data: Optional[H5F_Group] = None
+    continuous_group: Optional[H5F_Group] = None
 
     def __init__(self,
                  step: int,
+                 group_path: str,
                  step_dict: Optional[dict] = None,
                  step_name: Optional[str] = None,
                  trial_data: Optional[Type[Trial_Data]] = None,
-                 group_path: Optional[str] = '/data'):
+                 **data):
+        self._init_logger()
         if step_name is None and step_dict is None:
             raise ValueError('Need to give us something that will let us identify where to make this table!')
 
-        if step_name is not None:
+        if step_name is None:
             step_name = step_dict['step_name']
 
         if trial_data is None and step_dict:
@@ -59,6 +62,10 @@ class Step_Group(H5F_Group):
             task_class = autopilot.get_task(step_dict['task_type'])
             if hasattr(task_class, 'TrialData'):
                 trial_data = task_class.TrialData
+                if issubclass(trial_data, tables.IsDescription):
+                    self._logger.warning("Using pytables descriptions as TrialData is deprecated! Update to the pydantic TrialData model! Converting to TrialData class")
+                    trial_data = Trial_Data.from_pytables_description(trial_data)
+
             else:
                 trial_data = Trial_Data
         else:
@@ -68,15 +75,27 @@ class Step_Group(H5F_Group):
         if step_dict and 'stim' in step_dict.keys():
             trial_data = self._make_stim_descriptors(step_dict['stim'], trial_data)
 
+        # make group descriptions and children to prepare for ``make``
         group_name = f"S{step:02d}_{step_name}"
         path = '/'.join([group_path, group_name])
 
         continuous_group = H5F_Group(path='/'.join([path, 'continuous_data']))
+        trial_table = H5F_Table(path='/'.join([path, 'trial_data']),
+                                description=trial_data.to_pytables_description(),
+                                title='Trial Data')
+
+        super().__init__(
+            path = path,
+            step_name = step_name,
+            step = step,
+            trial_data = trial_data,
+            continuous_group = continuous_group,
+            children = [trial_table, continuous_group],
+            **data
+        )
 
 
-
-    def _make_stim_descriptors(self, stim:dict, descriptor:tables.IsDescription) -> tables.IsDescription:
-        # FIXME: this sucks. fix when tasks and stimuli have better models.
+    def _make_stim_descriptors(self, stim:dict, trial_data: Type[Trial_Data]) -> Type[Trial_Data]:
         if 'groups' in stim.keys():
             # managers have stim nested within groups, but this is still really ugly
             sound_params = {}
@@ -85,10 +104,9 @@ class Step_Group(H5F_Group):
                     for sound in sounds:
                         for k, v in sound.items():
                             if k in STRING_PARAMS:
-                                sound_params[k] = tables.StringCol(1024)
+                                sound_params[k] = (str, ...)
                             else:
-                                sound_params[k] = tables.Float64Col()
-            descriptor.columns.update(sound_params)
+                                sound_params[k] = (float, ...)
 
         elif 'sounds' in stim.keys():
             # for now we just assume they're floats
@@ -98,21 +116,16 @@ class Step_Group(H5F_Group):
                 for sound in sounds:
                     for k, v in sound.items():
                         if k in STRING_PARAMS:
-                            sound_params[k] = tables.StringCol(1024)
+                            sound_params[k] = (str, ...)
                         else:
-                            sound_params[k] = tables.Float64Col()
-            descriptor.columns.update(sound_params)
+                            sound_params[k] = (float, ...)
 
-        return descriptor
+        else:
+            raise ValueError(f'Dont know how to handle stim like {stim}')
 
+        trial_data = create_model('Trial_Data', __base__ = trial_data, **sound_params)
+        return trial_data
 
-
-
-
-
-
-    def make(self):
-        pass
 
 
 class Protocol_Group(H5F_Group):
@@ -141,10 +154,8 @@ class Protocol_Group(H5F_Group):
     """
     protocol_name: str
     protocol: typing.List[dict]
-    groups: typing.List[H5F_Group]
     tabs: typing.List[H5F_Table]
     steps: typing.List[Step_Group]
-    trial_tabs: typing.List[H5F_Table]
 
     def __init__(self,
                  protocol_name: str,
@@ -154,70 +165,21 @@ class Protocol_Group(H5F_Group):
         Override default __init__ method to populate a task's groups
 
         """
-        path = '/data'
-        groups = []
+        path = f'/data/{protocol_name}'
         steps = []
-        trial_tabs = []
         _tables = []
 
         for i, step in enumerate(protocol):
-            # group for this step
-            step_name = step['step_name']
-            group_name = f"S{i:02d}_{step_name}"
-            group_path = '/'.join([path, group_name])
-            group = H5F_Group(path=group_path)
-            groups.append(group)
-            steps.append(group)
-
-            # group for continuous data
-            groups.append(H5F_Group(path='/'.join([group_path, 'continuous_data'])))
-
-            # make trialData table if present
-            task_class = autopilot.get_task(step['task_type'])
-            if hasattr(task_class, 'TrialData'):
-                trial_tab = self._trial_table(
-                    trial_descriptor=task_class.TrialData,
-                    step=step, group_path=group_path
-                )
-
-            else:
-                class BaseDescriptor(tables.IsDescription):
-                    session = tables.Int32Col()
-                    trial_num = tables.Int32Col()
-
-                trial_tab = self._trial_table(
-                    trial_descriptor=BaseDescriptor,
-                    step=step, group_path=group_path
-                )
-            _tables.append(trial_tab)
-            trial_tabs.append(trial_tab)
+            step_group = Step_Group(step=i, group_path=path, step_dict=step)
+            steps.append(step_group)
 
         super().__init__(
+            path=path,
             protocol_name=protocol_name,
             protocol=protocol,
-            groups=groups,
             tabs=_tables,
             steps=steps,
-            trial_tabs=trial_tabs,
+            children=steps,
             **data)
-
-    def make(self, h5f:tables.file.File):
-        for group in self.groups:
-            group.make(h5f)
-        for tab in self.tabs:
-            tab.make(h5f)
-
-    def _trial_table(self, trial_descriptor:tables.IsDescription, step, group_path) -> H5F_Table:
-        # add a session column, everyone needs a session column
-        if 'session' not in trial_descriptor.columns.keys():
-            trial_descriptor.columns.update({'session': tables.Int32Col()})
-        # same thing with trial_num
-        if 'trial_num' not in trial_descriptor.columns.keys():
-            trial_descriptor.columns.update({'trial_num': tables.Int32Col()})
-        if 'stim' in step.keys():
-            trial_descriptor = self._make_stim_descriptors(step['stim'], trial_descriptor)
-
-        return H5F_Table(path='/'.join([group_path, 'trial_data']),
-                         description=trial_descriptor)
 
 

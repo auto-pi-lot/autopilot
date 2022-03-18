@@ -4,9 +4,11 @@ Abstract Root Objects from which all other autopilot objects inherit from.
 These objects are not intended to be instantiated on their own,
 and this module should not import from any other autopilot module
 """
+import logging
+from logging import Logger
+import typing
 
-from pydantic import BaseModel, BaseSettings
-
+from pydantic import BaseModel, BaseSettings, PrivateAttr
 
 def no_underscore_all_caps(input: str) -> str:
     """
@@ -28,6 +30,12 @@ class Autopilot_Type(BaseModel):
     """
     Root autopilot model for types
     """
+    _logger: typing.Optional[Logger] = PrivateAttr()
+
+
+    def _init_logger(self):
+        from autopilot.core.loggers import init_logger
+        self._logger = init_logger(self)
 
 
 
