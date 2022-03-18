@@ -13,7 +13,8 @@ import tables
 
 from autopilot import Autopilot_Type
 from autopilot.data.interfaces.base import Interface, Interface_Mapset, Interface_Map, Interface
-from autopilot.data.modeling.base import Table
+if typing.TYPE_CHECKING:
+    from autopilot.data.modeling.base import Table
 
 _datetime_conversion: typing.Callable[[datetime], str] = lambda x: x.isoformat()
 
@@ -146,7 +147,7 @@ class Tables_Interface(Interface):
         pass
 
 
-def model_to_table(table: Table) -> tables.IsDescription:
+def model_to_table(table: typing.Type['Table']) -> typing.Type[tables.IsDescription]:
     """
     Make a table description from the type annotations in a model
 
@@ -162,7 +163,7 @@ def model_to_table(table: Table) -> tables.IsDescription:
         type_str = field.type_.__name__
         cols[key] = Tables_Mapset.get(type_str)
 
-    description = type(table.__name__, (tables.IsDescription,), cols) # type: tables.IsDescription
+    description = type(table.__name__, (tables.IsDescription,), cols) # type: typing.Type[tables.IsDescription]
     return description
 
 

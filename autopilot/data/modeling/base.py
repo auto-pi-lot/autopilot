@@ -3,6 +3,9 @@ Base classes for data models -- the ``Data`` class itself.
 """
 import typing
 from typing import Optional, List
+
+import tables
+
 from autopilot.root import Autopilot_Type
 
 class Data(Autopilot_Type):
@@ -44,6 +47,15 @@ class Data(Autopilot_Type):
 
 class Table(Data):
     """To be made into a table!"""
+
+    @classmethod
+    def to_pytables_description(cls) -> typing.Type[tables.IsDescription]:
+        """
+        Convert the fields of this table to a pytables description
+        """
+        from autopilot.data.interfaces.tables import model_to_table
+        return model_to_table(cls)
+
 
 class Attributes(Data):
     """A set of attributes that's intended to be singular, rather than made into a table."""

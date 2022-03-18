@@ -171,3 +171,5 @@ class Subject_Structure(Schema):
         """
         for _, node in self._iter():
             node.make(h5f)
+
+

@@ -364,7 +364,7 @@ class Log(Autopilot_Type):
 
         Args:
             file (:class:`pathlib.Path`, str): If string, converted to Path. If relative (and relative file is not found),
-                then attempts to find relative to ``prefs.LOGLEVEL``
+                then attempts to find relative to ``prefs.LOGDIR``
             include_backups (bool): if ``True`` (default), try and load all of the backup logfiles (that have .1, .2, etc appended)
             parse_messages (Optional[str]): Parse messages with the :data:`.MESSAGE_FORMATS` key or format string
 
@@ -373,8 +373,11 @@ class Log(Autopilot_Type):
         """
         file = Path(file)
         if not file.exists():
-            relfile = file.relative_to(prefs.get('LOGDIR'))
-            if not file.exists():
+            if file.is_absolute():
+                relfile = file.relative_to(prefs.get('LOGDIR'))
+            else:
+                relfile = Path(prefs.get('LOGDIR')) / file
+            if not relfile.exists():
                 raise ParseError(f"Could not find input file either as an absolute path, or path relative to LOGDIR, got path {str(file)}")
             file = relfile
 
