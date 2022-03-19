@@ -9,6 +9,7 @@ models should the need arise.
 import threading
 import datetime
 import json
+import uuid
 import warnings
 import typing
 from copy import copy
@@ -23,7 +24,8 @@ from tables.nodes import filenode
 
 import autopilot
 from autopilot import prefs
-from autopilot.data.models.subject import Subject_Structure, Task_Status
+from autopilot.data.modeling.base import Table
+from autopilot.data.models.subject import Subject_Structure, Protocol_Status, Hashes, History, Weights
 from autopilot.data.models.biography import Biography
 from autopilot.data.models.protocol import Protocol_Group
 from autopilot.core.loggers import init_logger
@@ -92,8 +94,6 @@ class Subject(object):
                  name: str=None,
                  dir: Optional[Path] = None,
                  file: Optional[Path] = None,
-                 new: bool=False,
-                 biography: Biography=None,
                  structure: Subject_Structure = Subject_Structure()):
         """
         Args:
@@ -133,41 +133,12 @@ class Subject(object):
         self.logger = init_logger(self)
         self.file = file
 
-        if new or not self.file.exists():
-            new = True
-            self.structure = structure
-            self.new_subject_file(biography, structure)
-        else:
-            with self._h5f as h5f:
-                self.structure.make(h5f)
+        # make sure we have the expected structure
+        with self._h5f as h5f:
+            self.structure.make(h5f)
 
+        self._session_uuid = None
 
-        h5f = self.open_hdf()
-
-        # If subject has a protocol, load it to a dict
-        self.current = None
-        self.step    = None
-        self.protocol_name = None
-        if "/current" in h5f:
-            # We load the info from 'current' but don't keep the node open
-            # Stash it as a dict so better access from Python
-            current_node = filenode.open_node(h5f.root.current)
-            protocol_string = current_node.readall()
-            self.current = json.loads(protocol_string)
-            self.step = int(current_node.attrs['step'])
-            self.protocol_name = current_node.attrs['protocol_name']
-        elif not new:
-            # if we're not being created for the first time, warn that there is no protocol assigned to the subject
-            self.logger.warning('Subject has no protocol assigned!')
-
-        # get last session number if we have it
-        try:
-            self.session = int(h5f.root.info._v_attrs['session'])
-        except KeyError:
-            self.session = None
-
-        # We will get handles to trial and continuous data when we start running
-        self.current_trial  = None
 
         # Is the subject currently running (ie. we expect data to be incoming)
         # Used to keep the subject object alive, otherwise we close the file whenever we don't need it
@@ -178,19 +149,16 @@ class Subject(object):
         self._thread = None
         self.did_graduate = threading.Event()
 
-        # Every time we are initialized we stash the git hash
-        history_row = h5f.root.history.hashes.row
-        history_row['time'] = self.get_timestamp()
-        try:
-            history_row['hash'] = prefs.get('HASH')
-            # FIXME: less implicit way of getting hash plz
-        except AttributeError:
-            history_row['hash'] = ''
-        history_row.append()
-
-        # we have to always open and close the h5f
-        self.close_hdf(h5f)
-
+        with self._h5f as h5f:
+            # Every time we are initialized we stash the git hash
+            history_row = h5f.root.history.hashes.row
+            history_row['time'] = self._get_timestamp()
+            try:
+                history_row['hash'] = prefs.get('HASH')
+                # FIXME: less implicit way of getting hash plz
+            except AttributeError:
+                history_row['hash'] = ''
+            history_row.append()
 
     @property
     @contextmanager
@@ -217,7 +185,6 @@ class Subject(object):
                 h5f.close()
         # return _h5f_context()
 
-
     @property
     def info(self) -> Biography:
         """
@@ -234,6 +201,113 @@ class Subject(object):
 
         return Biography(**biodict)
 
+    @property
+    def protocol(self) -> Protocol_Status:
+        with self._h5f as h5f:
+            protocol = h5f.get_node(self.structure.protocol.path)
+            protocoldict = {}
+            for k in protocol._v_attrs._f_list():
+                protocoldict[k] = protocol._v_attrs[k]
+
+        return Protocol_Status(**protocoldict)
+
+    @protocol.setter
+    def protocol(self, protocol:Protocol_Status):
+        # TODO: Log this in history table
+        with self._h5f as h5f:
+            protocol_node = h5f.get_node(self.structure.protocol.path)
+            for k, v in protocol.dict():
+                protocol_node._v_attrs[k] = v
+
+        self.logger.debug(f"Saved new protocol status {Protocol_Status}")
+
+    @property
+    def protocol_name(self) -> str:
+        return self.protocol.protocol_name
+
+    @property
+    def current_trial(self) -> int:
+        return self.protocol.current_trial
+
+    @current_trial.setter
+    def current_trial(self, current_trial:int):
+        protocol = self.protocol
+        protocol.current_trial = current_trial
+        self.protocol = protocol
+
+    @property
+    def session(self) -> int:
+        return self.protocol.session
+
+    @session.setter
+    def session(self, session: int):
+        protocol = self.protocol
+        protocol.session = session
+        self.protocol = protocol
+
+    @property
+    def step(self) -> int:
+        return self.protocol.step
+
+    @step.setter
+    def step(self, step: int):
+        protocol = self.protocol
+        protocol.step = step
+        self.protocol = protocol
+
+    @property
+    def task(self) -> dict:
+        return self.protocol.protocol[self.step]
+
+    @property
+    def session_uuid(self) -> str:
+        if self._session_uuid is None:
+            self._session_uuid = str(uuid.uuid4())
+        return self._session_uuid
+
+    @property
+    def history(self) -> History:
+        return self._read_table('/history/history', History)
+
+    @property
+    def hashes(self) -> Hashes:
+        return self._read_table('/history/hashes', Hashes)
+
+    @property
+    def weights(self) -> Weights:
+        return self._read_table('/history/weights', Weights)
+
+
+    def _write_attrs(self, path: str, attrs:dict):
+        with self._h5f as h5f:
+            try:
+                node = h5f.get_node(path)
+
+            except tables.exceptions.NoSuchNodeError:
+                pathpieces = path.split('/')
+                parent = '/' + '/'.join(pathpieces[:-1])
+                node = h5f.create_group(parent, pathpieces[-1],
+                                     title=pathpieces[-1], createparents=True)
+            for k, v in attrs.items():
+                node._v_attrs[k] = v
+
+            h5f.flush()
+
+    def _read_table(self, path:str, table:typing.Type[Table]) -> typing.Union[Table,pd.DataFrame]:
+        with self._h5f as h5f:
+            tab = h5f.get_node(path).read() # type: np.ndarray
+
+        # unpack table to a dataframe
+        df = pd.DataFrame.from_records(tab)
+        for col in df.columns:
+            if df[col].dtype == 'O':
+                df[col] = df[col].str.decode("utf-8")
+
+        try:
+            return table(**df.to_dict(orient='list'))
+        except Exception as e:
+            self.logger.exception(f"Could not make table from loaded data, returning dataframe")
+            return df
 
 
     def open_hdf(self, mode='r+'):
@@ -308,6 +382,7 @@ class Subject(object):
         if path.exists():
             raise FileExistsError(f"A subject file for {bio.id} already exists at {path}!")
 
+        # use the open_file command directly here because we use mode="w"
         h5f = tables.open_file(filename=str(path), mode='w')
 
         # make basic structure
@@ -321,65 +396,12 @@ class Subject(object):
         info_node._v_attrs['name'] = bio.id
 
         # create initial values for task status
-        task_node = h5f.get_node(structure.task.path)
-        for k, v in Task_Status().dict().items():
-            task_node._v_attrs[k] = v
+        task_node = h5f.get_node(structure.protocol.path)
 
         h5f.close()
 
         return Subject(name=bio.id, file=path)
 
-
-
-
-
-
-
-
-
-    def new_subject_file(self, biography:Biography, structure: Subject_Structure):
-        """
-        Create a new subject file and make the general filestructure.
-
-        If a file already exists, open it in append mode, otherwise create it.
-
-        Args:
-            biography (dict): Biographical details like DOB, mass, etc.
-                Typically created by :class:`~.gui.New_Subject_Wizard.Biography_Tab`.
-        """
-        # If a file already exists, we open it for appending so we don't lose data.
-        # For now we are assuming that the existing file has the basic structure,
-        # but that's probably a bad assumption for full reliability
-        if self.file.exists():
-            h5f = self.open_hdf(mode='a')
-        else:
-            h5f = self.open_hdf(mode='w')
-
-        structure.make(h5f)
-
-        # Save biographical information as node attributes
-        if biography:
-            info_node = h5f.get_node(structure.info.path)
-            for k, v in biography.dict():
-                info_node._v_attrs[k] = v
-
-
-
-        self.close_hdf(h5f)
-
-
-    def update_biography(self, params):
-        """
-        Change or make a new biographical attribute, stored as
-        attributes of the `info` group.
-
-        Args:
-            params (dict): biographical attributes to be updated.
-        """
-        h5f = self.open_hdf()
-        for k, v in params.items():
-            h5f.root.info._v_attrs[k] = v
-        _ = self.close_hdf(h5f)
 
     def update_history(self, type, name:str, value:typing.Any, step=None):
         """
@@ -432,7 +454,7 @@ class Subject(object):
         h5f = self.open_hdf()
         history_row = h5f.root.history.history.row
 
-        history_row['time'] = self.get_timestamp(simple=True)
+        history_row['time'] = self._get_timestamp(simple=True)
         history_row['type'] = type
         history_row['name'] = name
         history_row['value'] = value
@@ -567,19 +589,10 @@ class Subject(object):
 
         Stored as the date that it was changed followed by its name if it has one
         """
-        h5f = self.open_hdf()
-        try:
-            protocol_name = h5f.get_node_attr('/current', 'protocol_name')
-            archive_name = '_'.join([self.get_timestamp(simple=True), protocol_name])
-        except AttributeError:
-            warnings.warn("protocol_name attribute couldn't be accessed, using timestamp to stash protocol")
-            archive_name = self.get_timestamp(simple=True)
 
-        archive_node = filenode.new_node(h5f, where='/history/past_protocols', name=archive_name)
-        archive_node.write(json.dumps(self.current).encode('utf-8'))
+        archive_name = f"{self._get_timestamp(simple=True)}_{self.protocol_name}"
+        self._write_attrs('/history/past_protocols/'+archive_name, self.protocol.dict())
 
-        h5f.remove_node('/current')
-        self.close_hdf(h5f)
         self.logger.debug('current protocol stashed')
 
     def prepare_run(self):
@@ -760,147 +773,146 @@ class Subject(object):
             queue (:class:`queue.Queue`): passed by :meth:`~.Subject.prepare_run` and used by other
                 objects to pass data to be stored.
         """
-        h5f = self.open_hdf()
+        with self._h5f as h5f:
 
-        task_params = self.current[self.step]
-        step_name = task_params['step_name']
+            task_params = self.current[self.step]
+            step_name = task_params['step_name']
 
-        # file structure is '/data/protocol_name/##_step_name/tables'
-        group_name = f"/data/{self.protocol_name}/S{self.step:02d}_{step_name}"
-        #try:
-        trial_table = h5f.get_node(group_name, 'trial_data')
-        trial_keys = trial_table.colnames
-        trial_row = trial_table.row
+            # file structure is '/data/protocol_name/##_step_name/tables'
+            group_name = f"/data/{self.protocol_name}/S{self.step:02d}_{step_name}"
+            #try:
+            trial_table = h5f.get_node(group_name, 'trial_data')
+            trial_keys = trial_table.colnames
+            trial_row = trial_table.row
 
-        # try to get continuous data table if any
-        cont_data = tuple()
-        cont_tables = {}
-        cont_rows = {}
-        try:
-            continuous_group = h5f.get_node(group_name, 'continuous_data')
-            session_group = h5f.get_node(continuous_group, 'session_{}'.format(self.session))
-            cont_data = continuous_group._v_attrs['data']
-
+            # try to get continuous data table if any
+            cont_data = tuple()
             cont_tables = {}
             cont_rows = {}
-        except AttributeError:
-            continuous_table = False
-
-        # start getting data
-        # stop when 'END' gets put in the queue
-        for data in iter(queue.get, 'END'):
-            # wrap everything in try because this thread shouldn't crash
             try:
-                # if we get continuous data, this should be simple because we always get a whole row
-                # there must be a more elegant way to check if something is a key and it is true...
-                # yet here we are
-                if 'continuous' in data.keys():
-                    for k, v in data.items():
-                        # if this isn't data that we're expecting, ignore it
-                        if k not in cont_data:
-                            continue
+                continuous_group = h5f.get_node(group_name, 'continuous_data')
+                session_group = h5f.get_node(continuous_group, 'session_{}'.format(self.session))
+                cont_data = continuous_group._v_attrs['data']
 
-                        # if we haven't made a table yet, do it
-                        if k not in cont_tables.keys():
-                            # make atom for this data
-                            try:
-                                # if it's a numpy array...
-                                col_atom = tables.Atom.from_type(v.dtype.name, v.shape)
-                            except AttributeError:
-                                temp_array = np.array(v)
-                                col_atom = tables.Atom.from_type(temp_array.dtype.name, temp_array.shape)
-                            # should have come in with a timestamp
-                            # TODO: Log if no timestamp is received
-                            try:
-                                temp_timestamp_arr = np.array(data['timestamp'])
-                                timestamp_atom = tables.Atom.from_type(temp_timestamp_arr.dtype.name,
-                                                                       temp_timestamp_arr.shape)
+                cont_tables = {}
+                cont_rows = {}
+            except AttributeError:
+                continuous_table = False
 
-                            except KeyError:
-                                self.logger.warning('no timestamp sent with continuous data')
+            # start getting data
+            # stop when 'END' gets put in the queue
+            for data in iter(queue.get, 'END'):
+                # wrap everything in try because this thread shouldn't crash
+                try:
+                    # if we get continuous data, this should be simple because we always get a whole row
+                    # there must be a more elegant way to check if something is a key and it is true...
+                    # yet here we are
+                    if 'continuous' in data.keys():
+                        for k, v in data.items():
+                            # if this isn't data that we're expecting, ignore it
+                            if k not in cont_data:
                                 continue
 
+                            # if we haven't made a table yet, do it
+                            if k not in cont_tables.keys():
+                                # make atom for this data
+                                try:
+                                    # if it's a numpy array...
+                                    col_atom = tables.Atom.from_type(v.dtype.name, v.shape)
+                                except AttributeError:
+                                    temp_array = np.array(v)
+                                    col_atom = tables.Atom.from_type(temp_array.dtype.name, temp_array.shape)
+                                # should have come in with a timestamp
+                                # TODO: Log if no timestamp is received
+                                try:
+                                    temp_timestamp_arr = np.array(data['timestamp'])
+                                    timestamp_atom = tables.Atom.from_type(temp_timestamp_arr.dtype.name,
+                                                                           temp_timestamp_arr.shape)
 
-                            cont_tables[k] = h5f.create_table(session_group, k, description={
-                                k: tables.Col.from_atom(col_atom),
-                                'timestamp': tables.Col.from_atom(timestamp_atom)
-                            })
-
-                            cont_rows[k] = cont_tables[k].row
-
-                        cont_rows[k][k] = v
-                        cont_rows[k]['timestamp'] = data['timestamp']
-                        cont_rows[k].append()
-
-                    # continue, the rest is for handling trial data
-                    continue
+                                except KeyError:
+                                    self.logger.warning('no timestamp sent with continuous data')
+                                    continue
 
 
+                                cont_tables[k] = h5f.create_table(session_group, k, description={
+                                    k: tables.Col.from_atom(col_atom),
+                                    'timestamp': tables.Col.from_atom(timestamp_atom)
+                                })
 
-                # Check if this is the same
-                # if we've already recorded a trial number for this row,
-                # and the trial number we just got is not the same,
-                # we edit that row if we already have some data on it or else start a new row
-                if 'trial_num' in data.keys():
-                    if (trial_row['trial_num']) and (trial_row['trial_num'] is None):
-                        trial_row['trial_num'] = data['trial_num']
+                                cont_rows[k] = cont_tables[k].row
 
-                    if (trial_row['trial_num']) and (trial_row['trial_num'] != data['trial_num']):
+                            cont_rows[k][k] = v
+                            cont_rows[k]['timestamp'] = data['timestamp']
+                            cont_rows[k].append()
 
-                        # find row with this trial number if it exists
-                        # this will return a list of rows with matching trial_num.
-                        # if it's empty, we didn't receive a TRIAL_END and should create a new row
-                        other_row = [r for r in trial_table.where("trial_num == {}".format(data['trial_num']))]
+                        # continue, the rest is for handling trial data
+                        continue
 
-                        if len(other_row) == 0:
-                            # proceed to fill the row below
-                            trial_row.append()
 
-                        elif len(other_row) == 1:
-                            # update the row and continue so we don't double write
-                            # have to be in the middle of iteration to use update()
-                            for row in trial_table.where("trial_num == {}".format(data['trial_num'])):
-                                for k, v in data.items():
-                                    if k in trial_keys:
-                                        row[k] = v
-                                row.update()
-                            continue
 
-                        else:
-                            # we have more than one row with this trial_num.
-                            # shouldn't happen, but we dont' want to throw any data away
-                            self.logger.warning('Found multiple rows with same trial_num: {}'.format(data['trial_num']))
-                            # continue just for data conservancy's sake
-                            trial_row.append()
+                    # Check if this is the same
+                    # if we've already recorded a trial number for this row,
+                    # and the trial number we just got is not the same,
+                    # we edit that row if we already have some data on it or else start a new row
+                    if 'trial_num' in data.keys():
+                        if (trial_row['trial_num']) and (trial_row['trial_num'] is None):
+                            trial_row['trial_num'] = data['trial_num']
 
-                for k, v in data.items():
-                    # some bug where some columns are not always detected,
-                    # rather than failing out here, just log error
-                    if k in trial_keys:
-                        try:
-                            trial_row[k] = v
-                        except KeyError:
-                            # TODO: Logging here
-                            self.logger.warning("Data dropped: key: {}, value: {}".format(k, v))
+                        if (trial_row['trial_num']) and (trial_row['trial_num'] != data['trial_num']):
 
-                # TODO: Or if all the values have been filled, shouldn't need explicit TRIAL_END flags
-                if 'TRIAL_END' in data.keys():
-                    trial_row['session'] = self.session
-                    if self.graduation:
-                        # set our graduation flag, the terminal will get the rest rolling
-                        did_graduate = self.graduation.update(trial_row)
-                        if did_graduate is True:
-                            self.did_graduate.set()
-                    trial_row.append()
+                            # find row with this trial number if it exists
+                            # this will return a list of rows with matching trial_num.
+                            # if it's empty, we didn't receive a TRIAL_END and should create a new row
+                            other_row = [r for r in trial_table.where("trial_num == {}".format(data['trial_num']))]
+
+                            if len(other_row) == 0:
+                                # proceed to fill the row below
+                                trial_row.append()
+
+                            elif len(other_row) == 1:
+                                # update the row and continue so we don't double write
+                                # have to be in the middle of iteration to use update()
+                                for row in trial_table.where("trial_num == {}".format(data['trial_num'])):
+                                    for k, v in data.items():
+                                        if k in trial_keys:
+                                            row[k] = v
+                                    row.update()
+                                continue
+
+                            else:
+                                # we have more than one row with this trial_num.
+                                # shouldn't happen, but we dont' want to throw any data away
+                                self.logger.warning('Found multiple rows with same trial_num: {}'.format(data['trial_num']))
+                                # continue just for data conservancy's sake
+                                trial_row.append()
+
+                    for k, v in data.items():
+                        # some bug where some columns are not always detected,
+                        # rather than failing out here, just log error
+                        if k in trial_keys:
+                            try:
+                                trial_row[k] = v
+                            except KeyError:
+                                # TODO: Logging here
+                                self.logger.warning("Data dropped: key: {}, value: {}".format(k, v))
+
+                    # TODO: Or if all the values have been filled, shouldn't need explicit TRIAL_END flags
+                    if 'TRIAL_END' in data.keys():
+                        trial_row['session'] = self.session
+                        if self.graduation:
+                            # set our graduation flag, the terminal will get the rest rolling
+                            did_graduate = self.graduation.update(trial_row)
+                            if did_graduate is True:
+                                self.did_graduate.set()
+                        trial_row.append()
+                        trial_table.flush()
+
+                    # always flush so that our row iteration routines above will find what they're looking for
                     trial_table.flush()
+                except Exception as e:
+                    # we shouldn't throw any exception in this thread, just log it and move on
+                    self.logger.exception(f'exception in data thread: {e}')
 
-                # always flush so that our row iteration routines above will find what they're looking for
-                trial_table.flush()
-            except Exception as e:
-                # we shouldn't throw any exception in this thread, just log it and move on
-                self.logger.exception(f'exception in data thread: {e}')
-
-        self.close_hdf(h5f)
 
     def save_data(self, data):
         """
@@ -970,96 +982,68 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
         # step= int is an integer specified step
         # step= [n1, n2] is from step n1 to n2 inclusive
         # step= 'all' or anything that isn't an int or a list is all steps
-        h5f = self.open_hdf()
-        group_name = "/data/{}".format(self.protocol_name)
-        group = h5f.get_node(group_name)
-        step_groups = sorted(group._v_children.keys())
+        with self._h5f as h5f:
+            group_name = "/data/{}".format(self.protocol_name)
+            group = h5f.get_node(group_name)
+            step_groups = sorted(group._v_children.keys())
 
-        if step == -1:
-            # find the last trial step with data
-            for step_name in reversed(step_groups):
-                if group._v_children[step_name].trial_data.attrs['NROWS']>0:
-                    step_groups = [step_name]
-                    break
-        elif isinstance(step, int):
-            if step > len(step_groups):
-                ValueError('You provided a step number ({}) greater than the number of steps in the subjects assigned protocol: ()'.format(step, len(step_groups)))
-            step_groups = [step_groups[step]]
-
-        elif isinstance(step, str) and step != 'all':
-
-            # since step names have S##_ prepended in the hdf5 file,
-            # but we want to be able to call them by their human readable name,
-            # have to make sure we have the right form
-            _step_groups = [s for s in step_groups if s == step]
-            if len(_step_groups) == 0:
-                _step_groups = [s for s in step_groups if step in s]
-            step_groups = _step_groups
-
-        elif isinstance(step, list):
-            if isinstance(step[0], int):
-                step_groups = step_groups[int(step[0]):int(step[1])]
-            elif isinstance(step[0], str):
-                _step_groups = []
-                for a_step in step:
-                    step_name = [s for s in step_groups if s==a_step]
-                    if len(step_name) == 0:
-                        step_name = [s for s in step_groups if a_step in s]
-                    _step_groups.extend(step_name)
-
-                step_groups = _step_groups
-        print('step groups:')
-        print(step_groups)
-
-        if what == "variables":
-            return_data = {}
-
-        for step_key in step_groups:
-            step_n = int(step_key[1:3]) # beginning of keys will be 'S##'
-            step_tab = group._v_children[step_key]._v_children['trial_data']
-            if what == "data":
-                step_df = pd.DataFrame(step_tab.read())
-                step_df['step'] = step_n
-                step_df['step_name'] = step_key
-                try:
-                    return_data = return_data.append(step_df, ignore_index=True)
-                except NameError:
-                    return_data = step_df
-
-            elif what == "variables":
-                return_data[step_key] = step_tab.coldescrs
-
-
-        self.close_hdf(h5f)
-
-        return return_data
-
-    def apply_along(self, along='session', step=-1):
-        h5f = self.open_hdf()
-        group_name = "/data/{}".format(self.protocol_name)
-        group = h5f.get_node(group_name)
-        step_groups = sorted(group._v_children.keys())
-
-        if along == "session":
             if step == -1:
                 # find the last trial step with data
                 for step_name in reversed(step_groups):
-                    if group._v_children[step_name].trial_data.attrs['NROWS'] > 0:
+                    if group._v_children[step_name].trial_data.attrs['NROWS']>0:
                         step_groups = [step_name]
                         break
             elif isinstance(step, int):
                 if step > len(step_groups):
-                    ValueError(
-                        'You provided a step number ({}) greater than the number of steps in the subjects assigned protocol: ()'.format(
-                            step, len(step_groups)))
+                    ValueError('You provided a step number ({}) greater than the number of steps in the subjects assigned protocol: ()'.format(step, len(step_groups)))
                 step_groups = [step_groups[step]]
 
+            elif isinstance(step, str) and step != 'all':
+
+                # since step names have S##_ prepended in the hdf5 file,
+                # but we want to be able to call them by their human readable name,
+                # have to make sure we have the right form
+                _step_groups = [s for s in step_groups if s == step]
+                if len(_step_groups) == 0:
+                    _step_groups = [s for s in step_groups if step in s]
+                step_groups = _step_groups
+
+            elif isinstance(step, list):
+                if isinstance(step[0], int):
+                    step_groups = step_groups[int(step[0]):int(step[1])]
+                elif isinstance(step[0], str):
+                    _step_groups = []
+                    for a_step in step:
+                        step_name = [s for s in step_groups if s==a_step]
+                        if len(step_name) == 0:
+                            step_name = [s for s in step_groups if a_step in s]
+                        _step_groups.extend(step_name)
+
+                    step_groups = _step_groups
+            print('step groups:')
+            print(step_groups)
+
+            if what == "variables":
+                return_data = {}
+
             for step_key in step_groups:
-                step_n = int(step_key[1:3])  # beginning of keys will be 'S##'
+                step_n = int(step_key[1:3]) # beginning of keys will be 'S##'
                 step_tab = group._v_children[step_key]._v_children['trial_data']
-                step_df = pd.DataFrame(step_tab.read())
-                step_df['step'] = step_n
-                yield step_df
+                if what == "data":
+                    step_df = pd.DataFrame(step_tab.read())
+                    step_df['step'] = step_n
+                    step_df['step_name'] = step_key
+                    try:
+                        return_data = return_data.append(step_df, ignore_index=True)
+                    except NameError:
+                        return_data = step_df
+
+                elif what == "variables":
+                    return_data[step_key] = step_tab.coldescrs
+
+        return return_data
+
+
 
 
 
@@ -1144,7 +1128,7 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
         self.close_hdf(h5f)
         return step_df
 
-    def get_timestamp(self, simple=False):
+    def _get_timestamp(self, simple=False):
         # type: (bool) -> str
         """
         Makes a timestamp.
@@ -1249,7 +1233,7 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
         h5f = self.open_hdf()
         if start is not None:
             weight_row = h5f.root.history.weights.row
-            weight_row['date'] = self.get_timestamp(simple=True)
+            weight_row['date'] = self._get_timestamp(simple=True)
             weight_row['session'] = self.session
             weight_row['start'] = float(start)
             weight_row.append()

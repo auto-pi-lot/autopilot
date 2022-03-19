@@ -133,7 +133,13 @@ class H5F_Table(H5F_Node):
         old_tab = h5f.get_node(self.path)
 
         # new table
+
         tmp_name = f"{self.name}_tmp"
+        try:
+            node = h5f.get_node('/'.join([self.parent, tmp_name]))
+            node.remove()
+        except tables.NoSuchNodeError:
+            pass
         new_tab = h5f.create_table(self.parent, tmp_name, self.description,
                                    title=self.title, filters=self.filters,
                                    createparents=True,expectedrows=self.expectedrows)
@@ -143,7 +149,7 @@ class H5F_Table(H5F_Node):
         new_cols = new_tab.colnames
         remove_old = False
         would_lose = list(set(old_cols)-set(new_cols))
-        to_keep = list(set(old_cols).union(new_cols))
+        to_keep = list(set(old_cols).intersection(new_cols))
         backup_name = f'{self.name}_bak--0'
         if len(would_lose) > 0:
             while backup_name in old_tab._v_parent._v_children.keys():
@@ -199,6 +205,32 @@ Tables_Mapset = Interface_Mapset(
     group = H5F_Group
 )
 
+_permissiveness = {
+    bool:0,
+    int:1,
+    float:2,
+    str:3,
+    dict:0,
+    datetime:0
+}
+
+def _resolve_type(type_) -> typing.Type:
+    """
+    Get the "inner" type of a model field, sans Optionals and Unions and the like
+    """
+    if not hasattr(type_, '__args__') or (hasattr(type_, '__origin__') and type_.__origin__ == typing.Literal):
+        # already resolved
+        return type_
+
+    subtypes = [t for t in type_.__args__ if t in _permissiveness.keys()]
+    if len(subtypes) == 0:
+        raise ValueError(f'Dont know how to resolve type {type_}')
+
+    # sort by permissiveness
+    types = [(t, _permissiveness[t]) for t in subtypes]
+    types.sort(key=lambda x: x[1])
+    return types[-1][0]
+
 class Tables_Interface(Interface):
     map = Tables_Mapset
 
@@ -219,7 +251,8 @@ def model_to_table(table: typing.Type['Table']) -> typing.Type[tables.IsDescript
     # get column descriptions
     cols = {}
     for key, field in table.__fields__.items():
-        type_str = field.type_.__name__
+        type_ = _resolve_type(field.type_)
+        type_str = type_.__name__
         cols[key] = Tables_Mapset.get(type_str)
 
     description = type(table.__name__, (tables.IsDescription,), cols) # type: typing.Type[tables.IsDescription]

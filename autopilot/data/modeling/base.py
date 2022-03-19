@@ -3,6 +3,7 @@ Base classes for data models -- the ``Data`` class itself.
 """
 import typing
 from typing import Optional, List
+import pandas as pd
 
 import tables
 
@@ -63,6 +64,15 @@ class Table(Data):
         """
         from autopilot.data.interfaces.tables import table_to_model
         return table_to_model(description, cls)
+
+    def to_dataframe(self) -> pd.DataFrame:
+        """
+        Create a dataframe from the lists of fields
+
+        Returns:
+            :class:`pandas.DataFrame`
+        """
+        return pd.DataFrame(self.dict())
 
 
 

@@ -1,12 +1,14 @@
 from datetime import datetime
 import typing
-from typing import Type
+from typing import Type, List, Union
 import tables
+from pydantic import Field, validator
+
 
 from autopilot.data.interfaces.tables import H5F_Group, H5F_Table
 from autopilot.data.modeling.base import Table, Group, Schema, Attributes
 from autopilot.data.models.biography import Biography
-
+from autopilot.data.models.protocol import Protocol_Data
 
 class History(Table):
     """
@@ -18,101 +20,34 @@ class History(Table):
         name (str): Name - Which parameter was changed, name of protocol, manual vs. graduation step change
         value (str): Value - What was the parameter/protocol/etc. changed to, step if protocol.
     """
-    time: datetime
-    type: str
-    name: str
-    value: str
-#
-#
-# class Hashes(Table):
-#     """
-#     Table to track changes in version over time
-#
-#     Attributes:
-#         time (str): Timestamps for entries
-#         hash (str): Hash of the currently checked out commit of the git repository.
-#         version (str): Current Version of autopilot, if not run from a cloned repository
-#         id (str): ID of the agent whose hash we are stashing (we want to keep track of all connected agents, ideally
-#
-#     """
-#     time: Type =  datetime
-#     hash: Type =  str
-#     version: Type =  str
-#     id: Type =  str
-#
-#
-# class Weights(Table):
-#     """
-#     Class to describe table for weight history
-#
-#     Attributes:
-#         start (float): Pre-task mass
-#         stop (float): Post-task mass
-#         date (str): Timestamp in simple format
-#         session (int): Session number
-#     """
-#     start: Type = float
-#     stop: Type  = float
-#     date: Type  = datetime
-#     session: Type  = int
-#
-#
-# class History_Group(Group):
-#     """
-#     Group for collecting subject history tables
-#     """
-#     history: Table = History()
-#     hashes: Table = Hashes()
-#     weights: Table = Weights()
-#     past_protocols: Group = Group()
-#
-#
-# class Subject_Schema(Schema):
-#     """
-#     Structure of the :class:`.Subject` class's hdf5 file
-#
-#     .. todo::
-#
-#         Convert this into an abstract representation of data rather than literally hdf5 tables
-#
-#     """
-#     info: Biography = Biography()
-#     data: Group = Group(kwargs={'filters':tables.Filters(complevel=6, complib='blosc:lz4')})
-#     history: History_Group = History_Group()
-#
+    time: List[datetime]
+    type: List[str]
+    name: List[str]
+    value: List[Union[str, List[dict]]]
+
+    @validator('time', each_item=True, allow_reuse=True, pre=True)
+    def simple_time(cls, v):
+        return datetime.strptime(v, '%y%m%d-%H%M%S')
 
 
-
-class History_Table(tables.IsDescription):
+class Hashes(Table):
     """
-    Class to describe parameter and protocol change history
+    Table to track changes in version over time
 
     Attributes:
-        time (str): timestamps
-        type (str): Type of change - protocol, parameter, step
-        name (str): Name - Which parameter was changed, name of protocol, manual vs. graduation step change
-        value (str): Value - What was the parameter/protocol/etc. changed to, step if protocol.
-    """
-
-    time = tables.StringCol(256)
-    type = tables.StringCol(256)
-    name = tables.StringCol(256)
-    value = tables.StringCol(4028)
-
-
-class Hash_Table(tables.IsDescription):
-    """
-    Class to describe table for hash history
-
-    Attributes:
-        time (str): Timestamps
+        time (str): Timestamps for entries
         hash (str): Hash of the currently checked out commit of the git repository.
+        version (str): Current Version of autopilot, if not run from a cloned repository
+        id (str): ID of the agent whose hash we are stashing (we want to keep track of all connected agents, ideally
+
     """
-    time = tables.StringCol(256)
-    hash = tables.StringCol(40)
+    time: List[datetime]
+    hash:  List[str]
+    version: List[str]
+    id: List[str]
 
 
-class Weight_Table(tables.IsDescription):
+class Weights(Table):
     """
     Class to describe table for weight history
 
@@ -122,31 +57,53 @@ class Weight_Table(tables.IsDescription):
         date (str): Timestamp in simple format
         session (int): Session number
     """
-    start = tables.Float32Col()
-    stop  = tables.Float32Col()
-    date  = tables.StringCol(256)
-    session = tables.Int32Col()
+    start: List[float]
+    stop: List[float]
+    date: List[datetime]
+    session: List[int]
+
+    @validator('date', each_item=True, allow_reuse=True, pre=True)
+    def simple_time(cls, v):
+        return datetime.strptime(v, '%y%m%d-%H%M%S')
+
+class History_Group(Group):
+    """
+    Group for collecting subject history tables
+    """
+    history: History
+    hashes:  Hashes
+    weights: Weights
+    past_protocols: Group
+
+class Protocol_Status(Attributes):
+    current_trial: int
+    session: int
+    step: int
+    protocol: typing.List[dict]
+    protocol_name: str
+    assigned: datetime = Field(default_factory=datetime.now)
+
+
+
+
 
 
 class _Hash_Table(H5F_Table):
     def __init__(self, **data):
-        super().__init__(description=Hash_Table, **data)
+        super().__init__(description=Hashes.to_pytables_description(), **data)
 
 
 class _History_Table(H5F_Table):
     def __init__(self, **data):
-        super().__init__(description=History_Table, **data)
+        super().__init__(description=History.to_pytables_description(), **data)
 
 
 class _Weight_Table(H5F_Table):
     def __init__(self, **data):
-        super().__init__(description=Weight_Table, **data)
+        super().__init__(description=Weights.to_pytables_description(), **data)
 
 
-class Task_Status(Attributes):
-    current_trial: int = 0
-    session: int = 0
-    task: typing.Optional[dict] = None
+
 
 
 class Subject_Structure(Schema):
@@ -155,7 +112,7 @@ class Subject_Structure(Schema):
     """
     info = H5F_Group(path='/info', title="Subject Biographical Information")
     data = H5F_Group(path='/data', filters=tables.Filters(complevel=6, complib='blosc:lz4'))
-    task = H5F_Group(path='/task', title="Metadata for the currently assigned task")
+    protocol = H5F_Group(path='/protocol', title="Metadata for the currently assigned protocol")
     history = H5F_Group(path='/history', children=[
         H5F_Group(path='/history/past_protocols', title='Past Protocol Files'),
         _Hash_Table(path='/history/hashes', title="Git commit hash history"),
@@ -171,5 +128,22 @@ class Subject_Structure(Schema):
         """
         for _, node in self._iter():
             node.make(h5f)
+
+
+
+class Subject_Schema(Schema):
+    """
+    Structure of the :class:`.Subject` class's hdf5 file
+
+    .. todo::
+
+        Convert this into an abstract representation of data rather than literally hdf5 tables
+
+    """
+    info: Biography
+    data: Protocol_Data
+    protocol: Protocol_Status
+    past_protocols: List[Protocol_Status]
+    history: History_Group
 
 

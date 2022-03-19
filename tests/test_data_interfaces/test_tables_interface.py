@@ -6,6 +6,7 @@ import pdb
 import pytest
 import uuid
 from pathlib import Path
+from typing import List
 
 from datetime import datetime
 
@@ -16,12 +17,12 @@ from autopilot.data.interfaces.tables import model_to_table, table_to_model
 from autopilot.data.models.protocol import Protocol_Group
 
 class TEST_TABLE(Table):
-    booly: bool
-    inty: int
-    floaty: float
-    stringy: str
-    bytey: bytes
-    datey: datetime
+    booly: List[bool]
+    inty: List[int]
+    floaty: List[float]
+    stringy: List[str]
+    bytey: List[bytes]
+    datey: List[datetime]
 
 class TEST_DESCRIPTION(tables.IsDescription):
     booly = tables.BoolCol()

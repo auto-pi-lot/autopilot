@@ -3,11 +3,12 @@ from typing import Optional, Type
 
 import tables
 from pydantic import Field, create_model
+import pandas as pd
 
 import autopilot
 from autopilot.root import Autopilot_Type
 from autopilot.data.interfaces.tables import H5F_Group, H5F_Table
-from autopilot.data.modeling.base import Table
+from autopilot.data.modeling.base import Table, Schema
 # from autopilot.data.models.subject import Subject_Schema
 from autopilot.stim.sound.sounds import STRING_PARAMS
 
@@ -182,4 +183,15 @@ class Protocol_Group(H5F_Group):
             children=steps,
             **data)
 
+class Step_Data(Schema):
+    """
+    Schema for storing data for a single step of a protocol
+    """
+    task: Task_Params
+    trial_data_table: Table
+    trial_data: Trial_Data
+    continuous_data: typing.Dict[str, list]
+
+class Protocol_Data(Schema):
+    steps: typing.List[Step_Data]
 
