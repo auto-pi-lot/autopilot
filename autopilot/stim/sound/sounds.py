@@ -212,9 +212,9 @@ class Noise(BASE_CLASS):
     
     The `type` attribute is always "Noise".
     """
-    # These are the parameters of the sound, I think this is used to generate
-    # sounds automatically for a protocol
-    PARAMS = ['duration','amplitude', 'channel']
+    # These are the parameters of the sound
+    # These can be set in the GUI when generating a Nafc step in a Protocol
+    PARAMS = ['duration', 'amplitude', 'highpass', 'channel']
     
     # The type of the sound
     type='Noise'
