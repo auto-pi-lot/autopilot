@@ -21,6 +21,7 @@ def hardware_plugin(default_dirs) -> Tuple[Path, str]:
         Path: path to created plugin file
     """
     plugin_dir = Path(prefs.get('PLUGINDIR'))
+    prefs.set('AUTOPLUGIN', True)
     hw_fn = plugin_dir / "test_hardware_plugin.py"
     class_name = "Test_Hardware_Plugin"
     hardware_plugin_test = f"""

@@ -12,40 +12,9 @@ import site
 site.ENABLE_USER_SITE = "--user" in sys.argv[1:]
 
 # declare defaults
-IS_RASPI = False
 SCRIPTS = []
 PACKAGES = []
-# CMAKE_ARGS = ['-DCMAKE_BUILD_DIR={}'.format(constants.CMAKE_BUILD_DIR()),
-#               '-DCMAKE_INSTALL_DIR={}'.format(constants.CMAKE_INSTALL_DIR()),
-#               '-DSETUPTOOLS_INSTALL_DIR={}'.format(constants.SETUPTOOLS_INSTALL_DIR()),
-#               '-DSKBUILD_DIR={}'.format(constants.SKBUILD_DIR()),
-#               '-DCMAKE_BUILD_RPATH_USE_ORIGIN=1', # use relative paths in Rpaths
-#               '-DCMAKE_INSTALL_RPATH=$ORIGIN/lib;$ORIGIN/../lib'
-#               ]
-
 REQUIREMENTS = []
-
-
-
-# detect if on raspberry pi
-try:
-    ret = subprocess.call(['grep', '-q', 'BCM', '/proc/cpuinfo'])
-    if ret == 0:
-        IS_RASPI = True
-except:
-    pass
-
-
-# detect architecture
-_ARCH = platform.uname().machine
-ARCH = None
-if _ARCH in ('armv7l',):
-    ARCH = "ARM32"
-elif _ARCH in ('aarch64',):
-    ARCH = 'ARM64'
-elif _ARCH in ('x86_64',):
-    ARCH = "x86"
-
 
 def load_requirements(req_file):
     with open(req_file, 'r') as f:
@@ -59,31 +28,8 @@ def load_requirements(req_file):
 
     return requirements
 
-# configure for raspberry pi
-if IS_RASPI:
-    # install raspi dependencies
-    # subprocess.call(['autopilot/setup/setup_environment_pi.sh'])
-
-
-    #CMAKE_ARGS.extend(['-DPIGPIO=ON', '-DJACK=ON'])
-    # FIXME: Need to get jack build in egg working, continue the CMakelists work on integrating during build. for now just adding to env dependencies
-
-    # CMAKE_ARGS = ['-DPIGPIO=ON']
-    #SCRIPTS.append('autopilot/external/pigpio/pigpiod')
-    #PACKAGES.append('autopilot.external.pigpio')
-    REQUIREMENTS = load_requirements('requirements/requirements_pilot.txt')
-
-elif ARCH == 'x86':
-    # is a terminal,
-    # install dependencies
-    # subprocess.call(['autopilot/setup/setup_environment_terminal.sh'])
-
-    # sys.argv.append('--skip-cmake')
-    REQUIREMENTS = load_requirements('requirements/requirements_terminal.txt')
-
-elif os.environ.get('TRAVIS', False):
+if os.environ.get('TRAVIS', False):
     REQUIREMENTS = load_requirements('requirements/requirements_tests.txt')
-
 else:
     REQUIREMENTS = load_requirements('requirements.txt')
 
@@ -131,10 +77,16 @@ setup(
     license="MPL-2.0",
     scripts = SCRIPTS,
     packages=packs,
-    #cmake_args=CMAKE_ARGS,
     install_requires = REQUIREMENTS,
+    extras_require={
+        'pilot': ['JACK-Client', 'pigpio @ git+https://github.com/sneakers-the-rat/pigpio'],
+        'terminal': ['PyOpenGL', 'pyqtgraph>=0.11.0rc0', 'PySide2'],
+        'docs': ['autodocsumm', 'sphinx_rtd_theme', 'sphinx-autobuild', 'sphinx-sass @ git+https://github.com/sneakers-the-rat/sphinx-sass']
+    },
     classifiers=[
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Intended Audience :: Education",

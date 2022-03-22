@@ -1,5 +1,15 @@
 .. _guide_task:
 
+.. important::
+
+    This guide and :ref:`guide_hardware` are lightly out of date with v0.4.0 of autopilot, but still largely reflect the
+    program design and its operation. For a simpler task, see :ref:`example_blink` .
+
+    Many of these things can be done more elegantly, more simply, etc. now but we
+    are a very small team and can only do so much work between releases! We'd be happy to get
+    `documentation requests <https://github.com/wehr-lab/autopilot/issues/32>`_ or even a pull request or two to help
+    us out until we can get to it :)
+
 Writing a Task
 **************
 
@@ -106,10 +116,6 @@ There are two types of data,
 * ``TrialData`` - where a single value for several variables is returned per 'trial', and
 * ``ContinuousData`` - where values and timestamps are taken continuously, with either a fixed or variable interval
 
-.. todo::
-
-    Support for saving continuous data is in place, but less tested than trial data storage. See  :ref:`todo`.
-
 Both are defined by `pytables <https://www.pytables.org/index.html>`_ :class:`tables.IsDescription` objects.
 Specify each variable that will be returned and its type using a :class:`tables.Col` object:
 
@@ -148,12 +154,6 @@ Available graphical primitives are registered in the :attr:`.plots.PLOT_LIST`, a
 
 Data is plotted either by trial (default) or by timestamp (if ``PLOT['continuous'] != True``). Numerical data is plotted (on the y-axis) as expected, but
 further mappings can be defined by extending the graphical element's ``update`` method -- eg. 'L'(eft) maps to 0 and 'R'(ight) maps to 1 by default.
-
-.. todo::
-
-    Non-numeric mappings will be supported in the ``PLOT`` specification after parameters are unified into a single structure.
-
-
 
 .. code-block:: python
 

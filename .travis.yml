@@ -53,6 +53,7 @@ before_script:
   - "herbstluftwm &"
   - sleep 1
   - mkdir -p /home/travis/autopilot # make directories for logs
+  - mkdir -p /home/travis/autopilot/logs
   # - pylint autopilot
 
 script:
@@ -73,5 +74,6 @@ deploy:
   on:
     tags: true
     branch: master
+    condition: "$TRAVIS_PYTHON_VERSION = 3.9"
   distributions: "sdist"
 

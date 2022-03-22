@@ -10,5 +10,6 @@ sound
 
    jackclient
    pyoserver
+   base
    sounds
 

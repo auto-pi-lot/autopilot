@@ -14,25 +14,30 @@ Autopilot integrates every part of your experiment,
 including hardware operation, task logic, stimulus delivery, data management, and visualization of task progress --
 making experiments in behavioral neuroscience replicable from a single file.
 
+Instead of rigid programming requirements, Autopilot attempts to be a flexible framework with many different modalities of use
+in order to adapt to the way you do and think about your science rather than the other way around. Use only the parts of the
+framework that are useful to you, build on top of it with its plugin system as you would normally, while also maintaining
+the provenance and system integration that more rigid systems offer.
+
+For developers of other tools, Autopilot provides a skeleton with minimal assumptions to integrate their work with its
+broader collection of tools, for example our integration of `DeepLabCut-live <https://github.com/DeepLabCut/DeepLabCut-live>`_
+as the :class:`~.transform.image.DLC` transform (:cite:`kaneRealtimeLowlatencyClosedloop2020`).
+
+Our long-range vision is to build a tool that lowers barriers to tool use and contribution, from code to contextual technical
+knowledge, so our broad and scattered work can be cumulatively combined without needing a centralized consortium or
+adoption of a singular standard.
+
 For a detailed overview of Autopilot's motivation, design, and structure, see our `whitepaper <https://www.biorxiv.org/content/10.1101/807693v1>`_.
 
-.. admonition:: What's New :ref:`(v0.3.0) <changelog_v030>`
+.. admonition:: What's New :ref:`v0.4.4 - Sound and Timing (2022-02-02) <changelog_v040>`
 
-    * Autopilot has moved to Python 3!! (Tested on 3.6-3.8, but 3.7 is currently required because the Spinnaker SDK currently only has armhf
-      binaries released for 3.7)
-    * Capturing video with OpenCV and the Spinnaker SDK is now supported (See :mod:`autopilot.hardware.cameras`)
-    * An :class:`~hardware.i2c.I2C_9DOF` motion sensor and the :class:`~hardware.i2c.MLX90640` temperature sensor
-      are now supported.
-    * Timestamps from GPIO events are now microsecond-precise thanks to some modifications to the ``pigpio`` library
-    * GPIO output timing is also microsecond-precise thanks to the use of ``pigpio`` scripts, so you can deliver
-      exactly the reward volumes you intend <3
-    * Hardware modules have been refactored into their own module, and have been almost wholly rebuilt to have sensible
-      inheritance structure.
-    * Networking modules are more efficient and automatically compress arrays (like video frames!) on transmission.
-      Streaming is also easier now, check out :meth:`.Net_Node.get_stream` !
-    * We now have a detailed :ref:`development roadmap <todo>` , so you can see the magnificent future we have planned.
-    * We have created the `autopilot-users <https://groups.google.com/forum/#!forum/autopilot-users>`_ discussion board
-      for troubleshooting & coordinating community development :)
+    * Big improvements to the sound server! Decoupling sounds from the server, better stability, etc.
+    * Trigger timing jitter from jack_client is now much closer to microseconds than the milliseconds it was formerly!
+    * New :mod:`~autopilot.utils.hydration` module for re-creating objects across processes and agents!
+    * New :mod:`~autopilot.utils.decorators` and :mod:`~autopilot.utils.types` and :mod:`~autopilot.utils.requires` modules
+      prefacing the architectural changes in v0.5.0
+    * See the :ref:`changelog <changelog_v040>` for more!
+
 
 This documentation is very young and is very much a work in progress! Please `submit an issue <https://github.com/wehr-lab/autopilot/issues/new>`_ with any incompletenesses, confusion, or errors!
 
@@ -42,10 +47,12 @@ This documentation is very young and is very much a work in progress! Please `su
    :caption: User Guide:
 
    Overview <guide/overview>
+   Quickstart <guide/quickstart>
    Installation <guide/installation>
    Training a Subject <guide/training>
    Writing a Task <guide/task>
    Writing a Hardware Class <guide/hardware>
+   Using Plugins <guide/plugins>
    Examples <examples>
 
 .. toctree::
@@ -64,19 +71,21 @@ This documentation is very young and is very much a work in progress! Please `su
    Prefs <prefs>
    External <external>
 
-.. toctree::
-    :caption: Tests:
-
-    tests/index
-
 
 .. toctree::
     :maxdepth: 1
     :caption: Meta:
 
+    Wiki <https://wiki.auto-pi-lot.com/>
     Discussion <https://github.com/wehr-lab/autopilot/discussions>
-    To-Do <todo>
     Changelog <changelog/index>
+    To-Do <todo>
+    References <references>
+
+.. toctree::
+    :caption: Tests:
+
+    tests/index
 
 
 

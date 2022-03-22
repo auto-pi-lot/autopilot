@@ -23,6 +23,12 @@ Some parts might accidentally work in Windows but we make no guarantees.
 We have tried to take care to make certain platform-specific dependencies not break the entire package,
 so if you have some difficulty installing autopilot on a non-raspberry-pi linux machine please submit an issue!
 
+.. note::
+
+    The latest version of raspiOS (bullseye) causes a lot of problems with the Jack audio that we have not figured out a workaround for.
+    If you intend to use sound, we recommend sticking with Buster for now (available from their `legacy downloads <https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-legacy>`_ section).
+
+
 
 Pre-installation
 =====================
@@ -96,9 +102,6 @@ be located anywhere.
 
     conda create --name autopilot python=3.7
 
-.. note::
-    Python version 3.7 is required on both the Terminal and the Pilot due to dependencies on the Spinnaker API for high-speed
-    cameras. In the future we will move to `aravis <https://github.com/SintefManufacturing/python-aravis>`_ to avoid this.
 
 The virtual environment must be "activated" now and any time you work with autopilot
 (:mod:`.setup_autopilot` will detect which venv it is run from and source it in the launch script).
@@ -148,6 +151,20 @@ cloned repository, rather than from the system/venv libraries.::
     Development work is done on the ``dev`` branch, which may have additional features/bugfixes but is much less stable!
     To use it just ``git checkout dev`` from your repository directory.
 
+Extra Dependencies
+-------------------
+
+Different deployments depend on different packages! Eg. `Pilot`s on raspberry pis need some means of interacting with the GPIO pins, and
+`Terminal`s need packages for the GUI. Rather than requiring them all for every installation, we use a set of optional dependencies.
+
+Depending on how you intend to use it, you will likely need some additional set of packages, specified like::
+
+    pip install auto-pi-lot[pilot]
+    # or
+    pip install auto-pi-lot[terminal]
+    # or if using an editable install
+    pip install .[pilot]
+
 
 Configuration
 ==============
@@ -162,7 +179,7 @@ After installation, set Autopilot up! Autopilot comes with a "guided installatio
 
 To start the guided process, run the following line. ::
 
-    python3 -m autopilot.setup.setup_autopilot
+    python3 -m autopilot.setup
 
 Select agent
 -------------
@@ -180,7 +197,8 @@ Select scripts
 ---------------
 Now you will see a menu of potential scripts that can be run.
 Select the scripts you want to run, and then hit "OK". Note that even the simplest task ("free water") requires pigpio,
-so you may want to include that one. You can see the commands that will be run in each of these scripts with :func:`.setup_autopilot.run_script` and :func:`.setup_autopilot.list_scripts`.
+so you may want to include that one. You can see the commands that will be run in each of these scripts with :mod:`.setup.run_script`
+in the :data:`.setup.scripts.SCRIPTS` dictionary.
 
 
 .. image:: ../_images/setup_scripts.png
@@ -207,7 +225,8 @@ Configure Hardware
 
 If configuring a Pilot, you'll be asked to configure your hardware.
 
-Press ``ctrl+x`` to add Hardware, and fill in the relevant parameters (most are optional and can be left blank)
+Press ``ctrl+x`` to add Hardware, and fill in the relevant parameters (most are optional and can be left blank).
+Consult the relevant page on the docs to see which arguments are relevant and how to use them.
 
 .. image:: ../_images/setup_hardware.gif
     :alt: Configure Hardware

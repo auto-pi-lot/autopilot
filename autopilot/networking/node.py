@@ -5,6 +5,8 @@ import typing
 from copy import copy
 from itertools import count
 from typing import Union, Optional
+from collections import deque
+import socket
 
 import zmq
 from tornado.ioloop import IOLoop
@@ -100,6 +102,7 @@ class Net_Node(object):
         self.router = None # type: Optional[zmq.Socket]
         self.loop_thread = None  # type: Optional[threading.Thread]
         self.senders = {} # type: typing.Dict[bytes, str]
+        self._ip = None
 
         # self.connected = False
         self.msg_counter = count()
@@ -231,7 +234,7 @@ class Net_Node(object):
              key:str=None,
              value:typing.Any=None,
              msg:Optional['Message']=None,
-             repeat:bool=True, flags = None, force_to:bool = False):
+             repeat:bool=False, flags = None, force_to:bool = False):
         """
         Send a message via our :attr:`~.Net_Node.sock` , DEALER socket.
 
@@ -462,7 +465,7 @@ class Net_Node(object):
 
         return msg
 
-    def get_stream(self, id, key, min_size=5, upstream=None, port = None, ip=None, subject=None):
+    def get_stream(self, id, key, min_size=5, upstream=None, port = None, ip=None, subject=None, q_size:Optional[int]=None):
         """
 
         Make a queue that another object can dump data into that sends on its own socket.
@@ -487,7 +490,7 @@ class Net_Node(object):
                 subject = prefs.get('SUBJECT')
 
         # make a queue
-        q = queue.Queue()
+        q = deque(maxlen=q_size)
 
         stream_thread = threading.Thread(target=self._stream,
                                          args=(id, key, min_size, upstream, port, ip, subject, q))
@@ -549,7 +552,14 @@ class Net_Node(object):
 
         if min_size > 1:
 
-            for data in iter(q.get, 'END'):
+            while True:
+                try:
+                    data = q.popleft()
+                except IndexError:
+                    # normal, we might iterate faster than the source
+                    continue
+                if isinstance(data, str) and data == 'END':
+                    break
                 if isinstance(data, tuple):
                     # tuples are immutable, so can't serialize numpy arrays they contain
                     data = list(data)
@@ -573,25 +583,61 @@ class Net_Node(object):
                     pending_data = []
         else:
             # just send like normal messags
-            for data in iter(q.get, 'END'):
+            # just send like normal messags
+            while True:
+                try:
+                    data = q.popleft()
+                except IndexError:
+                    continue
+
+                if isinstance(data, str) and data == "END":
+                    break
+
                 if isinstance(data, tuple):
                     # tuples are immutable, so can't serialize numpy arrays they contain
                     data = list(data)
 
-                if not socket.sending():
-                    msg = Message(to=upstream.decode('utf-8'), key=msg_key,
-                                  subject=subject,
-                                  pilot=pilot,
-                                  continuous=True,
-                                  value=data,
-                                  flags={'NOREPEAT': True, 'MINPRINT': True},
-                                  id="{}_{}".format(id, next(msg_counter)),
-                                  sender=socket_id).serialize()
-                    last_msg = socket.send_multipart((upstream, upstream, msg),
-                                                     track=True, copy=True)
+                msg = Message(to=upstream.decode('utf-8'), key=msg_key,
+                              subject=subject,
+                              pilot=pilot,
+                              continuous=True,
+                              value=data,
+                              flags={'NOREPEAT': True, 'MINPRINT': True},
+                              id="{}_{}".format(id, next(msg_counter)),
+                              sender=socket_id).serialize()
+                socket.send_multipart((upstream, upstream, msg),
+                                       track=False, copy=False)
 
                 self.logger.debug("STREAM {}: Sent 1 item".format(self.id + '_' + id))
 
+
+    @property
+    def ip(self) -> str:
+        """
+        Find our IP address
+
+        .. todo::
+
+            this is a copy of the :meth:`.Station.get_ip` method -- unify this in v0.5.0
+
+        returns (str): our IPv4 address.
+        """
+
+        # shamelessly stolen from https://www.w3resource.com/python-exercises/python-basic-exercise-55.php
+        # variables are badly named because this is just a rough unwrapping of what was a monstrous one-liner
+        # (and i don't really understand how it works)
+
+        if self._ip is None:
+
+            # get ips that aren't the loopback
+            unwrap00 = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1]
+            # ??? truly dk
+            unwrap01 = [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in
+                         [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]
+
+            self._ip = [l for l in (unwrap00, unwrap01) if l][0][0]
+
+        return self._ip
 
     def release(self):
         self.closing.set()

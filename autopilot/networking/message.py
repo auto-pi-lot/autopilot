@@ -7,13 +7,20 @@ import blosc
 
 class Message(object):
     """
-    A formatted message.
+    A formatted message that takes ``value``, sends it to ``id``, who should call
+    the listen method indicated by the ``key``.
+
+    Additional message behavior can be indicated by passing ``flags``
+
+    Numpy arrays given in the value field are automatically serialized and deserialized
+    when sending and receiving using bas64 encoding and blosc compression.
 
     `id`, `to`, `sender`, and `key` are required attributes,
     but any other key-value pair passed on init is added to the message's attributes
     and included in the message.
 
     Can be indexed and set like a dictionary (message['key'], etc.)
+
 
     Attributes:
         id (str): ID that uniquely identifies a message.
@@ -25,21 +32,13 @@ class Message(object):
         timestamp (str): Timestamp of message creation
         ttl (int): Time-To-Live, each message is sent this many times at max,
             each send decrements ttl.
-    """
+        flags (dict): Flags determine additional message behavior. If a flag has no value associated with it,
+            add it as a key with ``None`` as the value (eg. self.flags['MINPRINT'] = None), the value doesn't matter.
 
-    # TODO: just make serialization handle all attributes except Files which need to be b64 encoded first.
-    id = None # number of message, format {sender.id}_{number}
-    to = None
-    sender = None
-    key = None
-    # value is the only attribute that can be left None,
-    # ie. with signal-type messages like "STOP"
-    value = None
-    timestamp = None
-    flags = {}
-    ttl = 2 # every message starts with 2 retries. only relevant to the sender so not serialized.
-    changed = False
-    serialized = None
+            * ``MINPRINT`` - don't print the value in logs (eg. when a large array is being sent)
+            * ``NOREPEAT`` - sender will not seek, and recipients will not attempt to send message receipt confirmations
+            * ``NOLOG`` - don't log this message! for streaming, or other instances where the constant printing of the logger is performance prohibitive
+    """
 
     def __init__(self, msg=None, expand_arrays = False,  **kwargs):
         # Messages don't need to have all attributes on creation,
@@ -49,11 +48,23 @@ class Message(object):
             *args:
             **kwargs:
         """
+        self.id = None  # number of message, format {sender.id}_{number}
+        self.to = None
+        self.sender = None
+        self.key = None
+        # value is the only attribute that can be left None,
+        # ie. with signal-type messages like "STOP"
+        self.value = None
+        self.timestamp = None
+        self.flags = {}
+        self.changed = False
+        self.serialized = None
 
         # optional attrs should be instance attributes so they are caught by _-dict__
         self.flags = {}
         self.timestamp = None
-        self.ttl = 5
+
+        self.ttl = kwargs.get('ttl', 2)
 
         #set_trace(term_size=(120,40))
         #if len(args)>1:

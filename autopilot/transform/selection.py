@@ -19,22 +19,23 @@ class Slice(Transform):
 
 
         Args:
-            select (slice, tuple[slice]): a slice or tuple of slices
+            select (slice, tuple[slice], int, tuple[int]): a slice, tuple of slices, int, or tuple of ints! anything you can
+                use inside of a pair of [square brackets].
             *args:
             **kwargs:
         """
         super(Slice, self).__init__(*args, **kwargs)
 
-        self.check_slice(select)
+        # self.check_slice(select)
 
         self.select = select
 
-    def check_slice(self, select):
-        if isinstance(select, tuple):
-            if not all([isinstance(inner, slice) for inner in select]):
-                raise ValueError('Selections require slices or tuples of slices')
-        elif not isinstance(select, slice):
-            raise ValueError('Selections require slices or tuples of slices')
+    # def check_slice(self, select):
+    #     if isinstance(select, tuple):
+    #         if not all([isinstance(inner, slice) for inner in select]):
+    #             raise ValueError('Selections require slices or tuples of slices')
+    #     elif not isinstance(select, slice):
+    #         raise ValueError('Selections require slices or tuples of slices')
 
 
 

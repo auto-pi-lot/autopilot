@@ -7,6 +7,7 @@ import sys
 import os
 from pathlib import Path
 from pprint import pformat
+import time
 
 import datetime
 import logging
@@ -44,7 +45,7 @@ from autopilot.core.subject import Subject
 from autopilot.core.plots import Plot_Widget
 from autopilot.networking import Net_Node, Terminal_Station
 from autopilot.utils.invoker import get_invoker
-from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog, Plugins
+from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog, Stream_Video, Plugins
 from autopilot.core.loggers import init_logger
 
 # Try to import viz, but continue if that doesn't work
@@ -112,9 +113,12 @@ class Terminal(QtWidgets.QMainWindow):
             stored in ``prefs.get("TERMINAL_SETTINGS_FN")``
     """
 
-    def __init__(self):
+    def __init__(self, warn_defaults=True):
         # type: () -> None
         super(Terminal, self).__init__()
+
+        if warn_defaults:
+            os.environ['AUTOPILOT_WARN_DEFAULTS'] = '1'
 
         # store instance
         globals()['_TERMINAL'] = self
@@ -281,7 +285,13 @@ class Terminal(QtWidgets.QMainWindow):
         self.tool_menu.addAction(reassign_act)
         self.tool_menu.addAction(calibrate_act)
 
-        # Create a Plots menu and add Psychometric Curve action
+        # Swarm menu
+        # (tools 4 administering and interacting with agents in swarm)
+        self.swarm_menu = self.menuBar().addMenu("S&warm")
+        stream_video = QtWidgets.QAction("Stream Video", self, triggered=self.stream_video)
+        self.swarm_menu.addAction(stream_video)
+
+        # Plots menu
         self.plots_menu = self.menuBar().addMenu("&Plots")
         psychometric = QtWidgets.QAction("Psychometric Curve", self, triggered=self.plot_psychometric)
         self.plots_menu.addAction(psychometric)
@@ -484,7 +494,7 @@ class Terminal(QtWidgets.QMainWindow):
     # Listens & inter-object methods
 
     def ping_pilot(self, pilot):
-        self.send(pilot, 'PING')
+        self.node.send(pilot, 'PING')
 
     def heartbeat(self, once=False):
         """
@@ -590,6 +600,9 @@ class Terminal(QtWidgets.QMainWindow):
             task = self.subjects[subject_name].prepare_run()
             task['pilot'] = value['pilot']
 
+            # FIXME: Don't hardcode wait time, wait until we get confirmation that the running task has fully unloaded
+            time.sleep(5)
+
             self.node.send(to=value['pilot'], key="START", value=task)
 
     def l_ping(self, value):
@@ -676,11 +689,13 @@ class Terminal(QtWidgets.QMainWindow):
         """
         if name is None:
             name, ok = QtWidgets.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
+            if not ok or not name:
+                self.logger.info('Cancel button clicked, not adding new pilot')
+                return
 
         # Warn if we're going to overwrite
         if name in self.pilots.keys():
             self.logger.warning(f'pilot with id {name} already in pilot db, overwriting...')
-
 
         if pilot_prefs is None:
             pilot_prefs = {}
@@ -901,6 +916,20 @@ class Terminal(QtWidgets.QMainWindow):
     def manage_plugins(self):
         plugs = Plugins()
         plugs.exec_()
+
+    def stream_video(self):
+        """
+        Open a window to stream videos from a connected pilot.
+
+        Choose from connected pilots and configured :class:`~.hardware.cameras.Camera` objects
+        (``prefs.json`` sent by Pilots in :meth:`.Pilot.handshake` ). Stream video, save to file.
+
+        .. todo::
+
+            Configure camera parameters!!!
+        """
+
+        video_dialog = Stream_Video(self.pilots)
 
     def closeEvent(self, event):
         """

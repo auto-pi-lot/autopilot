@@ -5,7 +5,9 @@ from datetime import datetime
 import os
 import logging
 import tables
+from itertools import count
 # from autopilot.core.networking import Net_Node
+import autopilot
 from autopilot.hardware import BCM_TO_BOARD
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
@@ -94,6 +96,13 @@ class Task(object):
 
 
     def __init__(self, *args, **kwargs):
+        """
+        Args:
+            subject (str): Name of subject running the task
+            current_trial (int): Current trial number, default 0
+            *args ():
+            **kwargs ():
+        """
 
         # Task management
         self.stage_block = None  # a threading.Event used by the pilot to manage stage transitions
@@ -102,8 +111,10 @@ class Task(object):
         self.stages = None  # Some generator that continuously returns the next stage of the trial
         self.triggers = {}
         self.stim_manager = None
+        self.subject = kwargs.get('subject', None)
 
-        self.trial_counter = None  # will be init'd by the subtask because will use the current trial
+        self.trial_counter = count(int(kwargs.get('current_trial', 0)))  # will be init'd by the subtask because will use the current trial
+        self.current_trial = int(kwargs.get('current_trial', 0))
 
         # Hardware
         self.hardware = {}  # dict to store references to hardware
@@ -112,6 +123,8 @@ class Task(object):
         self.punish_block = threading.Event()
         self.punish_block.set()
         #self.running = threading.Event()
+
+        self.trigger_lock = threading.Lock()
 
         # try to get logger
         self.logger = init_logger(self)
@@ -136,6 +149,10 @@ class Task(object):
             self.hardware[type] = {}
             # then iterate through each pin and handler of this type
             for pin, handler in values.items():
+                # if the hardware is specified as a string, try and get it from registry
+                if isinstance(handler, str):
+                    handler = autopilot.get_hardware(handler)
+
                 try:
                     hw_args = pin_numbers[type][pin]
                     if isinstance(hw_args, dict):
@@ -161,8 +178,8 @@ class Task(object):
                         if 'pin' in hw_args.keys():
                             self.pin_id[hw_args['pin']] = pin 
 
-                except:
-                    self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}".format(type, pin))
+                except Exception as e:
+                    self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}\nGot exception:{}".format(type, pin, e))
 
     def set_reward(self, vol=None, duration=None, port=None):
         """
@@ -237,6 +254,11 @@ class Task(object):
         if not self.punish_block.is_set():
             return
 
+        unlocked = self.trigger_lock.acquire(blocking=False)
+        if not unlocked:
+            self.logger.debug('Trigger called, but trigger lock has not been released by stage method. returning')
+            return
+
         # Call the trigger
         try:
             self.triggers[pin]()
@@ -250,6 +272,7 @@ class Task(object):
 
         # clear triggers
         self.triggers = {}
+        self.trigger_lock.release()
 
         # Set the stage block so the pilot calls the next stage
         self.stage_block.set()
@@ -288,6 +311,7 @@ class Task(object):
         """
         Release all hardware objects
         """
+        self.logger.debug('ending task')
         for k, v in self.hardware.items():
             for pin, obj in v.items():
                 obj.release()
@@ -295,6 +319,9 @@ class Task(object):
         if hasattr(self, 'stim_manager'):
             if self.stim_manager is not None:
                 self.stim_manager.end()
+                del self.stim_manager
+
+        del self.hardware
 
 
 

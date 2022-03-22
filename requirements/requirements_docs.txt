@@ -2,11 +2,12 @@ sphinx>=3.1.2
 sphinx-bootstrap-theme>=0.6.5
 sphinx-automodapi
 numpy>=1.16.5
+sphinxcontrib-bibtex
 pyzmq>=18.1.*
 # pyo>=0.7.8
 pandas>=0.19.2
 npyscreen
-scipy
+scipy>=1.6.0
 tornado>=5.0.*
 pigpio
 git+https://github.com/pyqtgraph/pyqtgraph@develop
@@ -26,4 +27,10 @@ blosc
 scikit-video
 sphinx-autobuild
 git+https://github.com/sneakers-the-rat/sphinx-sass
+picamera
 requests
+pytest
+matplotlib
+validators
+importlib-metadata; python_version < '3.8'
+packaging

@@ -4,6 +4,13 @@ import os
 import socket
 import threading
 import time
+import os
+import multiprocessing
+import base64
+import socket
+import struct
+import blosc
+from collections import deque
 from copy import copy
 from itertools import count
 import typing
@@ -119,7 +126,7 @@ class Station(multiprocessing.Process):
             self.ip = ""
 
 
-        self.file_block = threading.Event() # to wait for file transfer
+        self.file_block = multiprocessing.Event() # to wait for file transfer
 
         # number messages as we send them
         self.msg_counter = count()
@@ -139,7 +146,10 @@ class Station(multiprocessing.Process):
 
 
     def __del__(self):
-        self.release()
+        try:
+            self.release()
+        except:
+            pass
 
     def run(self):
         """
@@ -282,7 +292,6 @@ class Station(multiprocessing.Process):
         msg_enc = msg.serialize()
 
         if not msg_enc:
-            #set_trace(term_size=(80,40))
             self.logger.exception('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
@@ -591,7 +600,7 @@ class Station(multiprocessing.Process):
                 listen_thread = threading.Thread(target=listen_funk, args=(msg,))
                 listen_thread.start()
             except KeyError:
-                self.logger.exception('ERROR: No function could be found for msg id {} with key: {}'.format(msg.id, msg.key))
+                self.logger.exception('No function could be found for msg id {} with key: {}'.format(msg.id, msg.key))
 
 
             # send a return message that confirms even if we except
@@ -894,22 +903,26 @@ class Terminal_Station(Station):
         send to :class:`.Plot` according to update rate in ``prefs.get('DRAWFPS')``
 
         Args:
-            msg (dict): A continuous data message
+            msg (:class:`.Message`): A continuous data message
         """
 
-        if not self.plot_timer:
-            self.start_plot_timer()
+
 
         # Send through to terminal
         #msg.value.update({'continuous':True})
         self.send(to='_T', msg=msg)
 
         # Send to plot widget, which should be listening to "P_{pilot_name}"
-        if msg.sender not in self.sent_plot.keys():
-            self.sent_plot[msg.sender] = threading.Event()
-        if self.sent_plot[msg.sender].is_set():
-            self.send(to='P_{}'.format(msg.value['pilot']), msg=msg)
-            self.sent_plot[msg.sender].clear()
+        plot_id = 'P_{}'.format(msg.value['pilot'])
+        if plot_id in self.senders.keys():
+            if not self.plot_timer:
+                self.start_plot_timer()
+
+            if msg.sender not in self.sent_plot.keys():
+                self.sent_plot[msg.sender] = threading.Event()
+            if self.sent_plot[msg.sender].is_set():
+                self.send(to=plot_id, msg=msg)
+                self.sent_plot[msg.sender].clear()
 
 
     # def l_continuous(self, msg):
@@ -1036,6 +1049,9 @@ class Pilot_Station(Station):
 
         #self.id = prefs.get('NAME').encode('utf-8')
         self.id = prefs.get('NAME')
+        if self.id is None or self.id == '':
+            self.logger.exception(f"pilot NAME in prefs.json cannot be blank, got {self.id}")
+            raise ValueError(f"pilot NAME in prefs.json cannot be blank, got {self.id}")
         self.pi_id = "_{}".format(self.id)
         self.subject = None # Store current subject ID
         self.state = 'IDLE' # store current pi state
@@ -1056,7 +1072,8 @@ class Pilot_Station(Station):
             'HANDSHAKE': self.l_noop,
             'CALIBRATE_PORT': self.l_forward,
             'CALIBRATE_RESULT': self.l_forward,
-            'BANDWIDTH': self.l_forward
+            'BANDWIDTH': self.l_forward,
+            'STREAM_VIDEO': self.l_forward
         })
 
         # ping back our status to the terminal every so often
