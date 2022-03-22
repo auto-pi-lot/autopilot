@@ -220,7 +220,7 @@ class Noise(BASE_CLASS):
     type='Noise'
     
     def __init__(self, duration, amplitude=0.01, channel=None, 
-        highpass=5000., **kwargs):
+        highpass=None, **kwargs):
         """Initialize a new white noise burst with specified parameters.
         
         The sound itself is stored as the attribute `self.table`. This can
@@ -234,7 +234,7 @@ class Noise(BASE_CLASS):
                 If 0, play noise from the first channel
                 If 1, play noise from the second channel
                 If None, send the same information to all channels ("mono")
-            highpass (float): highpass the Noise above this value
+            highpass (float or None): highpass the Noise above this value
                 If None, no highpass is applied
             **kwargs: extraneous parameters that might come along with instantiating us
         """
