@@ -44,6 +44,7 @@ import typing
 from time import sleep
 from scipy.io import wavfile
 from scipy.signal import resample
+import scipy.signal
 import numpy as np
 import threading
 from itertools import cycle
@@ -97,6 +98,115 @@ class Tone(BASE_CLASS):
 
         self.initialized = True
 
+class Tritone(BASE_CLASS):
+    """An unpleasant-sounding tritone"""
+    PARAMS = ['frequency', 'duration', 'amplitude', 'channel']
+    type = 'Tritone'
+    
+    def __init__(self, frequency, duration, amplitude=0.01, channel=None, **kwargs):
+        """Initialize a new tritone with specified parameters.
+        
+        The sound itself is stored as the attribute `self.table`. This can
+        be 1-dimensional or 2-dimensional, depending on `channel`. If it is
+        2-dimensional, then each channel is a column.
+        
+        Args:
+            frequency (float): frequency of the base tone
+            duration (float): duration of the sound
+            amplitude (float): amplitude of the sound as a proportion of 1.
+            channel (int or None): which channel should be used
+                If 0, play noise from the first channel
+                If 1, play noise from the second channel
+                If None, send the same information to all channels ("mono")
+            **kwargs: extraneous parameters that might come along with instantiating us
+        """
+        # This calls the base class, which sets server-specific parameters
+        # like sampling rate
+        super(Tritone, self).__init__()
+        
+        # Set the parameters specific to Tritone
+        self.frequency = float(frequency)
+        self.duration = float(duration)
+        self.amplitude = float(amplitude)
+        try:
+            self.channel = int(channel)
+        except TypeError:
+            self.channel = channel
+        
+        # Currently only mono or stereo sound is supported
+        if self.channel not in [None, 0, 1]:
+            raise ValueError(
+                "audio channel must be 0, 1, or None, not {}".format(
+                self.channel))
+
+        # Initialize the sound itself
+        self.init_sound()
+
+    def init_sound(self):
+        """Defines `self.table`, the waveform that is played. 
+        
+        The way this is generated depends on `self.server_type`, because
+        parameters like the sampling rate cannot be known otherwise.
+        
+        The sound is generated and then it is "chunked" (zero-padded and
+        divided into chunks). Finally `self.initialized` is set True.
+        """
+        # Depends on the server_type
+        if self.server_type == 'pyo':
+            raise ValueError("pyo not supported for Tritone")
+        
+        elif self.server_type == 'jack':
+            # This calculates the number of samples, using the specified 
+            # duration and the sampling rate from the server, and stores it
+            # as `self.nsamples`.
+            self.get_nsamples()
+
+            # The shape of the table depends on `self.channel`
+            if self.channel is None:
+                # The table will be 1-dimensional for mono sound
+                # Generate time
+                t = np.arange(self.nsamples)
+            
+                # Generate base tone
+                self.table = np.sin(
+                    2 * np.pi * self.frequency * t / self.fs)
+ 
+                # Add on the upper tone, which is sqrt(2) higher
+                self.table += np.sin(
+                    2 * np.pi * self.frequency * np.sqrt(2) * t / self.fs)
+ 
+            else:
+                # The table will be 2-dimensional for stereo sound
+                # Each channel is a column
+                # Only the specified channel contains data and the other is zero
+                # Generate time
+                t = np.arange(self.nsamples)
+            
+                # Generate base tone
+                data = np.sin(
+                    2 * np.pi * self.frequency * t / self.fs)
+ 
+                # Add on the upper tone, which is sqrt(2) higher
+                data += np.sin(
+                    2 * np.pi * self.frequency * np.sqrt(2) * t / self.fs)
+                
+                # Put in correct column
+                self.table = np.zeros((self.nsamples, 2))
+                assert self.channel in [0, 1]
+                self.table[:, self.channel] = data
+            
+            # Scale by the amplitude
+            self.table = self.table * self.amplitude
+            
+            # Convert to float32
+            self.table = self.table.astype(np.float32)
+            
+            # Chunk the sound 
+            self.chunk()
+
+        # Flag as initialized
+        self.initialized = True
+    
 class Noise(BASE_CLASS):
     """Generates a white noise burst with specified parameters
     
@@ -109,7 +219,8 @@ class Noise(BASE_CLASS):
     # The type of the sound
     type='Noise'
     
-    def __init__(self, duration, amplitude=0.01, channel=None, **kwargs):
+    def __init__(self, duration, amplitude=0.01, channel=None, 
+        highpass=5000., **kwargs):
         """Initialize a new white noise burst with specified parameters.
         
         The sound itself is stored as the attribute `self.table`. This can
@@ -123,15 +234,21 @@ class Noise(BASE_CLASS):
                 If 0, play noise from the first channel
                 If 1, play noise from the second channel
                 If None, send the same information to all channels ("mono")
+            highpass (float): highpass the Noise above this value
+                If None, no highpass is applied
             **kwargs: extraneous parameters that might come along with instantiating us
         """
         # This calls the base class, which sets server-specific parameters
-        # like samplign rate
+        # like sampling rate
         super(Noise, self).__init__(**kwargs)
         
         # Set the parameters specific to Noise
         self.duration = float(duration)
         self.amplitude = float(amplitude)
+        if highpass is None:
+            self.highpass = None
+        else:
+            self.highpass = float(highpass)
         try:
             self.channel = int(channel)
         except TypeError:
@@ -171,11 +288,25 @@ class Noise(BASE_CLASS):
             if self.channel is None:
                 # The table will be 1-dimensional for mono sound
                 self.table = np.random.uniform(-1, 1, self.nsamples)
+                
+                if self.highpass is not None:
+                    # Filter
+                    bhi, ahi = scipy.signal.butter(
+                        2, self.highpass / (self.fs / 2), 'high')
+                    self.table = scipy.signal.filtfilt(bhi, ahi, self.table)
+
             else:
                 # The table will be 2-dimensional for stereo sound
                 # Each channel is a column
                 # Only the specified channel contains data and the other is zero
                 data = np.random.uniform(-1, 1, self.nsamples)
+                
+                if self.highpass is not None:
+                    # Filter
+                    bhi, ahi = scipy.signal.butter(
+                        2, self.highpass / (self.fs / 2), 'high')
+                    data = scipy.signal.filtfilt(bhi, ahi, data)
+                
                 self.table = np.zeros((self.nsamples, 2))
                 assert self.channel in [0, 1]
                 self.table[:, self.channel] = data
