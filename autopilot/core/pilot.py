@@ -138,7 +138,7 @@ class Pilot:
     # audio server
     server = None
 
-    def __init__(self, splash=True):
+    def __init__(self, splash=True, warn_defaults = True):
 
         if splash:
             try:
@@ -154,6 +154,9 @@ class Pilot:
             except:
                 # truly an unnecessary thing, just pass quietly
                 pass
+
+        if warn_defaults:
+            os.environ['AUTOPILOT_WARN_DEFAULTS'] = '1'
 
         self.name = prefs.get('NAME')
         if prefs.get('LINEAGE') == "CHILD":

@@ -54,7 +54,6 @@ class Sound(Stim):
     def __init__(self,
         fs: int = None,
         duration: float = None,
-
         **kwargs
     ):
         if fs is None:

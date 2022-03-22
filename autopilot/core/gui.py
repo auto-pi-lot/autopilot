@@ -1268,7 +1268,7 @@ class Graduation_Widget(QtWidgets.QWidget):
         self.type = self.type_selection.currentText()
         self.param_dict['type'] = self.type
 
-        for k in autopilot.get_task(self.type).PARAMS:
+        for k in autopilot.get('graduation', self.type).PARAMS:
             edit_box = QtWidgets.QLineEdit()
             edit_box.setObjectName(k)
             edit_box.editingFinished.connect(self.store_param)

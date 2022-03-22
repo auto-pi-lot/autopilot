@@ -113,9 +113,12 @@ class Terminal(QtWidgets.QMainWindow):
             stored in ``prefs.get("TERMINAL_SETTINGS_FN")``
     """
 
-    def __init__(self):
+    def __init__(self, warn_defaults=True):
         # type: () -> None
         super(Terminal, self).__init__()
+
+        if warn_defaults:
+            os.environ['AUTOPILOT_WARN_DEFAULTS'] = '1'
 
         # store instance
         globals()['_TERMINAL'] = self

@@ -1,5 +1,6 @@
 import pytest
 import warnings
+import os
 
 from autopilot import prefs
 from autopilot.exceptions import DefaultPrefWarning
@@ -18,6 +19,7 @@ def clean_prefs(request):
 
     request.addfinalizer(restore_prefs)
 
+
 @pytest.mark.parametrize('default_pref', [(k, v) for k, v in prefs._DEFAULTS.items()])
 def test_prefs_defaults(default_pref, clean_prefs):
 
@@ -33,6 +35,7 @@ def test_prefs_warnings(default_pref, clean_prefs):
     """
     Test that getting a default pref warns once and only once
     """
+    os.environ['AUTOPILOT_WARN_DEFAULTS'] = '1'
 
     if 'default' in default_pref[1].keys():
         # if we have a default...
@@ -52,6 +55,8 @@ def test_prefs_warnings(default_pref, clean_prefs):
         # filter to just default warnings
         _warns = [r.category == DefaultPrefWarning for r in record]
         assert sum(_warns) == 1
+
+    del os.environ['AUTOPILOT_WARN_DEFAULTS']
 
 
 def test_prefs_deprecation():

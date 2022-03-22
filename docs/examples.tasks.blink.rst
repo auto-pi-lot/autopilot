@@ -39,7 +39,7 @@ Preamble
         """
 
 Note that we subclass the :class:`~autopilot.tasks.Task` class (``Blink(Task)``) to provide us with some methods
-useful for all Tasks.
+useful for all Tasks, and to make it available to the task registry (see :ref:`guide_plugins`).
 
 Tasks need to have a few class attributes defined to be integrated into the rest of the system
 See here for more about class vs. instance attributes https://www.toptal.com/python/python-class-attributes-an-overly-thorough-guide
