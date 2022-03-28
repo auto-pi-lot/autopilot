@@ -40,6 +40,7 @@ class Filter_IIR(Transform):
         self.ftype = ftype
         self.coef_type = coef_type
         self.axis = axis
+        self.btype = kwargs.get('btype', 'bandpass')
         self.coefs = signal.iirfilter(ftype=self.ftype, output=coef_type, **kwargs)
         self.buffer = deque(maxlen=buffer_size)
 
@@ -59,6 +60,30 @@ class Filter_IIR(Transform):
             return signal.lfilter(self.coefs[0], self.coefs[1], self.buffer, axis=self.axis)[-1]
         elif self.coef_type == "sos":
             return signal.sosfilt(self.coefs, self.buffer, axis=self.axis)[-1]
+
+    def filter(self, input: typing.Union[np.ndarray, typing.List[float]], axis:int=0, **kwargs) -> np.ndarray:
+        """
+        Filter an array using the configured filter without using the single-value buffer.
+
+        Since this assumes that the signal is static, uses :func:`scipy.signal.filtfilt` :func:`scipy.signal.sosfiltfilt`
+        depending on :attr:`.coef_type`
+
+        Args:
+            input (:class:`numpy.ndarray` or list of ints): Input array to filter
+            axis (int): Axis to filter over (default: ``0`` )
+            kwargs (dict): Passed to :func:`scipy.signal.filtfilt` :func:`scipy.signal.sosfiltfilt`
+
+        Returns:
+            :class:`numpy.ndarray` filtered array
+        """
+
+        if self.coef_type == "ba":
+            return signal.filtfilt(self.coefs[0], self.coefs[1], input, axis=axis, **kwargs)
+        elif self.coef_type == "sos":
+            return signal.sosfiltfilt(self.coefs, input, axis=axis, **kwargs)
+        else:
+            raise ValueError(f"coef_type must be one of `ba` or `sos`, got {self.coef_type}")
+
 
 
 class Gammatone(Transform):
