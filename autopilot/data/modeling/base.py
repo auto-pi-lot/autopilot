@@ -65,7 +65,7 @@ class Table(Data):
         from autopilot.data.interfaces.tables import table_to_model
         return table_to_model(description, cls)
 
-    def to_dataframe(self) -> pd.DataFrame:
+    def to_df(self) -> pd.DataFrame:
         """
         Create a dataframe from the lists of fields
 

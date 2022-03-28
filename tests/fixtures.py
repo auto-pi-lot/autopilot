@@ -1,9 +1,11 @@
 import uuid
 from datetime import datetime
+import typing
 
 import numpy as np
 import pytest
 from pathlib import Path
+import json
 
 from autopilot.data.models import biography
 from autopilot.prefs import _DEFAULTS, Scopes, get, set
@@ -60,3 +62,74 @@ def dummy_biography() -> biography.Biography:
         genotype=genotype
     )
     return bio
+
+@pytest.fixture
+def dummy_protocol() -> typing.List[dict]:
+    protocol = [
+        {
+            "allow_repeat": True,
+            "graduation": {
+                "type": "NTrials",
+                "value": {
+                    "n_trials": "100",
+                    "type": "NTrials"
+                }
+            },
+            "reward": 10,
+            "step_name": "Free_Water",
+            "task_type": "Free_Water"
+        },
+        {
+            "bias_mode": "None",
+            "correction": True,
+            "graduation": {
+                "type": "Accuracy",
+                "value": {
+                    "threshold": ".99",
+                    "type": "Accuracy",
+                    "window": "1000"
+                }
+            },
+            "punish_dur": 20,
+            "punish_stim": True,
+            "req_reward": True,
+            "reward": 10,
+            "step_name": "Nafc",
+            "stim": {
+                "sounds": {
+                    "L": [
+                        {
+                            "amplitude": "0.1",
+                            "duration": "100",
+                            "frequency": "1000",
+                            "type": "Tone"
+                        }
+                    ],
+                    "R": [
+                        {
+                            "amplitude": "0.1",
+                            "duration": "100",
+                            "frequency": "2000",
+                            "type": "Tone"
+                        }
+                    ]
+                },
+                "tag": "Sounds",
+                "type": "sounds"
+            },
+            "task_type": "Nafc"
+        }
+    ]
+    return protocol
+
+@pytest.fixture
+def dummy_protocol_file(dummy_protocol) -> Path:
+    protocol_dir = Path(get('PROTOCOLDIR')).resolve()
+    protocol_file = protocol_dir / 'dummy_protocol.json'
+    if protocol_file.exists():
+        protocol_file.unlink()
+
+    with open(protocol_file, 'w') as pfile:
+        json.dump(dummy_protocol, pfile)
+
+    return protocol_file

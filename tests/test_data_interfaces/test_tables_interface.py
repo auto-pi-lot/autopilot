@@ -15,6 +15,7 @@ import tables
 from autopilot.data.modeling.base import Table
 from autopilot.data.interfaces.tables import model_to_table, table_to_model
 from autopilot.data.models.protocol import Protocol_Group
+from ..fixtures import dummy_protocol
 
 class TEST_TABLE(Table):
     booly: List[bool]
@@ -31,62 +32,6 @@ class TEST_DESCRIPTION(tables.IsDescription):
     stringy = tables.StringCol(1024)
     bytey = tables.StringCol(1024)
     datey = tables.StringCol(1024)
-
-TEST_PROTOCOL = [
-    {
-        "allow_repeat": True,
-        "graduation": {
-            "type": "NTrials",
-            "value": {
-                "n_trials": "100",
-                "type": "NTrials"
-            }
-        },
-        "reward": 10,
-        "step_name": "Free_Water",
-        "task_type": "Free_Water"
-    },
-    {
-        "bias_mode": "None",
-        "correction": True,
-        "graduation": {
-            "type": "Accuracy",
-            "value": {
-                "threshold": ".99",
-                "type": "Accuracy",
-                "window": "1000"
-            }
-        },
-        "punish_dur": 20,
-        "punish_stim": True,
-        "req_reward": True,
-        "reward": 10,
-        "step_name": "Nafc",
-        "stim": {
-            "sounds": {
-                "L": [
-                    {
-                        "amplitude": "0.1",
-                        "duration": "100",
-                        "frequency": "1000",
-                        "type": "Tone"
-                    }
-                ],
-                "R": [
-                    {
-                        "amplitude": "0.1",
-                        "duration": "100",
-                        "frequency": "2000",
-                        "type": "Tone"
-                    }
-                ]
-            },
-            "tag": "Sounds",
-            "type": "sounds"
-        },
-        "task_type": "Nafc"
-    }
-]
 
 @pytest.fixture()
 def h5file():
@@ -132,11 +77,11 @@ def test_table_to_model():
     method_converted = Table.from_pytables_description(TEST_DESCRIPTION)
     _compare_fields(method_converted, TEST_TABLE)
 
-def test_protocol_group(h5file):
+def test_protocol_group(h5file, dummy_protocol):
     """
     Test that a protocol group is correctly made from a protocol dictionary
     """
-    pgroup = Protocol_Group(protocol_name='TEST_PROCOTOL', protocol=TEST_PROTOCOL)
+    pgroup = Protocol_Group(protocol_name='TEST_PROCOTOL', protocol=dummy_protocol)
 
     pgroup.make(h5file)
     test_tables = ['/data/TEST_PROCOTOL/S00_Free_Water/trial_data', '/data/TEST_PROCOTOL/S01_Nafc/trial_data']

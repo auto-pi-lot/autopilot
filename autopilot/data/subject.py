@@ -12,6 +12,7 @@ import json
 import uuid
 import warnings
 import typing
+from typing import Union, Optional
 from copy import copy
 from typing import Optional
 from contextlib import contextmanager
@@ -64,7 +65,6 @@ class Subject(object):
         |--- info - group with biographical information as attributes
 
     Attributes:
-        lock (:class:`threading.Lock`): manages access to the hdf5 file
         name (str): Subject ID
         file (str): Path to hdf5 file - usually `{prefs.get('DATADIR')}/{self.name}.h5`
         current (dict): current task parameters. loaded from
@@ -139,7 +139,6 @@ class Subject(object):
 
         self._session_uuid = None
 
-
         # Is the subject currently running (ie. we expect data to be incoming)
         # Used to keep the subject object alive, otherwise we close the file whenever we don't need it
         self.running = False
@@ -182,6 +181,7 @@ class Subject(object):
                 h5f = tables.open_file(str(self.file), mode="r+")
                 yield h5f
             finally:
+                h5f.flush()
                 h5f.close()
         # return _h5f_context()
 
@@ -202,21 +202,50 @@ class Subject(object):
         return Biography(**biodict)
 
     @property
-    def protocol(self) -> Protocol_Status:
+    def protocol(self) -> Union[Protocol_Status, None]:
         with self._h5f as h5f:
             protocol = h5f.get_node(self.structure.protocol.path)
             protocoldict = {}
             for k in protocol._v_attrs._f_list():
                 protocoldict[k] = protocol._v_attrs[k]
 
-        return Protocol_Status(**protocoldict)
+        if len(protocoldict) == 0:
+            return None
+        else:
+            return Protocol_Status(**protocoldict)
 
     @protocol.setter
     def protocol(self, protocol:Protocol_Status):
-        # TODO: Log this in history table
+        if self.protocol is not None and protocol.protocol != self.protocol.protocol:
+            archive_name = f"{self._get_timestamp(simple=True)}_{self.protocol_name}"
+            self._write_attrs('/history/past_protocols/' + archive_name, self.protocol.dict())
+            self.logger.debug(f"Stashed old protocol details in {'/history/past_protocols/' + archive_name}")
+
+        # check for differences
+        diffs = []
+        if self.protocol is None:
+            diffs.append('protocol')
+            diffs.append('step')
+        else:
+            if protocol.protocol_name != self.protocol_name:
+                diffs.append('protocol')
+            if protocol.step != self.step:
+                diffs.append('step')
+
+        for diff in diffs:
+            if diff == 'protocol':
+                self.update_history('protocol', protocol.protocol_name, value=protocol.protocol)
+            elif diff == 'step':
+                self.update_history('step', name=protocol.protocol[protocol.step]['step_name'],
+                                    value=protocol.step)
+
+
+        # make sure that we have the required protocol structure
+        self._make_protocol_structure(protocol.protocol_name, protocol.protocol)
+
         with self._h5f as h5f:
             protocol_node = h5f.get_node(self.structure.protocol.path)
-            for k, v in protocol.dict():
+            for k, v in protocol.dict().items():
                 protocol_node._v_attrs[k] = v
 
         self.logger.debug(f"Saved new protocol status {Protocol_Status}")
@@ -309,47 +338,6 @@ class Subject(object):
             self.logger.exception(f"Could not make table from loaded data, returning dataframe")
             return df
 
-
-    def open_hdf(self, mode='r+'):
-        """
-        Opens the hdf5 file.
-
-        This should be called at the start of every method that access the h5 file
-        and :meth:`~.Subject.close_hdf` should be called at the end. Otherwise
-        the file will close and we risk file corruption.
-
-        See the pytables docs
-        `here <https://www.pytables.org/cookbook/threading.html>`_ and
-        `here <https://www.pytables.org/FAQ.html#can-pytables-be-used-in-concurrent-access-scenarios>`_
-
-        Args:
-            mode (str): a file access mode, can be:
-
-                * 'r': Read-only - no data can be modified.
-                * 'w': Write - a new file is created (an existing file with the same name would be deleted).
-                * 'a' Append - an existing file is opened for reading and writing, and if the file does not exist it is created.
-                * 'r+' (default) - Similar to 'a', but file must already exist.
-
-        Returns:
-            :class:`tables.File`: Opened hdf file.
-        """
-        # TODO: Use a decorator around methods instead of explicitly calling
-        with self._lock:
-            return tables.open_file(self.file, mode=mode)
-
-    def close_hdf(self, h5f):
-        # type: (tables.file.File) -> None
-        """
-        Flushes & closes the open hdf file.
-        Must be called whenever :meth:`~.Subject.open_hdf` is used.
-
-        Args:
-            h5f (:class:`tables.File`): the hdf file opened by :meth:`~.Subject.open_hdf`
-        """
-        with self._lock:
-            h5f.flush()
-            h5f.close()
-
     @classmethod
     def new(cls,
             bio:Biography,
@@ -394,9 +382,7 @@ class Subject(object):
 
         # compatibility - double `id` as name
         info_node._v_attrs['name'] = bio.id
-
-        # create initial values for task status
-        task_node = h5f.get_node(structure.protocol.path)
+        h5f.root._v_attrs['VERSION'] = cls._VERSION
 
         h5f.close()
 
@@ -429,17 +415,6 @@ class Subject(object):
         self.logger.info(f'Updating subject {self.name} history - type: {type}, name: {name}, value: {value}, step: {step}')
 
         # Make sure the updates are written to the subject file
-        if type == 'param':
-            if not step:
-                self.current[self.step][name] = value
-            else:
-                self.current[step][name] = value
-            self.flush_current()
-        elif type == 'step':
-            self.step = int(value)
-            self.flush_current()
-        elif type == 'protocol':
-            self.flush_current()
 
 
         # Check that we're all strings in here
@@ -451,16 +426,67 @@ class Subject(object):
             value = str(value)
 
         # log the change
-        h5f = self.open_hdf()
-        history_row = h5f.root.history.history.row
+        with self._h5f as h5f:
+            history_row = h5f.root.history.history.row
 
-        history_row['time'] = self._get_timestamp(simple=True)
-        history_row['type'] = type
-        history_row['name'] = name
-        history_row['value'] = value
-        history_row.append()
+            history_row['time'] = self._get_timestamp(simple=True)
+            history_row['type'] = type
+            history_row['name'] = name
+            history_row['value'] = value
+            history_row.append()
 
-        _ = self.close_hdf(h5f)
+
+    def _find_protocol(self, protocol:typing.Union[Path, str, typing.List[dict]],
+                       protocol_name: Optional[str]=None) -> typing.Tuple[str, typing.List[dict]]:
+        """
+        Resolve a protocol from a name, path, etc. into a list of dictionaries
+
+        Returns:
+            tuple of (protocol_name, protocol)
+        """
+
+        if isinstance(protocol, str):
+            # check if it's just a json encoded dictionary
+            try:
+                protocol = json.loads(protocol)
+            except json.decoder.JSONDecodeError:
+                # try it as a path
+                if not protocol.endswith('.json'):
+                    protocol += '.json'
+                protocol = Path(protocol)
+
+        if isinstance(protocol, Path):
+            if not protocol.exists():
+                if protocol.is_absolute():
+                    protocol = protocol.relative_to(prefs.get('PROTOCOLDIR'))
+                else:
+                    protocol = Path(prefs.get('PROTOCOLDIR')) / protocol
+            if not protocol.exists():
+                raise FileNotFoundError(f"Could not find protocol file {protocol}!")
+
+            protocol_name = protocol.stem
+
+            with open(protocol, 'r') as pfile:
+                protocol = json.load(pfile)
+
+        elif isinstance(protocol, list):
+            if protocol_name is None:
+                raise ValueError(f"If passed protocol as a list of dictionaries, need to also pass protocol_name")
+
+        return protocol_name, protocol
+
+    def _make_protocol_structure(self, protocol_name:str, protocol:typing.List[dict] ):
+        """
+        Use a :class:`.Protocol_Group` to make the necessary tables for the given protocol.
+        """
+        # make protocol structure!
+        protocol_structure = Protocol_Group(
+            protocol_name=protocol_name,
+            protocol=protocol,
+            structure=self.structure
+        )
+        with self._h5f as h5f:
+            protocol_structure.make(h5f)
 
     def assign_protocol(self, protocol:typing.Union[Path, str, typing.List[dict]],
                         step_n:int=0,
@@ -489,111 +515,28 @@ class Subject(object):
         """
         # Protocol will be passed as a .json filename in prefs.get('PROTOCOLDIR')
 
-        h5f = self.open_hdf()
-
-        if isinstance(protocol, str):
-            # check if it's just a json encoded dictionary
-            try:
-                protocol = json.loads(protocol)
-            except json.decoder.JSONDecodeError:
-                # try it as a path
-                if not protocol.endswith('.json'):
-                    protocol += '.json'
-                protocol = Path(protocol)
-
-        if isinstance(protocol, Path):
-            if not protocol.exists():
-                protocol = protocol.relative_to(prefs.get('PROTOCOLDIR'))
-            if not protocol.exists():
-                raise FileNotFoundError(f"Could not find protocol file {protocol}!")
-
-            protocol_name = protocol.stem
-
-            with open(protocol, 'r') as pfile:
-                protocol = json.load(pfile)
-
-
-        elif isinstance(protocol, list):
-            if protocol_name is None:
-                raise ValueError(f"If passed protocol as a list of dictionaries, need to also pass protocol_name")
-
+        protocol_name, protocol = self._find_protocol(protocol, protocol_name)
 
         # check if this is the same protocol as we already have so we don't reset session number
-        same_protocol = False
-        if (protocol_name == self.protocol_name) and (step_n == self.step):
-            same_protocol = True
+        if self.protocol is not None and (protocol_name == self.protocol_name) and (step_n == self.step):
+            session = self.session
+            current_trial = self.current_trial
 
-        # Check if there is an existing protocol, archive it if there is.
-        if "/current" in h5f:
-            _ = self.close_hdf(h5f)
-            self.stash_current()
-            h5f = self.open_hdf()
+            self.logger.debug("Keeping existing session and current_trial counts")
+        else:
+            session = 0
+            current_trial = 0
 
-        # Make filenode and save as serialized json
-        current_node = filenode.new_node(h5f, where='/', name='current')
-        current_node.write(json.dumps(protocol).encode('utf-8'))
-        h5f.flush()
-
-        # save some protocol attributes
-        self.current = protocol
-        current_node.attrs['protocol_name'] = protocol_name
-        self.protocol_name = protocol_name
-        current_node.attrs['step'] = step_n
-        self.step = int(step_n)
-
-        # always start out on session 0 on a new task
-        # unless this is the same task as was already assigned
-        if not same_protocol:
-            h5f.root.info._v_attrs['session'] = 0
-            self.session = 0
-
-        # make protocol structure!
-        protocol_structure = Protocol_Group(
-            protocol_name=protocol_name,
+        status = Protocol_Status(
+            current_trial=current_trial,
+            session=session,
+            step=step_n,
             protocol=protocol,
-            structure=self.structure
+            protocol_name=protocol_name,
         )
-        protocol_structure.make(h5f)
+        # set current status (this will also stash any existing status and update the trial history tables as needed)
 
-        _ = self.close_hdf(h5f)
-
-        # Update history
-        self.update_history(type='protocol', name=protocol_name, value=self.current)
-        self.update_history(type='step',
-                            name=self.current[self.step]['step_name'],
-                            value=self.step)
-
-    def flush_current(self):
-        """
-        Flushes the 'current' attribute in the subject object to the current filenode
-        in the .h5
-
-        Used to make sure the stored .json representation of the current task stays up to date
-        with the params set in the subject object
-        """
-
-        h5f = self.open_hdf()
-        h5f.remove_node('/current')
-        current_node = filenode.new_node(h5f, where='/', name='current')
-        current_node.write(json.dumps(self.current).encode('utf-8'))
-        current_node.attrs['step'] = self.step
-        current_node.attrs['protocol_name'] = self.protocol_name
-        self.close_hdf(h5f)
-        self.logger.debug('current protocol flushed')
-
-    def stash_current(self):
-        """
-        Save the current protocol in the history group and delete the node
-
-        Typically this is called when assigning a new protocol.
-
-        Stored as the date that it was changed followed by its name if it has one
-        """
-
-        archive_name = f"{self._get_timestamp(simple=True)}_{self.protocol_name}"
-        self._write_attrs('/history/past_protocols/'+archive_name, self.protocol.dict())
-
-        self.logger.debug('current protocol stashed')
+        self.protocol = status
 
     def prepare_run(self):
         """
@@ -614,132 +557,132 @@ class Subject(object):
 
         # get step history
         try:
-            step_df = self.get_step_history(use_history=True)
+            step_df = self.history.to_df()
+            step_df = step_df[step_df['type'] == 'step']
         except Exception as e:
             self.logger.exception(f"Couldnt get step history to trim data given to graduation objects, got exception {e}")
             step_df = None
 
-        h5f = self.open_hdf()
 
         protocol_groups = Protocol_Group(
             protocol_name = self.protocol_name,
-            protocol = self.current,
+            protocol = self.protocol.protocol,
             structure = self.structure
         )
         group_name = protocol_groups.steps[self.step].path
 
         # Get current task parameters and handles to tables
-        task_params = self.current[self.step]
+        task_params = self.protocol.protocol[self.step]
 
-        # tasks without TrialData will have some default table, so this should always be present
-        trial_table = h5f.get_node(group_name, 'trial_data')
+        with self._h5f as h5f:
+            # tasks without TrialData will have some default table, so this should always be present
+            trial_table = h5f.get_node(group_name, 'trial_data')
 
-        ##################################3
-        # first try and find some timestamp column to filter past data we give to the graduation object
-        # in case the subject has been stepped back down to a previous stage, for example
-        slice_start = 0
-        try:
-            ts_cols = [col for col in trial_table.colnames if 'timestamp' in col]
-            # just use the first timestamp column
-            if len(ts_cols) > 0:
-                trial_ts = pd.DataFrame({'timestamp': trial_table.col(ts_cols[0])})
-                trial_ts['timestamp'] = pd.to_datetime(trial_ts['timestamp'].str.decode('utf-8'))
-            else:
-                self.logger.warning(
-                    'No timestamp column could be found in trial data, cannot trim data given to graduation objects')
-                trial_ts = None
-
-            if trial_ts is not None and step_df is not None:
-                # see where, if any, the timestamp column is older than the last time the step was changed
-                good_rows = np.where(trial_ts['timestamp'] >= step_df['timestamp'].iloc[-1])[0]
-                if len(good_rows) > 0:
-                    slice_start = np.min(good_rows)
-                # otherwise if it's because we found no good rows but have trials,
-                # we will say not to use them, otherwise we say not to use them by
-                # slicing at the end of the table
+            ##################################3
+            # first try and find some timestamp column to filter past data we give to the graduation object
+            # in case the subject has been stepped back down to a previous stage, for example
+            slice_start = 0
+            try:
+                ts_cols = [col for col in trial_table.colnames if 'timestamp' in col]
+                # just use the first timestamp column
+                if len(ts_cols) > 0:
+                    trial_ts = pd.DataFrame({'timestamp': trial_table.col(ts_cols[0])})
+                    trial_ts['timestamp'] = pd.to_datetime(trial_ts['timestamp'].str.decode('utf-8'))
                 else:
-                    slice_start = trial_table.nrows
+                    self.logger.warning(
+                        'No timestamp column could be found in trial data, cannot trim data given to graduation objects')
+                    trial_ts = None
 
-        except Exception as e:
-            self.logger.exception(
-                f"Couldnt trim data given to graduation objects with step change history, got exception {e}")
+                if trial_ts is not None and step_df is not None:
+                    # see where, if any, the timestamp column is older than the last time the step was changed
+                    good_rows = np.where(trial_ts['timestamp'] >= step_df['time'].iloc[-1])[0]
+                    if len(good_rows) > 0:
+                        slice_start = np.min(good_rows)
+                    # otherwise if it's because we found no good rows but have trials,
+                    # we will say not to use them, otherwise we say not to use them by
+                    # slicing at the end of the table
+                    else:
+                        slice_start = trial_table.nrows
 
-        trial_tab = trial_table.read(start=slice_start)
-        trial_tab_keys = tuple(trial_tab.dtype.fields.keys())
-
-        ##############################
-
-        # get last trial number and session
-        try:
-            self.current_trial = trial_tab['trial_num'][-1]+1
-        except IndexError:
-            if 'trial_num' not in trial_tab_keys:
-                self.logger.info('No previous trials detected, setting current_trial to 0')
-            self.current_trial = 0
-
-        # should have gotten session from current node when we started
-        # so sessions increment over the lifespan of the subject, even if
-        # reassigned.
-        if not self.session:
-            try:
-                self.session = trial_tab['session'][-1]
-            except IndexError:
-                if 'session' not in trial_tab_keys:
-                    self.logger.warning('previous session couldnt be found, setting to 0')
-                self.session = 0
-
-        self.session += 1
-        h5f.root.info._v_attrs['session'] = self.session
-        h5f.flush()
-
-        # prepare continuous data group and tables
-        task_class = autopilot.get_task(task_params['task_type'])
-        if hasattr(task_class, 'ContinuousData'):
-            cont_group = h5f.get_node(group_name, 'continuous_data')
-            try:
-                session_group = h5f.create_group(cont_group, "session_{}".format(self.session))
-            except tables.NodeError:
-                pass # fine, already made it
-
-        self.graduation = None
-        if 'graduation' in task_params.keys():
-            try:
-                grad_type = task_params['graduation']['type']
-                grad_params = task_params['graduation']['value'].copy()
-
-                # add other params asked for by the task class
-                grad_obj = autopilot.get('graduation', grad_type)
-
-                if grad_obj.PARAMS:
-                    # these are params that should be set in the protocol settings
-                    for param in grad_obj.PARAMS:
-                        #if param not in grad_params.keys():
-                        # for now, try to find it in our attributes
-                        # but don't overwrite if it already has what it needs in case
-                        # of name overlap
-                        # TODO: See where else we would want to get these from
-                        if hasattr(self, param) and param not in grad_params.keys():
-                            grad_params.update({param:getattr(self, param)})
-
-                if grad_obj.COLS:
-                    # these are columns in our trial table
-
-                    # then give the data to the graduation object
-                    for col in grad_obj.COLS:
-                        try:
-                            grad_params.update({col: trial_tab[col]})
-                        except KeyError:
-                            self.logger.warning('Graduation object requested column {}, but it was not found in the trial table'.format(col))
-
-                #grad_params['value']['current_trial'] = str(self.current_trial) # str so it's json serializable
-                self.graduation = grad_obj(**grad_params)
-                self.did_graduate.clear()
             except Exception as e:
-                self.logger.exception(f'Exception in graduation parameter specification, graduation is disabled.\ngot error: {e}')
-        else:
-            self.graduation = None
+                self.logger.exception(
+                    f"Couldnt trim data given to graduation objects with step change history, got exception {e}")
 
-        self.close_hdf(h5f)
+            trial_tab = trial_table.read(start=slice_start)
+            trial_tab_keys = tuple(trial_tab.dtype.fields.keys())
+
+            ##############################
+
+            # get last trial number and session
+            try:
+                self.current_trial = trial_tab['trial_num'][-1]+1
+            except IndexError:
+                if 'trial_num' not in trial_tab_keys:
+                    self.logger.info('No previous trials detected, setting current_trial to 0')
+                self.current_trial = 0
+
+            # should have gotten session from current node when we started
+            # so sessions increment over the lifespan of the subject, even if
+            # reassigned.
+            if not self.session:
+                try:
+                    self.session = trial_tab['session'][-1]
+                except IndexError:
+                    if 'session' not in trial_tab_keys:
+                        self.logger.warning('previous session couldnt be found, setting to 0')
+                    self.session = 0
+
+            self.session += 1
+            h5f.root.info._v_attrs['session'] = self.session
+            h5f.flush()
+
+            # prepare continuous data group and tables
+            task_class = autopilot.get_task(task_params['task_type'])
+            if hasattr(task_class, 'ContinuousData'):
+                cont_group = h5f.get_node(group_name, 'continuous_data')
+                try:
+                    session_group = h5f.create_group(cont_group, "session_{}".format(self.session))
+                except tables.NodeError:
+                    pass # fine, already made it
+
+            self.graduation = None
+            if 'graduation' in task_params.keys():
+                try:
+                    grad_type = task_params['graduation']['type']
+                    grad_params = task_params['graduation']['value'].copy()
+
+                    # add other params asked for by the task class
+                    grad_obj = autopilot.get('graduation', grad_type)
+
+                    if grad_obj.PARAMS:
+                        # these are params that should be set in the protocol settings
+                        for param in grad_obj.PARAMS:
+                            #if param not in grad_params.keys():
+                            # for now, try to find it in our attributes
+                            # but don't overwrite if it already has what it needs in case
+                            # of name overlap
+                            # TODO: See where else we would want to get these from
+                            if hasattr(self, param) and param not in grad_params.keys():
+                                grad_params.update({param:getattr(self, param)})
+
+                    if grad_obj.COLS:
+                        # these are columns in our trial table
+
+                        # then give the data to the graduation object
+                        for col in grad_obj.COLS:
+                            try:
+                                grad_params.update({col: trial_tab[col]})
+                            except KeyError:
+                                self.logger.warning('Graduation object requested column {}, but it was not found in the trial table'.format(col))
+
+                    #grad_params['value']['current_trial'] = str(self.current_trial) # str so it's json serializable
+                    self.graduation = grad_obj(**grad_params)
+                    self.did_graduate.clear()
+                except Exception as e:
+                    self.logger.exception(f'Exception in graduation parameter specification, graduation is disabled.\ngot error: {e}')
+            else:
+                self.graduation = None
+
 
         # spawn thread to accept data
         self.data_queue = queue.Queue()
@@ -748,8 +691,7 @@ class Subject(object):
         self.running = True
 
         # return a task parameter dictionary
-
-        task = copy(self.current[self.step])
+        task = copy(self.protocol.protocol[self.step])
         task['subject'] = self.name
         task['step'] = int(self.step)
         task['current_trial'] = int(self.current_trial)
@@ -913,7 +855,6 @@ class Subject(object):
                     # we shouldn't throw any exception in this thread, just log it and move on
                     self.logger.exception(f'exception in data thread: {e}')
 
-
     def save_data(self, data):
         """
         Alternate and equivalent method of putting data in the queue as `Subject.data_queue.put(data)`
@@ -933,27 +874,6 @@ class Subject(object):
         self.running = False
         if self._thread.is_alive():
             self.logger.warning('Data thread did not exit')
-
-    def to_csv(self, path, task='current', step='all'):
-        """
-        Export trial data to .csv
-
-        Args:
-            path (str): output path of .csv
-            task (str, int):  not implemented, but in the future pull data from 'current' or other named task
-            step (str, int, list, tuple): Step to select, see :meth:`.Subject.get_trial_data`
-        """
-        # TODO: Jonny just scratching out temporarily, doesn't have all features implemented
-        df = self.get_trial_data(step=step)
-        df['subject'] = self.name
-        df.to_csv(path)
-        print("""Subject {}
-dataframe saved to:\n {}
-========================
-N Trials:   {}
-N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique())))
-
-
 
     def get_trial_data(self,
                        step: typing.Union[int, list, str] = -1,
@@ -1043,91 +963,6 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
 
         return return_data
 
-
-
-
-
-
-
-    def get_step_history(self, use_history=True):
-        """
-        Gets a dataframe of step numbers, timestamps, and step names
-        as a coarse view of training status.
-
-        Args:
-            use_history (bool): whether to use the history table or to reconstruct steps and dates from the trial table itself.
-                compatibility fix for old versions that didn't stash step changes when the whole protocol was updated.
-
-        Returns:
-            :class:`pandas.DataFrame`
-
-        """
-        h5f = self.open_hdf()
-        if use_history:
-            history = h5f.root.history.history
-            step_df = pd.DataFrame(history.read())
-            if step_df.shape[0] == 0:
-                return None
-            # encode as unicode
-            # https://stackoverflow.com/a/63028569/13113166
-            for col, dtype in step_df.dtypes.items():
-                if dtype == np.object:  # Only process byte object columns.
-                    step_df[col] = step_df[col].apply(lambda x: x.decode("utf-8"))
-
-            # filter to step only
-            step_df = step_df[step_df['type'] == 'step'].drop('type', axis=1)
-            # rename and retype
-            step_df = step_df.rename(columns={
-                'value': 'step_n',
-                'time': 'timestamp',
-                'name': 'name'})
-
-            step_df['timestamp'] = pd.to_datetime(step_df['timestamp'],
-                                                  format='%y%m%d-%H%M%S')
-            step_df['step_n'] = pd.to_numeric(step_df['step_n'])
-
-
-        else:
-            group_name = "/data/{}".format(self.protocol_name)
-            group = h5f.get_node(group_name)
-            step_groups = sorted(group._v_children.keys())
-
-            # find the last trial step with data
-            for step_name in reversed(step_groups):
-                if group._v_children[step_name].trial_data.attrs['NROWS']>0:
-                    step_groups = [step_name]
-                    break
-
-            # Iterate through steps, find first timestamp, use that.
-            for step_key in step_groups:
-                step_n = int(step_key[1:3])  # beginning of keys will be 'S##'
-                step_name = self.current[step_n]['step_name']
-                step_tab = group._v_children[step_key]._v_children['trial_data']
-                # find name of column that is a timestamp
-                colnames = step_tab.cols._v_colnames
-                try:
-                    ts_column = [col for col in colnames if "timestamp" in col][0]
-                    ts = step_tab.read(start=0, stop=1, field=ts_column)
-
-                except IndexError:
-                    self.logger.warning('No Timestamp column found, only returning step numbers and named that were reached')
-                    ts = 0
-
-                step_df = pd.DataFrame(
-                    {'step_n':step_n,
-                     'timestamp':ts,
-                     'name':step_name
-                    })
-                try:
-                    return_df = return_df.append(step_df, ignore_index=True)
-                except NameError:
-                    return_df = step_df
-
-            step_df = return_df
-
-        self.close_hdf(h5f)
-        return step_df
-
     def _get_timestamp(self, simple=False):
         # type: (bool) -> str
         """
@@ -1169,31 +1004,30 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
         # TODO: Get by session
         weights = {}
 
-        h5f = self.open_hdf()
-        weight_table = h5f.root.history.weights
-        if which == 'last':
-            for column in weight_table.colnames:
-                try:
-                    weights[column] = weight_table.read(-1, field=column)[0]
-                except IndexError:
-                    weights[column] = None
-        else:
-            for column in weight_table.colnames:
-                try:
-                    weights[column] = weight_table.read(field=column)
-                except IndexError:
-                    weights[column] = None
+        with self._h5f as h5f:
+            weight_table = h5f.root.history.weights
+            if which == 'last':
+                for column in weight_table.colnames:
+                    try:
+                        weights[column] = weight_table.read(-1, field=column)[0]
+                    except IndexError:
+                        weights[column] = None
+            else:
+                for column in weight_table.colnames:
+                    try:
+                        weights[column] = weight_table.read(field=column)
+                    except IndexError:
+                        weights[column] = None
 
-        if include_baseline is True:
-            try:
-                baseline = float(h5f.root.info._v_attrs['baseline_mass'])
-            except KeyError:
-                baseline = 0.0
-            minimum = baseline*0.8
-            weights['baseline_mass'] = baseline
-            weights['minimum_mass'] = minimum
+            if include_baseline is True:
+                try:
+                    baseline = float(h5f.root.info._v_attrs['baseline_mass'])
+                except KeyError:
+                    baseline = 0.0
+                minimum = baseline*0.8
+                weights['baseline_mass'] = baseline
+                weights['minimum_mass'] = minimum
 
-        self.close_hdf(h5f)
         return weights
 
     def set_weight(self, date, col_name, new_value):
@@ -1209,14 +1043,12 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
             new_value (float): New mass.
         """
 
-        h5f = self.open_hdf()
-        weight_table = h5f.root.history.weights
-        # there should only be one matching row since it includes seconds
-        for row in weight_table.where('date == b"{}"'.format(date)):
-            row[col_name] = new_value
-            row.update()
-
-        self.close_hdf(h5f)
+        with self._h5f as h5f:
+            weight_table = h5f.root.history.weights
+            # there should only be one matching row since it includes seconds
+            for row in weight_table.where('date == b"{}"'.format(date)):
+                row[col_name] = new_value
+                row.update()
 
 
     def update_weights(self, start=None, stop=None):
@@ -1230,20 +1062,18 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
             start (float): Mass before running task in grams
             stop (float): Mass after running task in grams.
         """
-        h5f = self.open_hdf()
-        if start is not None:
-            weight_row = h5f.root.history.weights.row
-            weight_row['date'] = self._get_timestamp(simple=True)
-            weight_row['session'] = self.session
-            weight_row['start'] = float(start)
-            weight_row.append()
-        elif stop is not None:
-            # TODO: Make this more robust - don't assume we got a start weight
-            h5f.root.history.weights.cols.stop[-1] = stop
-        else:
-            self.logger.warning("Need either a start or a stop weight")
-
-        _ = self.close_hdf(h5f)
+        with self._h5f as h5f:
+            if start is not None:
+                weight_row = h5f.root.history.weights.row
+                weight_row['date'] = self._get_timestamp(simple=True)
+                weight_row['session'] = self.session
+                weight_row['start'] = float(start)
+                weight_row.append()
+            elif stop is not None:
+                # TODO: Make this more robust - don't assume we got a start weight
+                h5f.root.history.weights.cols.stop[-1] = stop
+            else:
+                self.logger.warning("Need either a start or a stop weight")
 
     def graduate(self):
         """

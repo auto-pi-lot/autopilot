@@ -95,7 +95,7 @@ class Biography(Attributes):
     - Replace the implicit biographical structure in the :class:`.gui.New_Subject_Wizard` (embarrassing)
     - Interface with the NWB biographical information schema.
     """
-    id: Union[str, uuid.UUID] = Field(default_factory=uuid.uuid4, description="The indentifying string, name, subject_id, etc. for this subject. " + \
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="The indentifying string, name, subject_id, etc. for this subject. " + \
                                       "This value is also used to name the related Subject file, like {id}.h5, so these are typically expected to be unique. " + \
                                       "If None is provided, a uuid.uuid4() will be generated (which will be ugly so you probably want to give an id).")
     start_date: datetime = Field(default_factory=datetime.now, description="The date that this subject file was created. Not that this is not necessarily the date " + \
