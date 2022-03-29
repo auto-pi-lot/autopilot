@@ -41,6 +41,7 @@ The behavior of this module depends on `prefs.get('AUDIOSERVER')`.
 import os
 import sys
 import typing
+from typing import Union, Optional
 from time import sleep
 from scipy.io import wavfile
 from scipy.signal import resample
@@ -53,6 +54,7 @@ from queue import Empty, Full
 from autopilot import prefs
 from autopilot.stim.sound.base import get_sound_class, Sound
 import autopilot
+from autopilot.transform.timeseries import Filter_IIR
 
 BASE_CLASS = get_sound_class()
 
@@ -122,7 +124,7 @@ class Tritone(BASE_CLASS):
         """
         # This calls the base class, which sets server-specific parameters
         # like sampling rate
-        super(Tritone, self).__init__()
+        super(Tritone, self).__init__(**kwargs)
         
         # Set the parameters specific to Tritone
         self.frequency = float(frequency)
@@ -153,7 +155,7 @@ class Tritone(BASE_CLASS):
         """
         # Depends on the server_type
         if self.server_type == 'pyo':
-            raise ValueError("pyo not supported for Tritone")
+            raise NotImplementedError("pyo not supported for Tritone")
         
         elif self.server_type == 'jack':
             # This calculates the number of samples, using the specified 
@@ -161,35 +163,28 @@ class Tritone(BASE_CLASS):
             # as `self.nsamples`.
             self.get_nsamples()
 
+            # generate samples
+            # Generate time
+            t = np.arange(self.nsamples)
+
+            # Generate base tone
+            data = np.sin(
+                2 * np.pi * self.frequency * t / self.fs)
+
+            # Add on the upper tone, which is sqrt(2) higher
+            data += np.sin(
+                2 * np.pi * self.frequency * np.sqrt(2) * t / self.fs)
+
             # The shape of the table depends on `self.channel`
             if self.channel is None:
                 # The table will be 1-dimensional for mono sound
-                # Generate time
-                t = np.arange(self.nsamples)
-            
-                # Generate base tone
-                self.table = np.sin(
-                    2 * np.pi * self.frequency * t / self.fs)
- 
-                # Add on the upper tone, which is sqrt(2) higher
-                self.table += np.sin(
-                    2 * np.pi * self.frequency * np.sqrt(2) * t / self.fs)
- 
+                self.table = data
+
             else:
                 # The table will be 2-dimensional for stereo sound
                 # Each channel is a column
                 # Only the specified channel contains data and the other is zero
-                # Generate time
-                t = np.arange(self.nsamples)
-            
-                # Generate base tone
-                data = np.sin(
-                    2 * np.pi * self.frequency * t / self.fs)
- 
-                # Add on the upper tone, which is sqrt(2) higher
-                data += np.sin(
-                    2 * np.pi * self.frequency * np.sqrt(2) * t / self.fs)
-                
+
                 # Put in correct column
                 self.table = np.zeros((self.nsamples, 2))
                 assert self.channel in [0, 1]
@@ -220,7 +215,8 @@ class Noise(BASE_CLASS):
     type='Noise'
     
     def __init__(self, duration, amplitude=0.01, channel=None, 
-        highpass=None, **kwargs):
+        highpass: Optional[Union[float, Filter_IIR]]=None,
+        **kwargs):
         """Initialize a new white noise burst with specified parameters.
         
         The sound itself is stored as the attribute `self.table`. This can
@@ -234,8 +230,8 @@ class Noise(BASE_CLASS):
                 If 0, play noise from the first channel
                 If 1, play noise from the second channel
                 If None, send the same information to all channels ("mono")
-            highpass (float or None): highpass the Noise above this value
-                If None, no highpass is applied
+            highpass (float, :class:`~.transform.timeseries.Filter_IIR`, or None): highpass the Noise above this value
+                If None, no highpass is applied. If a float is given, makes 2nd order butterworth filter
             **kwargs: extraneous parameters that might come along with instantiating us
         """
         # This calls the base class, which sets server-specific parameters
@@ -245,10 +241,15 @@ class Noise(BASE_CLASS):
         # Set the parameters specific to Noise
         self.duration = float(duration)
         self.amplitude = float(amplitude)
-        if highpass is None:
-            self.highpass = None
-        else:
-            self.highpass = float(highpass)
+        self._highpass = None
+        if isinstance(highpass, (float, int)):
+            self._highpass = float(highpass)
+        elif isinstance(highpass, Filter_IIR):
+            if highpass.btype != 'highpass':
+                self.logger.warning(f'Got a {highpass.btype} filter instead of a highpass, this should still work, but indicates this parameter should probably be renamed...')
+
+            self._highpass = highpass
+
         try:
             self.channel = int(channel)
         except TypeError:
@@ -282,30 +283,22 @@ class Noise(BASE_CLASS):
             # duration and the sampling rate from the server, and stores it
             # as `self.nsamples`.
             self.get_nsamples()
-            
+
             # Generate the table by sampling from a uniform distribution
+            data = np.random.uniform(-1, 1, self.nsamples)
+
+            if self.highpass is not None:
+                data = self.highpass.filter(data)
+
             # The shape of the table depends on `self.channel`
             if self.channel is None:
                 # The table will be 1-dimensional for mono sound
-                self.table = np.random.uniform(-1, 1, self.nsamples)
-                
-                if self.highpass is not None:
-                    # Filter
-                    bhi, ahi = scipy.signal.butter(
-                        2, self.highpass / (self.fs / 2), 'high')
-                    self.table = scipy.signal.filtfilt(bhi, ahi, self.table)
+                self.table = data
 
             else:
                 # The table will be 2-dimensional for stereo sound
                 # Each channel is a column
                 # Only the specified channel contains data and the other is zero
-                data = np.random.uniform(-1, 1, self.nsamples)
-                
-                if self.highpass is not None:
-                    # Filter
-                    bhi, ahi = scipy.signal.butter(
-                        2, self.highpass / (self.fs / 2), 'high')
-                    data = scipy.signal.filtfilt(bhi, ahi, data)
                 
                 self.table = np.zeros((self.nsamples, 2))
                 assert self.channel in [0, 1]
@@ -324,6 +317,25 @@ class Noise(BASE_CLASS):
         # Flag as initialized
         self.initialized = True
 
+    @property
+    def highpass(self) -> Union[Filter_IIR, None]:
+        """
+        A highpass filter (see the ``highpass`` argument) applied to generated samples
+
+        Returns:
+            :class:`~.transform.timeseries.Filter_IIR` or None, if none supplied
+
+        """
+
+        if isinstance(self._highpass, float):
+            # If we were given a float, make the filter and stash it
+            filter = Filter_IIR(ftype='butter', N=2, Wn=self._highpass,
+                                btype="highpass", fs=self.fs)
+            self._highpass = filter
+
+        return self._highpass
+
+
     def iter_continuous(self) -> typing.Generator:
         """
         Continuously yield frames of audio. If this method is not overridden,
@@ -341,12 +353,14 @@ class Noise(BASE_CLASS):
 
         rng = np.random.default_rng()
 
-
         while True:
             if self.channel is None:
                 table[:] = rng.uniform(-self.amplitude, self.amplitude, self.blocksize)
             else:
                 table[:,self.channel] = rng.uniform(-self.amplitude, self.amplitude, self.blocksize)
+
+            if self.highpass is not None:
+                table = self.highpass.filter(table)
 
             yield table
 
