@@ -24,6 +24,8 @@ class Filter_IIR(Transform):
 
             * ``N`` - filter order
             * ``Wn`` - array or scalar giving critical frequencies
+                This should be provided in Hz, not as a fraction of the
+                Nyquist frequency.
             * ``btype`` - type of band: ``['bandpass', 'lowpass', 'highpass', 'bandstop']``
 
     Attributes:

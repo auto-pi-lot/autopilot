@@ -230,8 +230,18 @@ class Noise(BASE_CLASS):
                 If 0, play noise from the first channel
                 If 1, play noise from the second channel
                 If None, send the same information to all channels ("mono")
-            highpass (float, :class:`~.transform.timeseries.Filter_IIR`, or None): highpass the Noise above this value
-                If None, no highpass is applied. If a float is given, makes 2nd order butterworth filter
+            highpass (float, :class:`~.transform.timeseries.Filter_IIR`, or None): 
+                This optionally applies a filter to the Noise.
+                If None, no filter is applied.
+                If :class:`~.transform.timeseries.Filter_IIR`, then that
+                    filter is applied.
+                If float, then a :class:`~.transform.timeseries.Filter_IIR`
+                    is created for you. By default it will be a 2nd-order
+                    Butterworth high-pass with the specified float as `Wn`.
+                    This value should be provided in Hz, not as a fraction
+                    of the Nyquist frequency, because we also provide
+                    the sampling rate to Filter_IIR (and from there to
+                    scipy.signal.iirfilter).
             **kwargs: extraneous parameters that might come along with instantiating us
         """
         # This calls the base class, which sets server-specific parameters
