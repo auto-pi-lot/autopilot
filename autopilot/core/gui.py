@@ -1199,7 +1199,7 @@ class Graduation_Widget(QtWidgets.QWidget):
     A protocol is composed of multiple tasks (steps), and graduation criteria
     define when a subject should progress through those steps.
 
-    eg. a subject should graduate one stage after 300 trials, or after it reaches
+    eg. a subject should _graduate one stage after 300 trials, or after it reaches
     75% accuracy over the last 500 trials.
 
     Attributes:

@@ -76,7 +76,7 @@ class Accuracy(Graduation):
             row (:class:`~tables.tableextension.Row`) : Trial row
 
         Returns:
-            bool: Did we graduate this time or not?
+            bool: Did we _graduate this time or not?
         """
         try:
             self.corrects.append(int(row['correct']))
@@ -105,7 +105,7 @@ class NTrials(Graduation):
     def __init__(self, n_trials, current_trial=0, **kwargs):
         """
         Args:
-            n_trials (int): Number of trials to graduate after
+            n_trials (int): Number of trials to _graduate after
             current_trial (int): If not starting from zero, start from here
             **kwargs:
         """
@@ -122,7 +122,7 @@ class NTrials(Graduation):
             row: ignored
 
         Returns:
-            bool: Did we graduate or not?
+            bool: Did we _graduate or not?
         """
         if 'trial_num' in row:
             trials = row['trial_num']

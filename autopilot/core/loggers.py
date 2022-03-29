@@ -159,8 +159,10 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             parent_logger.debug(f'parent, module-level logger created: {module_name}')
 
         logger = logging.getLogger(logger_name)
+        if logger_name not in globals()['_LOGGERS']:
         # logger.addHandler(_rich_handler())
-        logger.debug(f"Logger created: {logger_name}")
+            logger.debug(f"Logger created: {logger_name}")
+            globals()['_LOGGERS'].append(logger_name)
 
     return logger
 

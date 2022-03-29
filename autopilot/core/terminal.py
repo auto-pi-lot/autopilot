@@ -598,7 +598,7 @@ class Terminal(QtWidgets.QMainWindow):
         if self.subjects[subject_name].did_graduate.is_set() is True:
             self.node.send(to=value['pilot'], key="STOP", value={'graduation':True})
             self.subjects[subject_name].stop_run()
-            self.subjects[subject_name].graduate()
+            self.subjects[subject_name]._graduate()
             task = self.subjects[subject_name].prepare_run()
             task['pilot'] = value['pilot']
 

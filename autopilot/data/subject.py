@@ -159,6 +159,14 @@ class Subject(object):
                 history_row['hash'] = ''
             history_row.append()
 
+            do_update = False
+            if 'current' in h5f.root:
+                do_update = True
+
+        if do_update:
+            self.logger.warning('Detected an old subject format, updating...')
+            self._update_structure()
+
     @property
     @contextmanager
     def _h5f(self) -> tables.file.File:
@@ -207,7 +215,14 @@ class Subject(object):
             protocol = h5f.get_node(self.structure.protocol.path)
             protocoldict = {}
             for k in protocol._v_attrs._f_list():
+
                 protocoldict[k] = protocol._v_attrs[k]
+
+            if 'protocol' in protocol:
+                protocol_node = h5f.get_node(self.structure.protocol.path + '/protocol')
+                protocol_node = filenode.open_node(protocol_node)
+                protocoldict['protocol'] = json.loads(protocol_node.readall())
+                protocol_node.close()
 
         if len(protocoldict) == 0:
             return None
@@ -246,7 +261,14 @@ class Subject(object):
         with self._h5f as h5f:
             protocol_node = h5f.get_node(self.structure.protocol.path)
             for k, v in protocol.dict().items():
-                protocol_node._v_attrs[k] = v
+                if k == 'protocol':
+                    if 'protocol' in protocol_node:
+                        h5f.remove_node(self.structure.protocol.path + '/protocol')
+                    protocol_filenode = filenode.new_node(h5f, where=self.structure.protocol.path, name='protocol')
+                    protocol_filenode.write(json.dumps(v).encode('utf-8'))
+
+                else:
+                    protocol_node._v_attrs[k] = v
 
         self.logger.debug(f"Saved new protocol status {Protocol_Status}")
 
@@ -550,7 +572,7 @@ class Subject(object):
             Dict: the parameters for the current step, with subject id, step number,
                 current trial, and session number included.
         """
-        if self.current is None:
+        if self.protocol is None:
             e = RuntimeError('No task assigned to subject, cant prepare_run. use Subject.assign_protocol or protocol reassignment wizard in the terminal GUI')
             self.logger.exception(f"{e}")
             raise e
@@ -620,17 +642,6 @@ class Subject(object):
                 if 'trial_num' not in trial_tab_keys:
                     self.logger.info('No previous trials detected, setting current_trial to 0')
                 self.current_trial = 0
-
-            # should have gotten session from current node when we started
-            # so sessions increment over the lifespan of the subject, even if
-            # reassigned.
-            if not self.session:
-                try:
-                    self.session = trial_tab['session'][-1]
-                except IndexError:
-                    if 'session' not in trial_tab_keys:
-                        self.logger.warning('previous session couldnt be found, setting to 0')
-                    self.session = 0
 
             self.session += 1
             h5f.root.info._v_attrs['session'] = self.session
@@ -717,7 +728,7 @@ class Subject(object):
         """
         with self._h5f as h5f:
 
-            task_params = self.current[self.step]
+            task_params = self.protocol.protocol[self.step]
             step_name = task_params['step_name']
 
             # file structure is '/data/protocol_name/##_step_name/tables'
@@ -1075,16 +1086,67 @@ class Subject(object):
             else:
                 self.logger.warning("Need either a start or a stop weight")
 
-    def graduate(self):
+    def _graduate(self):
         """
         Increase the current step by one, unless it is the last step.
         """
-        if len(self.current)<=self.step+1:
-            self.logger.warning('Tried to graduate from the last step!\n Task has {} steps and we are on {}'.format(len(self.current), self.step+1))
+        if len(self.protocol.protocol)<=self.step+1:
+            self.logger.warning('Tried to _graduate from the last step!\n Task has {} steps and we are on {}'.format(len(self.current), self.step+1))
             return
 
         # increment step, update_history should handle the rest
-        step = self.step+1
-        name = self.current[step]['step_name']
-        self.update_history('step', name, step)
+        self.step += 1
 
+    def _update_structure(self):
+        """
+        Update old formats to new ones
+        """
+        protocol = None
+        with self._h5f as h5f:
+            if 'current' in h5f.root:
+                protocol = _update_current(h5f)
+
+        if protocol is not None:
+            self.protocol = protocol
+            with self._h5f as h5f:
+                h5f.remove_node('/current')
+
+
+
+
+
+def _update_current(h5f) -> Protocol_Status:
+    """Update the old 'current' filenode to the new Protocol Status"""
+    current_node = filenode.open_node(h5f.root.current)
+    protocol_string = current_node.readall()
+    protocol = json.loads(protocol_string)
+    step = current_node.attrs['step']
+    protocol_name = current_node.attrs['protocol_name']
+
+    group_stx = Protocol_Group(protocol_name=protocol_name, protocol=protocol)
+    active_step = group_stx.steps[step]
+    trial_tab = h5f.get_node(active_step.path, 'trial_data')
+    try:
+        current_trial = trial_tab['trial_num'][-1]
+    except:
+        print('Coudlnt get current trial, using 0')
+        current_trial = 0
+
+    try:
+        session = h5f.root.info._v_attrs['session']
+    except:
+        print('couldnt get session from metadata, getting from trial table')
+        try:
+            session = trial_tab['session'][-1]
+        except:
+            print('couldnt get session from trial table, using 0')
+            session = 0
+
+    status = Protocol_Status(
+        current_trial=current_trial,
+        protocol=protocol,
+        step=step,
+        session=session,
+        protocol_name=protocol_name
+    )
+    return status

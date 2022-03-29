@@ -416,7 +416,7 @@ class Gammatone(Noise):
 
 
     # These parameters are strings not numbers... jonny should do this better
-STRING_PARAMS = ['path', 'type']
+STRING_PARAMS = ['path', 'type', 'speaker', 'vowel', 'token', 'consonant']
 """
 These parameters should be given string columns rather than float columns.
 

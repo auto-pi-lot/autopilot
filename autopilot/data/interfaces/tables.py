@@ -114,7 +114,7 @@ class H5F_Table(H5F_Node):
             node = h5f.get_node(self.path)
             if not isinstance(node, tables.table.Table):
                 raise ValueError(f'{self.path} already exists, but it isnt a Table! instead its a {type(node)}')
-            elif node.description._v_names != list(self.description.columns.keys()):
+            elif set(node.description._v_names) != set(list(self.description.columns.keys())):
                 self._logger.warning(f"Found existing table with columns {node.description._v_names}, but requested a table with {list(self.description.columns.keys())}, remaking.")
                 self._remake_table(h5f)
 
