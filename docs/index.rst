@@ -60,6 +60,7 @@ This documentation is very young and is very much a work in progress! Please `su
    :caption: API Documentation:
 
    Core Modules <core/index>
+   Data <data/index>
    Hardware <hardware/index>
    Networking <networking/index>
    Stimuli <stim/index>
