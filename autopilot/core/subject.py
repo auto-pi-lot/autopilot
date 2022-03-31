@@ -840,19 +840,28 @@ class Subject(object):
                         # if we haven't made a table yet, do it
                         if k not in cont_tables.keys():
                             print("{} not in cont_tables.keys".format(k))
-                            # make atom for this data
-                            try:
-                                # if it's a numpy array...
-                                col_atom = tables.Atom.from_type(v.dtype.name, v.shape)
-                            except AttributeError:
-                                temp_array = np.array(v)
-                                col_atom = tables.Atom.from_type(temp_array.dtype.name, temp_array.shape)
+                            
+                            # Make it an array if it's not already
+                            varr = np.asarray(v)
+                            
+                            # Special case string
+                            if 'str' in varr.dtype.name:
+                                col_atom = tables.StringAtom(len(v))
+                            else:
+                                col_atom = tables.Atom.from_type(
+                                    varr.dtype.name, varr.shape)
+                                
                             # should have come in with a timestamp
                             # TODO: Log if no timestamp is received
                             try:
-                                temp_timestamp_arr = np.array(data['timestamp'])
-                                timestamp_atom = tables.Atom.from_type(temp_timestamp_arr.dtype.name,
-                                                                       temp_timestamp_arr.shape)
+                                varr_timestamp = np.asarray(data['timestamp'])
+                                # Special case string
+                                if 'str' in varr_timestamp.dtype.name:
+                                    timestamp_atom = tables.StringAtom(len(data['timestamp']))
+                                else:
+                                    timestamp_atom = tables.Atom.from_type(
+                                        varr_timestamp.dtype.name, 
+                                        varr_timestamp.shape)
 
                             except KeyError:
                                 self.logger.warning('no timestamp sent with continuous data')
