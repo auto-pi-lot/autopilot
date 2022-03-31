@@ -2,6 +2,7 @@
 Interfaces for pytables and hdf5 generally
 """
 import typing
+from typing import List, Union
 from abc import abstractmethod
 from typing import Optional, List
 from pydantic import create_model
@@ -289,8 +290,18 @@ def table_to_model(description: typing.Type[tables.IsDescription], cls:typing.Ty
         Subclass of Table
     """
     description_dict = {}
-    for key, col in description.columns.items():
+    if hasattr(description, 'columns'):
+        iterator = description.columns
+    elif hasattr(description, '_v_colobjects'):
+        # compatibility iwth tables.description.Description types
+        iterator = description._v_colobjects
+    else:
+        raise TypeError(f"Dont know how to convert table from {description}")
+
+    for key, col in iterator.items():
         python_type = _NUMPY_TO_BUILTIN[col.dtype.kind]
+        # tables always accept Lists or singletons
+        python_type = Union[List[python_type], python_type]
         description_dict[key] = (python_type, ...)
 
     model = create_model(cls.__name__, __base__=cls, **description_dict)

@@ -17,6 +17,7 @@ from copy import copy
 from typing import Optional
 from contextlib import contextmanager
 from pathlib import Path
+import shutil
 
 import pandas as pd
 import numpy as np
@@ -133,8 +134,11 @@ class Subject(object):
         self.logger = init_logger(self)
         self.file = file
 
+        if not self.file.exists():
+            raise FileNotFoundError(f"Subject file {str(self.file)} does not exist!")
+
         # make sure we have the expected structure
-        with self._h5f as h5f:
+        with self._h5f() as h5f:
             self.structure.make(h5f)
 
         self._session_uuid = None
@@ -148,7 +152,7 @@ class Subject(object):
         self._thread = None
         self.did_graduate = threading.Event()
 
-        with self._h5f as h5f:
+        with self._h5f() as h5f:
             # Every time we are initialized we stash the git hash
             history_row = h5f.root.history.hashes.row
             history_row['time'] = self._get_timestamp()
@@ -164,14 +168,20 @@ class Subject(object):
                 do_update = True
 
         if do_update:
-            self.logger.warning('Detected an old subject format, updating...')
-            self._update_structure()
+            self.logger.warning('Detected an old subject format, trying to update...')
+            try:
+                self._update_structure()
+            except Exception as e:
+                self.logger.exception(f"Unable to update! Got exception:\n{e}")
 
-    @property
     @contextmanager
-    def _h5f(self) -> tables.file.File:
+    def _h5f(self, lock:bool=True) -> tables.file.File:
         """
         Context manager for access to hdf5 file.
+
+        Args:
+            lock (bool): Lock the file while it is open, only use ``False`` for operations
+                that are read-only: there should only ever be one write operation at a time.
 
         Examples:
 
@@ -184,9 +194,18 @@ class Subject(object):
 
         # @contextmanager
         # def _h5f_context() -> tables.file.File:
-        with self._lock:
+        if lock:
+            with self._lock:
+                try:
+                    h5f = tables.open_file(str(self.file), mode="r+")
+                    yield h5f
+                finally:
+                    h5f.flush()
+                    h5f.close()
+
+        else:
             try:
-                h5f = tables.open_file(str(self.file), mode="r+")
+                h5f = tables.open_file(str(self.file), mode="r")
                 yield h5f
             finally:
                 h5f.flush()
@@ -201,7 +220,7 @@ class Subject(object):
         Returns:
             dict
         """
-        with self._h5f as h5f:
+        with self._h5f(lock=False) as h5f:
             info = h5f.get_node(self.structure.info.path)
             biodict = {}
             for k in info._v_attrs._f_list():
@@ -211,7 +230,7 @@ class Subject(object):
 
     @property
     def protocol(self) -> Union[Protocol_Status, None]:
-        with self._h5f as h5f:
+        with self._h5f(lock=False) as h5f:
             protocol = h5f.get_node(self.structure.protocol.path)
             protocoldict = {}
             for k in protocol._v_attrs._f_list():
@@ -253,12 +272,7 @@ class Subject(object):
             elif diff == 'step':
                 self.update_history('step', name=protocol.protocol[protocol.step]['step_name'],
                                     value=protocol.step)
-
-
-        # make sure that we have the required protocol structure
-        self._make_protocol_structure(protocol.protocol_name, protocol.protocol)
-
-        with self._h5f as h5f:
+        with self._h5f() as h5f:
             protocol_node = h5f.get_node(self.structure.protocol.path)
             for k, v in protocol.dict().items():
                 if k == 'protocol':
@@ -270,7 +284,17 @@ class Subject(object):
                 else:
                     protocol_node._v_attrs[k] = v
 
-        self.logger.debug(f"Saved new protocol status {Protocol_Status}")
+        # make sure that we have the required protocol structure
+        try:
+            self._make_protocol_structure(protocol.protocol_name, protocol.protocol)
+        except ValueError as e:
+            if 'Could not find subclass of' in str(e):
+                task_name = str(e).split(' ')[-1].rstrip('!')
+                self.logger.error(f"When attempting to make protocol data structure, could not find the task type {task_name}. If it's in a plugin, make sure that the plugin is in your plugin directory. The protocol has been assigned, but you will need to have the task code present to run it.")
+            else:
+                raise e
+
+        self.logger.info(f"Saved new protocol status {protocol}")
 
     @property
     def protocol_name(self) -> str:
@@ -330,7 +354,7 @@ class Subject(object):
 
 
     def _write_attrs(self, path: str, attrs:dict):
-        with self._h5f as h5f:
+        with self._h5f() as h5f:
             try:
                 node = h5f.get_node(path)
 
@@ -345,7 +369,7 @@ class Subject(object):
             h5f.flush()
 
     def _read_table(self, path:str, table:typing.Type[Table]) -> typing.Union[Table,pd.DataFrame]:
-        with self._h5f as h5f:
+        with self._h5f(lock=False) as h5f:
             tab = h5f.get_node(path).read() # type: np.ndarray
 
         # unpack table to a dataframe
@@ -448,7 +472,7 @@ class Subject(object):
             value = str(value)
 
         # log the change
-        with self._h5f as h5f:
+        with self._h5f() as h5f:
             history_row = h5f.root.history.history.row
 
             history_row['time'] = self._get_timestamp(simple=True)
@@ -507,7 +531,7 @@ class Subject(object):
             protocol=protocol,
             structure=self.structure
         )
-        with self._h5f as h5f:
+        with self._h5f() as h5f:
             protocol_structure.make(h5f)
 
     def assign_protocol(self, protocol:typing.Union[Path, str, typing.List[dict]],
@@ -596,7 +620,7 @@ class Subject(object):
         # Get current task parameters and handles to tables
         task_params = self.protocol.protocol[self.step]
 
-        with self._h5f as h5f:
+        with self._h5f() as h5f:
             # tasks without TrialData will have some default table, so this should always be present
             trial_table = h5f.get_node(group_name, 'trial_data')
 
@@ -726,7 +750,7 @@ class Subject(object):
             queue (:class:`queue.Queue`): passed by :meth:`~.Subject.prepare_run` and used by other
                 objects to pass data to be stored.
         """
-        with self._h5f as h5f:
+        with self._h5f() as h5f:
 
             task_params = self.protocol.protocol[self.step]
             step_name = task_params['step_name']
@@ -887,92 +911,85 @@ class Subject(object):
             self.logger.warning('Data thread did not exit')
 
     def get_trial_data(self,
-                       step: typing.Union[int, list, str] = -1,
-                       what: str ="data"):
+                       step: typing.Union[int, list, str, None] = None
+                       ) -> Union[typing.List[pd.DataFrame], pd.DataFrame]:
         """
         Get trial data from the current task.
 
         Args:
-            step (int, list, 'all'): Step that should be returned, can be one of
+            step (int, list, str, None): Step that should be returned, can be one of
 
-                * -1: most recent step
+                * ``None``: All steps (default)
+                * -1: the current step
                 * int: a single step
-                * list of two integers eg. [0, 5], an inclusive range of steps.
+                * list: of step numbers or step names (excluding S##_)
                 * string: the name of a step (excluding S##_)
-                * 'all': all steps.
-
-            what (str): What should be returned?
-
-                * 'data' : Dataframe of requested steps' trial data
-                * 'variables': dict of variables *without* loading data into memory
 
         Returns:
-            :class:`pandas.DataFrame`: DataFrame of requested steps' trial data.
+            :class:`pandas.DataFrame`: DataFrame of requested steps' trial data (or list of dataframes).
         """
-        # step= -1 is just most recent step,
-        # step= int is an integer specified step
-        # step= [n1, n2] is from step n1 to n2 inclusive
-        # step= 'all' or anything that isn't an int or a list is all steps
-        with self._h5f as h5f:
-            group_name = "/data/{}".format(self.protocol_name)
-            group = h5f.get_node(group_name)
-            step_groups = sorted(group._v_children.keys())
 
+        try:
+            groups = Protocol_Group(self.protocol_name, self.protocol.protocol)
+        except ValueError:
+            self.logger.warning(f"Could not recreate data descriptions from protocol, likely because a plugin is missing or has not been imported. Attempting to recreate from pytables description, but this might not be fully accurate. check AUTOPLUGIN and that the plugin is in the plugin directory.")
+            groups = None
+
+        step_names = [s['step_name'].lower() for s in self.protocol.protocol]
+
+        # convert input into a list of integers
+        if isinstance(step, int):
             if step == -1:
-                # find the last trial step with data
-                for step_name in reversed(step_groups):
-                    if group._v_children[step_name].trial_data.attrs['NROWS']>0:
-                        step_groups = [step_name]
-                        break
-            elif isinstance(step, int):
-                if step > len(step_groups):
-                    ValueError('You provided a step number ({}) greater than the number of steps in the subjects assigned protocol: ()'.format(step, len(step_groups)))
-                step_groups = [step_groups[step]]
+                # the current step
+                step = self.step
+            steps = [step]
+        elif isinstance(step, list):
+            steps = []
+            for s in step:
+                try:
+                    # check if it's an integer
+                    steps.append(int(s))
+                except ValueError:
+                    # must be a step name!
+                    steps.append(step_names.index(s.lower()))
+        elif isinstance(step, str):
+            # get index from step name!
+            steps = [step_names.index(step.lower())]
+        else:
+            # get all steps
+            steps = list(range(len(self.protocol.protocol)))
 
-            elif isinstance(step, str) and step != 'all':
+        ret = [self._get_step_data(i, groups) for i in steps]
+        if len(ret) == 1:
+            return ret[0]
+        else:
+            return ret
 
-                # since step names have S##_ prepended in the hdf5 file,
-                # but we want to be able to call them by their human readable name,
-                # have to make sure we have the right form
-                _step_groups = [s for s in step_groups if s == step]
-                if len(_step_groups) == 0:
-                    _step_groups = [s for s in step_groups if step in s]
-                step_groups = _step_groups
+    def _get_step_data(self, step:int, groups:Optional[Protocol_Group]=None) -> pd.DataFrame:
+        """
+        Get individual step data, using the protocol group if given, otherwise try and recover from pytables description
+        """
+        # find the table
+        if groups:
+            path = groups.steps[step].path + '/trial_data'
+            data_table = groups.steps[step].trial_data
+        else:
+            group_path = f"/data/{self.protocol_name}"
+            with self._h5f(lock=False) as h5f:
+                step_groups = sorted(h5f.get_node(group_path)._v_children.keys())
+                path = f"{group_path}/{step_groups[step]}/trial_data"
+                data_node = h5f.get_node(path) # type: tables.table.Table
+                data_table = Table.from_pytables_description(data_node.description)
 
-            elif isinstance(step, list):
-                if isinstance(step[0], int):
-                    step_groups = step_groups[int(step[0]):int(step[1])]
-                elif isinstance(step[0], str):
-                    _step_groups = []
-                    for a_step in step:
-                        step_name = [s for s in step_groups if s==a_step]
-                        if len(step_name) == 0:
-                            step_name = [s for s in step_groups if a_step in s]
-                        _step_groups.extend(step_name)
+        # get the data from the table!
+        data = self._read_table(path, data_table)
+        if isinstance(data, Table):
+            data = data.to_df()
+        return data
 
-                    step_groups = _step_groups
-            print('step groups:')
-            print(step_groups)
 
-            if what == "variables":
-                return_data = {}
 
-            for step_key in step_groups:
-                step_n = int(step_key[1:3]) # beginning of keys will be 'S##'
-                step_tab = group._v_children[step_key]._v_children['trial_data']
-                if what == "data":
-                    step_df = pd.DataFrame(step_tab.read())
-                    step_df['step'] = step_n
-                    step_df['step_name'] = step_key
-                    try:
-                        return_data = return_data.append(step_df, ignore_index=True)
-                    except NameError:
-                        return_data = step_df
 
-                elif what == "variables":
-                    return_data[step_key] = step_tab.coldescrs
-
-        return return_data
 
     def _get_timestamp(self, simple=False):
         # type: (bool) -> str
@@ -1015,7 +1032,7 @@ class Subject(object):
         # TODO: Get by session
         weights = {}
 
-        with self._h5f as h5f:
+        with self._h5f(lock=False) as h5f:
             weight_table = h5f.root.history.weights
             if which == 'last':
                 for column in weight_table.colnames:
@@ -1054,7 +1071,7 @@ class Subject(object):
             new_value (float): New mass.
         """
 
-        with self._h5f as h5f:
+        with self._h5f() as h5f:
             weight_table = h5f.root.history.weights
             # there should only be one matching row since it includes seconds
             for row in weight_table.where('date == b"{}"'.format(date)):
@@ -1073,7 +1090,7 @@ class Subject(object):
             start (float): Mass before running task in grams
             stop (float): Mass after running task in grams.
         """
-        with self._h5f as h5f:
+        with self._h5f() as h5f:
             if start is not None:
                 weight_row = h5f.root.history.weights.row
                 weight_row['date'] = self._get_timestamp(simple=True)
@@ -1101,15 +1118,24 @@ class Subject(object):
         """
         Update old formats to new ones
         """
+        backup = self.file.with_stem(self.file.stem + f"_backup-{datetime.date.today().isoformat()}")
+        append_int = 1
+        while backup.exists():
+            backup = self.file.with_stem(self.file.stem + f"_backup-{datetime.date.today().isoformat()}-{append_int}")
+            append_int += 1
+        self.logger.warning(f'Attempting to update structure, making a backup to {str(backup)}')
+        shutil.copy(str(self.file), str(backup))
+
         protocol = None
-        with self._h5f as h5f:
+        with self._h5f() as h5f:
             if 'current' in h5f.root:
                 protocol = _update_current(h5f)
 
         if protocol is not None:
             self.protocol = protocol
-            with self._h5f as h5f:
+            with self._h5f() as h5f:
                 h5f.remove_node('/current')
+                self.logger.debug("Removed current node")
 
 
 
@@ -1123,24 +1149,36 @@ def _update_current(h5f) -> Protocol_Status:
     step = current_node.attrs['step']
     protocol_name = current_node.attrs['protocol_name']
 
-    group_stx = Protocol_Group(protocol_name=protocol_name, protocol=protocol)
-    active_step = group_stx.steps[step]
-    trial_tab = h5f.get_node(active_step.path, 'trial_data')
+    current_trial = 0
+    session = 0
+
+    got_protocol = False
     try:
-        current_trial = trial_tab['trial_num'][-1]
-    except:
-        print('Coudlnt get current trial, using 0')
-        current_trial = 0
+        group_stx = Protocol_Group(protocol_name=protocol_name, protocol=protocol)
+        active_step = group_stx.steps[step]
+        trial_tab = h5f.get_node(active_step.path, 'trial_data')
+        got_protocol = True
+    except ValueError:
+        print("Couldnt find task, not able to retrieve data from trial table. Using zeros for current trial and session")
+
+    if got_protocol:
+        try:
+            current_trial = trial_tab['trial_num'][-1]
+        except:
+            print('Coudlnt get current trial, using 0')
+            current_trial = 0
 
     try:
         session = h5f.root.info._v_attrs['session']
     except:
-        print('couldnt get session from metadata, getting from trial table')
-        try:
-            session = trial_tab['session'][-1]
-        except:
-            print('couldnt get session from trial table, using 0')
-            session = 0
+        print('couldnt get session from metadata')
+        if got_protocol:
+            print('getting session from trial table')
+            try:
+                session = trial_tab['session'][-1]
+            except:
+                print('couldnt get session from trial table, using 0')
+                session = 0
 
     status = Protocol_Status(
         current_trial=current_trial,

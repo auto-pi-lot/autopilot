@@ -7,6 +7,7 @@ and this module should not import from any other autopilot module
 import logging
 from logging import Logger
 import typing
+from pprint import pformat
 
 from pydantic import BaseModel, BaseSettings, PrivateAttr
 
@@ -25,7 +26,6 @@ def no_underscore_all_caps(input: str) -> str:
     """
     return input.replace('_', '').upper()
 
-
 class Autopilot_Type(BaseModel):
     """
     Root autopilot model for types
@@ -36,6 +36,11 @@ class Autopilot_Type(BaseModel):
     def _init_logger(self):
         from autopilot.core.loggers import init_logger
         self._logger = init_logger(self)
+
+    def __str__(self):
+        return pformat(self.dict(), indent=2, compact=True)
+
+
 
 
 

@@ -25,9 +25,9 @@ class Trial_Data(Table):
     Tasks should subclass this and add any additional parameters that are needed.
     The subject class will then use this to create a table in the hdf5 file.
     """
-    group: str = Field(..., description="Path of the parent step group")
+    group: Optional[str] = Field(None, description="Path of the parent step group")
     session: int = Field(..., description="Current training session, increments every time the task is started")
-    session_uuid: str = Field(..., description="Each session gets a unique uuid, regardless of the session integer, to enable independent addressing of sessions when session numbers might overlap (eg. reassignment)")
+    session_uuid: Optional[str] = Field(None, description="Each session gets a unique uuid, regardless of the session integer, to enable independent addressing of sessions when session numbers might overlap (eg. reassignment)")
     trial_num: int = Field(..., description="Trial data is grouped within, well, trials, which increase (rather than resetting) across sessions within a task")
 
 
