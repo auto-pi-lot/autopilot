@@ -830,17 +830,13 @@ class Subject(object):
                 # there must be a more elegant way to check if something is a key and it is true...
                 # yet here we are
                 if 'continuous' in data.keys():
-                    print("in continuous")
                     for k, v in data.items():
                         # if this isn't data that we're expecting, ignore it
                         if k not in cont_data:
-                            print("{} not in cont_data".format(k))
                             continue
 
                         # if we haven't made a table yet, do it
                         if k not in cont_tables.keys():
-                            print("{} not in cont_tables.keys".format(k))
-                            
                             # Make it an array if it's not already
                             varr = np.asarray(v)
                             
@@ -874,13 +870,10 @@ class Subject(object):
                             }, filters=self.continuous_filter)
 
                             cont_rows[k] = cont_tables[k].row
-                            
-                            print("created")
 
                         cont_rows[k][k] = v
                         cont_rows[k]['timestamp'] = data['timestamp']
                         cont_rows[k].append()
-                        print("stored")
 
                     # continue, the rest is for handling trial data
                     continue
