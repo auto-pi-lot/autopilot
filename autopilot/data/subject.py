@@ -1,10 +1,5 @@
 """
-
-Classes for managing data and protocol access and storage.
-
-Currently named subject, but will likely be refactored to include other data
-models should the need arise.
-
+Abstraction layer around subject data storage files
 """
 import threading
 import datetime
@@ -12,11 +7,11 @@ import json
 import uuid
 import warnings
 import typing
-from typing import Union
-from typing import Optional
+from typing import Union, Optional
 from contextlib import contextmanager
 from pathlib import Path
 import shutil
+import queue
 
 import pandas as pd
 import numpy as np
@@ -35,14 +30,8 @@ from autopilot.core.loggers import init_logger
 if typing.TYPE_CHECKING:
     from autopilot.tasks.graduation import Graduation
 
-import queue
-
 # suppress pytables natural name warnings
 warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
-
-# --------------------------------------------------
-# Classes to describe structure of subject files
-# --------------------------------------------------
 
 
 class Subject(object):
@@ -607,7 +596,6 @@ class Subject(object):
         self.session += 1
         self._session_uuid = None
 
-
         ##############################
         trial_tab = self._trim_trial_to_session(group_path)
         trial_tab_keys = tuple(trial_tab.dtype.fields.keys())
@@ -629,7 +617,6 @@ class Subject(object):
         self.graduation = None
         if 'graduation' in task_params.keys():
             self.graduation = self._prepare_graduation(task_params, trial_tab)
-
 
         # spawn thread to accept data
         self.data_queue = queue.Queue()
@@ -763,7 +750,6 @@ class Subject(object):
         with self._h5f() as h5f:
 
             trial_table = h5f.get_node(trial_table_path)
-            trial_keys = trial_table.colnames
             trial_row = trial_table.row
 
             # try to get continuous data table if any
@@ -779,14 +765,10 @@ class Subject(object):
                         cont_tables, cont_rows = self._save_continuous_data(
                             h5f, data, continuous_group_path, cont_tables, cont_rows
                         )
-
                         # continue, the rest is for handling trial data
                         continue
 
-                    # Check if this is the same
-                    # if we've already recorded a trial number for this row,
-                    # and the trial number we just got is not the same,
-                    # we edit that row if we already have some data on it or else start a new row
+                    # If we get trial data out of order, try and write it back in the correct row.
                     if 'trial_num' in data.keys() and 'trial_num' in trial_row:
                         trial_row = self._sync_trial_row(data['trial_num'], trial_row, trial_table)
                         del data['trial_num']
