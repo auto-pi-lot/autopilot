@@ -4,10 +4,12 @@ Abstract Root Objects from which all other autopilot objects inherit from.
 These objects are not intended to be instantiated on their own,
 and this module should not import from any other autopilot module
 """
-import logging
 from logging import Logger
 import typing
+from typing import Optional
 from pprint import pformat
+from abc import ABC
+
 
 from pydantic import BaseModel, BaseSettings, PrivateAttr
 
@@ -41,9 +43,6 @@ class Autopilot_Type(BaseModel):
         return pformat(self.dict(), indent=2, compact=True)
 
 
-
-
-
 class Autopilot_Pref(BaseSettings):
     """
     Root autopilot model for prefs
@@ -55,3 +54,18 @@ class Autopilot_Pref(BaseSettings):
     class Config:
         env_prefix = "AUTOPILOT_"
         alias_generator = no_underscore_all_caps
+
+
+class Autopilot_Object(ABC):
+    """
+    Meta-object for autopilot object types
+    """
+
+    def __init__(self, id:Optional[str]=None):
+        super(Autopilot_Object, self).__init__()
+        self.id = id
+        self.logger = self._init_logger()
+
+    def _init_logger(self) -> Logger:
+        from autopilot.core.loggers import init_logger
+        return init_logger(self)

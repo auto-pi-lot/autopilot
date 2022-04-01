@@ -12,8 +12,7 @@ import json
 import uuid
 import warnings
 import typing
-from typing import Union, Optional
-from copy import copy
+from typing import Union
 from typing import Optional
 from contextlib import contextmanager
 from pathlib import Path
@@ -22,6 +21,7 @@ import shutil
 import pandas as pd
 import numpy as np
 import tables
+from tables.tableextension import Row
 from tables.nodes import filenode
 
 import autopilot
@@ -31,6 +31,9 @@ from autopilot.data.models.subject import Subject_Structure, Protocol_Status, Ha
 from autopilot.data.models.biography import Biography
 from autopilot.data.models.protocol import Protocol_Group
 from autopilot.core.loggers import init_logger
+
+if typing.TYPE_CHECKING:
+    from autopilot.tasks.graduation import Graduation
 
 import queue
 
@@ -68,24 +71,10 @@ class Subject(object):
     Attributes:
         name (str): Subject ID
         file (str): Path to hdf5 file - usually `{prefs.get('DATADIR')}/{self.name}.h5`
-        current (dict): current task parameters. loaded from
-            the 'current' :mod:`~tables.filenode` of the h5 file
-        step (int): current step
-        protocol_name (str): name of currently assigned protocol
         current_trial (int): number of current trial
         running (bool): Flag that signals whether the subject is currently running a task or not.
         data_queue (:class:`queue.Queue`): Queue to dump data while running task
-        _thread (:class:`threading.Thread`): thread used to keep file open while running task
         did_graduate (:class:`threading.Event`): Event used to signal if the subject has graduated the current step
-        STRUCTURE (list): list of tuples with order:
-
-            * full path, eg. '/history/weights'
-            * relative path, eg. '/history'
-            * name, eg. 'weights'
-            * type, eg. :class:`.Subject.Weight_Table` or 'group'
-
-        node locations (eg. '/data') to types, either 'group' for groups or a
-            :class:`tables.IsDescriptor` for tables.
     """
     _VERSION = 1
 
@@ -101,8 +90,6 @@ class Subject(object):
             name (str): subject ID
             dir (str): path where the .h5 file is located, if `None`, `prefs.get('DATADIR')` is used
             file (str): load a subject from a filename. if `None`, ignored.
-            new (bool): if True, a new file is made (a new file is made if one does not exist anyway)
-            biography (dict): If making a new subject file, a dictionary with biographical data can be passed
             structure (:class:`.Subject_Schema`): Structure to use with this subject.
         """
 
@@ -395,7 +382,7 @@ class Subject(object):
 
 
         Args:
-            biography (:class:`~.data.models.biography.Biography`): A collection of biographical information
+            bio (:class:`~.data.models.biography.Biography`): A collection of biographical information
                 about the subject! Stored as attributes within `/info`
             structure (Optional[:class:`~.models.subject.Subject_Structure`]): The structure of tables and groups to
                 use when creating this Subject. **Note:** This is not currently saved with the subject file,
@@ -584,13 +571,17 @@ class Subject(object):
 
         self.protocol = status
 
-    def prepare_run(self):
+    # --------------------------------------------------
+    # prepare run
+    # --------------------------------------------------
+
+    def prepare_run(self) -> dict:
         """
         Prepares the Subject object to receive data while running the task.
 
         Gets information about current task, trial number,
         spawns :class:`~.tasks.graduation.Graduation` object,
-        spawns :attr:`~.Subject.data_queue` and calls :meth:`~.Subject.data_thread`.
+        spawns :attr:`~.Subject.data_queue` and calls :meth:`~.Subject._data_thread`.
 
         Returns:
             Dict: the parameters for the current step, with subject id, step number,
@@ -601,139 +592,158 @@ class Subject(object):
             self.logger.exception(f"{e}")
             raise e
 
-        # get step history
-        try:
-            step_df = self.history.to_df()
-            step_df = step_df[step_df['type'] == 'step']
-        except Exception as e:
-            self.logger.exception(f"Couldnt get step history to trim data given to graduation objects, got exception {e}")
-            step_df = None
-
-
         protocol_groups = Protocol_Group(
             protocol_name = self.protocol_name,
             protocol = self.protocol.protocol,
             structure = self.structure
         )
-        group_name = protocol_groups.steps[self.step].path
+        group_path = protocol_groups.steps[self.step].path
+        trial_table_path = "/".join([group_path, 'trial_data'])
 
         # Get current task parameters and handles to tables
         task_params = self.protocol.protocol[self.step]
 
-        with self._h5f() as h5f:
-            # tasks without TrialData will have some default table, so this should always be present
-            trial_table = h5f.get_node(group_name, 'trial_data')
+        # increment session and clear session_uuid to ensure uniqueness
+        self.session += 1
+        self._session_uuid = None
 
-            ##################################3
-            # first try and find some timestamp column to filter past data we give to the graduation object
-            # in case the subject has been stepped back down to a previous stage, for example
-            slice_start = 0
-            try:
-                ts_cols = [col for col in trial_table.colnames if 'timestamp' in col]
-                # just use the first timestamp column
-                if len(ts_cols) > 0:
-                    trial_ts = pd.DataFrame({'timestamp': trial_table.col(ts_cols[0])})
-                    trial_ts['timestamp'] = pd.to_datetime(trial_ts['timestamp'].str.decode('utf-8'))
-                else:
-                    self.logger.warning(
-                        'No timestamp column could be found in trial data, cannot trim data given to graduation objects')
-                    trial_ts = None
 
-                if trial_ts is not None and step_df is not None:
-                    # see where, if any, the timestamp column is older than the last time the step was changed
-                    good_rows = np.where(trial_ts['timestamp'] >= step_df['time'].iloc[-1])[0]
-                    if len(good_rows) > 0:
-                        slice_start = np.min(good_rows)
-                    # otherwise if it's because we found no good rows but have trials,
-                    # we will say not to use them, otherwise we say not to use them by
-                    # slicing at the end of the table
-                    else:
-                        slice_start = trial_table.nrows
+        ##############################
+        trial_tab = self._trim_trial_to_session(group_path)
+        trial_tab_keys = tuple(trial_tab.dtype.fields.keys())
 
-            except Exception as e:
-                self.logger.exception(
-                    f"Couldnt trim data given to graduation objects with step change history, got exception {e}")
+        # get last trial number from trial_table
+        try:
+            self.current_trial = trial_tab['trial_num'][-1]+1
+        except IndexError:
+            if 'trial_num' not in trial_tab_keys:
+                self.logger.warning('No trial_num column detected in trial data! this is a basic indexing column for trialwise data and should always be present! You might experience unexpected behavior in your data, make sure you check everyhing is as it should be!')
+            self.logger.info('Using current_trial = 0')
+            self.current_trial = 0
 
-            trial_tab = trial_table.read(start=slice_start)
-            trial_tab_keys = tuple(trial_tab.dtype.fields.keys())
+        continuous_group_path = self._prepare_continuous_data(task_params, group_path)
 
-            ##############################
+        # --------------------------------------------------
+        # prepare graduation object
 
-            # get last trial number and session
-            try:
-                self.current_trial = trial_tab['trial_num'][-1]+1
-            except IndexError:
-                if 'trial_num' not in trial_tab_keys:
-                    self.logger.info('No previous trials detected, setting current_trial to 0')
-                self.current_trial = 0
-
-            self.session += 1
-            h5f.root.info._v_attrs['session'] = self.session
-            h5f.flush()
-
-            # prepare continuous data group and tables
-            task_class = autopilot.get_task(task_params['task_type'])
-            if hasattr(task_class, 'ContinuousData'):
-                cont_group = h5f.get_node(group_name, 'continuous_data')
-                try:
-                    session_group = h5f.create_group(cont_group, "session_{}".format(self.session))
-                except tables.NodeError:
-                    pass # fine, already made it
-
-            self.graduation = None
-            if 'graduation' in task_params.keys():
-                try:
-                    grad_type = task_params['graduation']['type']
-                    grad_params = task_params['graduation']['value'].copy()
-
-                    # add other params asked for by the task class
-                    grad_obj = autopilot.get('graduation', grad_type)
-
-                    if grad_obj.PARAMS:
-                        # these are params that should be set in the protocol settings
-                        for param in grad_obj.PARAMS:
-                            #if param not in grad_params.keys():
-                            # for now, try to find it in our attributes
-                            # but don't overwrite if it already has what it needs in case
-                            # of name overlap
-                            # TODO: See where else we would want to get these from
-                            if hasattr(self, param) and param not in grad_params.keys():
-                                grad_params.update({param:getattr(self, param)})
-
-                    if grad_obj.COLS:
-                        # these are columns in our trial table
-
-                        # then give the data to the graduation object
-                        for col in grad_obj.COLS:
-                            try:
-                                grad_params.update({col: trial_tab[col]})
-                            except KeyError:
-                                self.logger.warning('Graduation object requested column {}, but it was not found in the trial table'.format(col))
-
-                    #grad_params['value']['current_trial'] = str(self.current_trial) # str so it's json serializable
-                    self.graduation = grad_obj(**grad_params)
-                    self.did_graduate.clear()
-                except Exception as e:
-                    self.logger.exception(f'Exception in graduation parameter specification, graduation is disabled.\ngot error: {e}')
-            else:
-                self.graduation = None
+        self.graduation = None
+        if 'graduation' in task_params.keys():
+            self.graduation = self._prepare_graduation(task_params, trial_tab)
 
 
         # spawn thread to accept data
         self.data_queue = queue.Queue()
-        self._thread = threading.Thread(target=self.data_thread, args=(self.data_queue,))
+        self._thread = threading.Thread(
+            target=self._data_thread,
+            args=(self.data_queue, trial_table_path, continuous_group_path)
+        )
         self._thread.start()
         self.running = True
 
-        # return a task parameter dictionary
-        task = copy(self.protocol.protocol[self.step])
-        task['subject'] = self.name
-        task['step'] = int(self.step)
-        task['current_trial'] = int(self.current_trial)
-        task['session'] = int(self.session)
-        return task
+        # return a completed task parameter dictionary
+        task_params['subject'] = self.name
+        task_params['step'] = int(self.step)
+        task_params['current_trial'] = int(self.current_trial)
+        task_params['session'] = int(self.session)
+        return task_params
 
-    def data_thread(self, queue):
+    def _trim_trial_to_session(self, group_path:str) -> tables.table.Table:
+
+        with self._h5f(lock=False) as h5f:
+            # tasks without TrialData will have some default table, so this should always be present
+            trial_table = h5f.get_node(group_path, 'trial_data')
+
+            ##################################3
+            # try to filter rows based on contiguous session numbers
+            # session always increments, even when reassigned, so if reassigning, there should be
+            # a discontinuity in session number.
+            # this is more reliable than trying to use timestamps, because they might not always
+            # be present (though they should be) and they might differ from the history timestamps
+            # if a terminal and pilot are on different timezones, for example.
+            slice_start = 0
+            try:
+                sessions = trial_table.col('session')
+
+                # first check if our current session is the same or +1 the previous session
+                # otherwise, we have been reassigned and haven't done any trials yet.
+                if len(sessions)>0 and abs(self.session - sessions[-1])>1:
+                    slice_start = len(sessions)
+
+                else:
+                    # find any discontinuities
+                    # normally continuous sessions should have a diff of 0 or 1 (same or incremented session)
+                    discontinuities = np.where(np.logical_or(np.diff(sessions)<0,np.diff(sessions) > 1))
+                    if len(discontinuities) == 0:
+                        # fine, use the whole thing
+                        pass
+                    else:
+                        slice_start = discontinuities[-1]+1
+
+            except Exception as e:
+                self.logger.exception(
+                    f"Couldnt trim data given to graduation objects to current set of sessions, using full data history. got exception\n {e}")
+
+            trial_tab = trial_table.read(start=slice_start)
+            return trial_tab
+
+    def _prepare_continuous_data(self, task_params: dict, group_path:str) -> str:
+        # --------------------------------------------------
+        # prepare continuous data group
+
+        group_name = f"session_{self.session}"
+        continuous_group_path = '/'.join([group_path, group_name])
+
+        with self._h5f() as h5f:
+
+            # prepare continuous data group and tables
+            task_class = autopilot.get_task(task_params['task_type'])
+            if hasattr(task_class, 'ContinuousData'):
+                cont_group = h5f.get_node(group_path, 'continuous_data')
+                try:
+                    _ = h5f.create_group(cont_group, group_name)
+                except tables.NodeError:
+                    pass # fine, already made it
+
+        return continuous_group_path
+
+    def _prepare_graduation(self, task_params:dict, trial_tab:tables.table.Table) -> 'Graduation':
+        try:
+            grad_type = task_params['graduation']['type']
+            grad_params = task_params['graduation']['value'].copy()
+
+            # add other params asked for by the task class
+            grad_obj = autopilot.get('graduation', grad_type) # type: typing.Type[Graduation]
+
+            if grad_obj.PARAMS:
+                # these are params that should be set in the protocol settings
+                for param in grad_obj.PARAMS:
+                    # if param not in grad_params.keys():
+                    # for now, try to find it in our attributes
+                    # but don't overwrite if it already has what it needs in case
+                    # of name overlap
+                    if hasattr(self, param) and param not in grad_params.keys():
+                        grad_params.update({param: getattr(self, param)})
+
+            if grad_obj.COLS:
+                # give requested columns in trial table to graduation object
+                for col in grad_obj.COLS:
+                    try:
+                        grad_params.update({col: trial_tab[col]})
+                    except KeyError:
+                        self.logger.exception(f'Graduation object requested column {col}, but it was not found in the trial table. Graduation will likely be inaccurate!')
+
+            grad_instance = grad_obj(**grad_params)
+            self.did_graduate.clear()
+            return grad_instance
+        except Exception as e:
+            self.logger.exception(
+                f'Exception in graduation parameter specification, graduation is disabled.\ngot error: {e}')
+
+    # --------------------------------------------------
+    # Data Thread Private Methods!
+    # --------------------------------------------------
+
+    def _data_thread(self, queue:queue.Queue, trial_table_path:str, continuous_group_path:str):
         """
         Thread that keeps hdf file open and receives data while task is running.
 
@@ -752,143 +762,152 @@ class Subject(object):
         """
         with self._h5f() as h5f:
 
-            task_params = self.protocol.protocol[self.step]
-            step_name = task_params['step_name']
-
-            # file structure is '/data/protocol_name/##_step_name/tables'
-            group_name = f"/data/{self.protocol_name}/S{self.step:02d}_{step_name}"
-            #try:
-            trial_table = h5f.get_node(group_name, 'trial_data')
+            trial_table = h5f.get_node(trial_table_path)
             trial_keys = trial_table.colnames
             trial_row = trial_table.row
 
             # try to get continuous data table if any
-            cont_data = tuple()
             cont_tables = {}
             cont_rows = {}
-            try:
-                continuous_group = h5f.get_node(group_name, 'continuous_data')
-                session_group = h5f.get_node(continuous_group, 'session_{}'.format(self.session))
-                cont_data = continuous_group._v_attrs['data']
-
-                cont_tables = {}
-                cont_rows = {}
-            except AttributeError:
-                continuous_table = False
 
             # start getting data
             # stop when 'END' gets put in the queue
             for data in iter(queue.get, 'END'):
                 # wrap everything in try because this thread shouldn't crash
                 try:
-                    # if we get continuous data, this should be simple because we always get a whole row
-                    # there must be a more elegant way to check if something is a key and it is true...
-                    # yet here we are
                     if 'continuous' in data.keys():
-                        for k, v in data.items():
-                            # if this isn't data that we're expecting, ignore it
-                            if k not in cont_data:
-                                continue
-
-                            # if we haven't made a table yet, do it
-                            if k not in cont_tables.keys():
-                                # make atom for this data
-                                try:
-                                    # if it's a numpy array...
-                                    col_atom = tables.Atom.from_type(v.dtype.name, v.shape)
-                                except AttributeError:
-                                    temp_array = np.array(v)
-                                    col_atom = tables.Atom.from_type(temp_array.dtype.name, temp_array.shape)
-                                # should have come in with a timestamp
-                                # TODO: Log if no timestamp is received
-                                try:
-                                    temp_timestamp_arr = np.array(data['timestamp'])
-                                    timestamp_atom = tables.Atom.from_type(temp_timestamp_arr.dtype.name,
-                                                                           temp_timestamp_arr.shape)
-
-                                except KeyError:
-                                    self.logger.warning('no timestamp sent with continuous data')
-                                    continue
-
-
-                                cont_tables[k] = h5f.create_table(session_group, k, description={
-                                    k: tables.Col.from_atom(col_atom),
-                                    'timestamp': tables.Col.from_atom(timestamp_atom)
-                                })
-
-                                cont_rows[k] = cont_tables[k].row
-
-                            cont_rows[k][k] = v
-                            cont_rows[k]['timestamp'] = data['timestamp']
-                            cont_rows[k].append()
+                        cont_tables, cont_rows = self._save_continuous_data(
+                            h5f, data, continuous_group_path, cont_tables, cont_rows
+                        )
 
                         # continue, the rest is for handling trial data
                         continue
-
-
 
                     # Check if this is the same
                     # if we've already recorded a trial number for this row,
                     # and the trial number we just got is not the same,
                     # we edit that row if we already have some data on it or else start a new row
-                    if 'trial_num' in data.keys():
-                        if (trial_row['trial_num']) and (trial_row['trial_num'] is None):
-                            trial_row['trial_num'] = data['trial_num']
+                    if 'trial_num' in data.keys() and 'trial_num' in trial_row:
+                        trial_row = self._sync_trial_row(data['trial_num'], trial_row, trial_table)
+                        del data['trial_num']
 
-                        if (trial_row['trial_num']) and (trial_row['trial_num'] != data['trial_num']):
+                    self._save_trial_data(data, trial_row, trial_table)
 
-                            # find row with this trial number if it exists
-                            # this will return a list of rows with matching trial_num.
-                            # if it's empty, we didn't receive a TRIAL_END and should create a new row
-                            other_row = [r for r in trial_table.where("trial_num == {}".format(data['trial_num']))]
-
-                            if len(other_row) == 0:
-                                # proceed to fill the row below
-                                trial_row.append()
-
-                            elif len(other_row) == 1:
-                                # update the row and continue so we don't double write
-                                # have to be in the middle of iteration to use update()
-                                for row in trial_table.where("trial_num == {}".format(data['trial_num'])):
-                                    for k, v in data.items():
-                                        if k in trial_keys:
-                                            row[k] = v
-                                    row.update()
-                                continue
-
-                            else:
-                                # we have more than one row with this trial_num.
-                                # shouldn't happen, but we dont' want to throw any data away
-                                self.logger.warning('Found multiple rows with same trial_num: {}'.format(data['trial_num']))
-                                # continue just for data conservancy's sake
-                                trial_row.append()
-
-                    for k, v in data.items():
-                        # some bug where some columns are not always detected,
-                        # rather than failing out here, just log error
-                        if k in trial_keys:
-                            try:
-                                trial_row[k] = v
-                            except KeyError:
-                                # TODO: Logging here
-                                self.logger.warning("Data dropped: key: {}, value: {}".format(k, v))
-
-                    # TODO: Or if all the values have been filled, shouldn't need explicit TRIAL_END flags
-                    if 'TRIAL_END' in data.keys():
-                        trial_row['session'] = self.session
-                        if self.graduation:
-                            # set our graduation flag, the terminal will get the rest rolling
-                            did_graduate = self.graduation.update(trial_row)
-                            if did_graduate is True:
-                                self.did_graduate.set()
-                        trial_row.append()
-                        trial_table.flush()
-
-                    # always flush so that our row iteration routines above will find what they're looking for
-                    trial_table.flush()
                 except Exception as e:
                     # we shouldn't throw any exception in this thread, just log it and move on
                     self.logger.exception(f'exception in data thread: {e}')
+
+    def _save_continuous_data(self,
+                              h5f: tables.File,
+                              data: dict,
+                              continuous_group_path:str,
+                              cont_tables: typing.Dict[str, tables.table.Table],
+                              cont_rows:typing.Dict[str, Row]) -> typing.Tuple[typing.Dict[str, tables.table.Table], typing.Dict[str, Row]]:
+        for k, v in data.items():
+
+            # if we haven't made a table yet, do it
+            if k not in cont_tables.keys():
+                new_cont_table = self._make_continuous_table(h5f, continuous_group_path, k, v)
+                cont_tables[k] = new_cont_table
+                cont_rows[k] = new_cont_table.row
+
+            cont_rows[k][k] = v
+            cont_rows[k]['timestamp'] = data.get('timestamp', datetime.datetime.now().isoformat())
+            cont_rows[k].append()
+
+        return cont_tables, cont_rows
+
+    def _make_continuous_table(self, h5f:tables.file.File,
+                               continuous_group_path:str,
+                               key:str,
+                               value:typing.Any) -> tables.table.Table:
+        # make atom for this data
+        try:
+            # if it's a numpy array...
+            col_atom = tables.Atom.from_type(value.dtype.name, value.shape)
+        except AttributeError:
+            temp_array = np.array(value)
+            col_atom = tables.Atom.from_type(temp_array.dtype.name, temp_array.shape)
+
+        return h5f.create_table(continuous_group_path, key, description={
+            key: tables.Col.from_atom(col_atom),
+            'timestamp': tables.StringCol(256)
+        })
+
+    def _save_trial_data(self, data:dict, trial_row:Row, trial_table:tables.table.Table):
+
+        for k, v in data.items():
+            # some bug where some columns are not always detected,
+            # rather than failing out here, just log error
+            if k in ('TRIAL_END',):
+                continue
+
+            try:
+                if trial_row[k] is not None:
+                    self.logger.warning(
+                        f"Received two values for key, making new row.: {k} and trial row: {trial_row.nrow}, existing value: {trial_row[k]}, new value: {v}")
+                    self._increment_trial(trial_row)
+                trial_row[k] = v
+            except KeyError:
+                # TODO: expand trial_table!
+                self.logger.exception(f"Trial data dropped because no column for key: {k}, value: {v}")
+
+        if 'TRIAL_END' in data.keys() or all([v is not None for v in trial_row.fetch_all_fields()]):
+            self._increment_trial(trial_row)
+
+        # always flush so that our row iteration routines above will find what they're looking for
+        trial_table.flush()
+
+    def _sync_trial_row(self, trial_num:int, trial_row:Row, trial_table:tables.table.Table) -> Row:
+        if trial_row['trial_num'] is None:
+            trial_row['trial_num'] = trial_num
+
+        elif trial_num == trial_row['trial_num'] + 1:
+            self._increment_trial(trial_row)
+            trial_row['trial_num'] = trial_num
+
+        elif trial_num == trial_row['trial_num']:
+            # fine! we're on the right one
+            pass
+
+        else:
+            # we're on the wrong row somehow!
+
+            # find row with this trial number if it exists
+            # this will return a list of rows with matching trial_num.
+            # if it's empty, we didn't receive a TRIAL_END and should create a new row
+            other_row = [r for r in trial_table.where(f"trial_num == {trial_num}")]
+
+            if len(other_row) == 0:
+                # proceed to fill the row below, we got trial data discontinuously somehow
+                self.logger.warning(f"Got discontinuous trial data")
+                self._increment_trial(trial_row)
+                trial_row['trial_num'] = trial_num
+
+            elif len(other_row) == 1:
+                # return the other row! (if an overwrite is attempted, append and go to next row anyway)
+                trial_row = other_row[0]
+
+            else:
+                # we have more than one row with this trial_num.
+                # shouldn't happen, but we dont' want to throw any data away
+                self.logger.warning(f'Found multiple rows with same trial_num: {trial_num}')
+                # continue just for data conservancy's sake
+                self._increment_trial(trial_row)
+                trial_row['trial_num'] = trial_num
+
+            return trial_row
+
+    def _increment_trial(self, trial_row: Row):
+        self.logger.debug('Trial Incremented')
+        trial_row['session'] = self.session
+        trial_row['session_uuid'] = self.session_uuid
+        if self.graduation:
+            # set our graduation flag, the terminal will get the rest rolling
+            did_graduate = self.graduation.update(trial_row)
+            if did_graduate is True:
+                self.did_graduate.set()
+        trial_row.append()
 
     def save_data(self, data):
         """
@@ -902,13 +921,17 @@ class Subject(object):
 
     def stop_run(self):
         """
-        puts 'END' in the data_queue, which causes :meth:`~.Subject.data_thread` to end.
+        puts 'END' in the data_queue, which causes :meth:`~.Subject._data_thread` to end.
         """
         self.data_queue.put('END')
         self._thread.join(5)
         self.running = False
         if self._thread.is_alive():
             self.logger.warning('Data thread did not exit')
+
+    # --------------------------------------------------
+    # Data retrieval
+    # --------------------------------------------------
 
     def get_trial_data(self,
                        step: typing.Union[int, list, str, None] = None
@@ -986,9 +1009,6 @@ class Subject(object):
         if isinstance(data, Table):
             data = data.to_df()
         return data
-
-
-
 
 
     def _get_timestamp(self, simple=False):
@@ -1108,7 +1128,7 @@ class Subject(object):
         Increase the current step by one, unless it is the last step.
         """
         if len(self.protocol.protocol)<=self.step+1:
-            self.logger.warning('Tried to _graduate from the last step!\n Task has {} steps and we are on {}'.format(len(self.current), self.step+1))
+            self.logger.warning('Tried to _graduate from the last step!\n Task has {} steps and we are on {}'.format(len(self.protocol.protocol), self.step+1))
             return
 
         # increment step, update_history should handle the rest
@@ -1136,9 +1156,6 @@ class Subject(object):
             with self._h5f() as h5f:
                 h5f.remove_node('/current')
                 self.logger.debug("Removed current node")
-
-
-
 
 
 def _update_current(h5f) -> Protocol_Status:

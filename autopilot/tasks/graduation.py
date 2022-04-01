@@ -4,11 +4,16 @@ different tasks in a protocol.
 """
 
 from autopilot.core.loggers import init_logger
+from abc import abstractmethod
+from autopilot.root import Autopilot_Object
 from collections import deque
 import numpy as np
 from itertools import count
+import typing
+if typing.TYPE_CHECKING:
+    from tables.tableextension import Row
 
-class Graduation(object):
+class Graduation(Autopilot_Object):
     """
     Base Graduation object.
 
@@ -16,8 +21,6 @@ class Graduation(object):
     `update` method.
 
     """
-    def __init__(self):
-        self.logger = init_logger(self)
 
     PARAMS = []
     """
@@ -29,12 +32,12 @@ class Graduation(object):
     list: list of any data columns that this object should be given.
     """
 
-    def update(self, row):
+    @abstractmethod
+    def update(self, row:'Row'):
         """
         Args:
             :class:`~tables.tableextension.Row` : Trial row
         """
-        Exception('The update method was not redefined by the subclass!')
 
 
 class Accuracy(Graduation):
@@ -63,9 +66,7 @@ class Accuracy(Graduation):
             # don't need to trim, dqs take the last values already
             self.corrects.extend(kwargs['correct'])
         else:
-            Warning("correct column not given")
-
-
+            self.logger.warning("correct column not given, only counting corrects from this session")
 
     def update(self, row):
         """
