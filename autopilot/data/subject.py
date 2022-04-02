@@ -858,6 +858,8 @@ class Subject(object):
             # find row with this trial number if it exists
             # this will return a list of rows with matching trial_num.
             # if it's empty, we didn't receive a TRIAL_END and should create a new row
+            # FIXME: this should also ensure that the trial_num comes from a row with a matching session_uuid
+
             other_row = [r for r in trial_table.where(f"trial_num == {trial_num}")]
 
             if len(other_row) == 0:
