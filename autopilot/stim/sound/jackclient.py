@@ -435,7 +435,7 @@ class JackClient(mp.Process):
                 # sound is over
                 self.play_evt.clear()
                 # end time is just the start of the next frame??
-                self.wait_until = self.client.last_frame_time+self.blocksize
+                self.wait_until = self.client.last_frame_time+(self.blocksize*self.alsa_nperiods)
                 # Thread(target=self._wait_for_end, args=(self.client.last_frame_time+self.blocksize,)).start()
                 if self.debug_timing:
                     self.logger.debug(f'Sound has ended, requesting end event at {self.wait_until}')
@@ -445,7 +445,7 @@ class JackClient(mp.Process):
                 if data.shape[0] < self.blocksize:
                     data = self._pad_continuous(data)
                     # sound is over!
-                    self.wait_until = self.client.last_frame_time + self.blocksize + data.shape[0]
+                    self.wait_until = self.client.last_frame_time + (self.blocksize*self.alsa_nperiods) + data.shape[0]
                     if self.debug_timing:
                         self.logger.debug(
                             f'Sound has ended, size {data.shape[0]}, requesting end event at {self.wait_until}')
