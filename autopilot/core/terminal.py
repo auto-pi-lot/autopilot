@@ -45,7 +45,11 @@ from autopilot.data.subject import Subject
 from autopilot.core.plots import Plot_Widget
 from autopilot.networking import Net_Node, Terminal_Station
 from autopilot.utils.invoker import get_invoker
-from autopilot.core.gui import Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog, Stream_Video, Plugins
+from autopilot.gui.dialog import pop_dialog
+from autopilot.gui.menus.swarm import Stream_Video
+from autopilot.gui.menus.plugins import Plugins
+from autopilot.gui.menus.tools import Calibrate_Water, Reassign, Weights
+from autopilot.gui.menus.tests import Bandwidth_Test
 from autopilot.gui.widgets.protocol import Protocol_Wizard
 from autopilot.gui.widgets.terminal import Control_Panel
 from autopilot.core.loggers import init_logger

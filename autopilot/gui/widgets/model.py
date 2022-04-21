@@ -12,7 +12,8 @@ from datetime import datetime
 from PySide2 import QtWidgets, QtGui
 
 from autopilot.root import Autopilot_Type
-from autopilot.core.gui import pop_dialog
+from autopilot.gui.dialog import pop_dialog
+
 
 class _Input(BaseModel):
     """
