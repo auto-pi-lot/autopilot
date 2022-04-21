@@ -192,9 +192,6 @@ class Subject(object):
     def info(self) -> Biography:
         """
         Subject biographical information
-
-        Returns:
-            dict
         """
         with self._h5f(lock=False) as h5f:
             info = h5f.get_node(self.structure.info.path)
@@ -203,6 +200,13 @@ class Subject(object):
                 biodict[k] = info._v_attrs[k]
 
         return Biography(**biodict)
+
+    @property
+    def bio(self) -> Biography:
+        """
+        Subject biographical information (alias for :meth:`.info`)
+        """
+        return self.info
 
     @property
     def protocol(self) -> Union[Protocol_Status, None]:
