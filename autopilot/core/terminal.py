@@ -18,7 +18,7 @@ import numpy as np
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from autopilot import prefs
-from autopilot.core import styles
+from autopilot.gui import styles
 
 if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     prefs.init(prefs_file)
 
 from autopilot.data.subject import Subject
-from autopilot.core.plots import Plot_Widget
+from autopilot.gui.plots.plot import Plot_Widget
 from autopilot.networking import Net_Node, Terminal_Station
 from autopilot.utils.invoker import get_invoker
 from autopilot.gui.dialog import pop_dialog
@@ -50,7 +50,7 @@ from autopilot.gui.menus.swarm import Stream_Video
 from autopilot.gui.menus.plugins import Plugins
 from autopilot.gui.menus.tools import Calibrate_Water, Reassign, Weights
 from autopilot.gui.menus.tests import Bandwidth_Test
-from autopilot.gui.widgets.protocol import Protocol_Wizard
+from autopilot.gui.menus.file import Protocol_Wizard
 from autopilot.gui.widgets.terminal import Control_Panel
 from autopilot.core.loggers import init_logger
 from autopilot.gui.widgets.model import Model_Filler_Dialogue

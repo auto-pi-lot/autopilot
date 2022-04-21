@@ -8,7 +8,7 @@ from PySide2 import QtWidgets, QtGui
 from autopilot import prefs
 from autopilot.gui.dialog import pop_dialog
 from autopilot.core.loggers import init_logger
-from autopilot.core.plots import Video
+from autopilot.gui.plots.video import Video
 from autopilot.networking import Net_Node
 
 

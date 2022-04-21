@@ -2,12 +2,14 @@ import json
 import os
 import typing
 
+from PySide2 import QtWidgets, QtCore
+
 from autopilot import prefs
-from autopilot.core import styles
+from autopilot.gui import styles
 from autopilot.gui.gui import gui_event
 from autopilot.gui.widgets.subject import New_Subject_Wizard
 from autopilot.core.loggers import init_logger
-from autopilot.core.subject import Subject
+from autopilot.data.subject import Subject
 
 
 class Control_Panel(QtWidgets.QWidget):
@@ -162,38 +164,6 @@ class Control_Panel(QtWidgets.QWidget):
             self.pilots[pilot]['subjects'].append(biography_vals['id'])
             self.subject_lists[pilot].addItem(biography_vals['id'])
             self.update_db()
-
-    # TODO: fix this
-    # def edit_params(self, item):
-    #     """
-    #     Args:
-    #         item:
-    #     """
-    #     # edit a subject's task parameters, called when subject double-clicked
-    #     subject = item.text()
-    #     if subject not in self.subjects.keys():
-    #         self.subjects[subject] = Subject(subject)
-    #
-    #     if '/current' not in self.subjects[subject].h5f:
-    #         Warning("Subject {} has no protocol!".format(subject))
-    #         return
-    #
-    #     protocol = self.subjects[subject].current
-    #     step = self.subjects[subject].step
-    #
-    #     protocol_edit = Protocol_Parameters_Dialogue(protocol, step)
-    #     protocol_edit.exec_()
-    #
-    #     if protocol_edit.result() == 1:
-    #         param_changes = protocol_edit.step_changes
-    #         # iterate through steps, checking for changes
-    #         for i, step_changes in enumerate(param_changes):
-    #             # if there are any changes to this step, stash them
-    #             if step_changes:
-    #                 for k, v in step_changes.items():
-    #                     self.subjects[subject].update_history('param', k, v, step=i)
-    #
-    #
 
     def update_db(self, pilots:typing.Optional[dict]=None, **kwargs):
         """

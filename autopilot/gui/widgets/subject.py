@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 
+from PySide2 import QtWidgets, QtGui
 from autopilot import prefs
 
 
