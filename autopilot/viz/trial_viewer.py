@@ -14,19 +14,17 @@ import autopilot.utils.common
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from glob import glob
 import argparse
 from bokeh.plotting import figure
 from bokeh.io import show
-from bokeh.models import ColumnDataSource, Legend, LegendItem, Span
+from bokeh.models import ColumnDataSource, Span
 from bokeh.layouts import gridplot
 from bokeh.transform import factor_cmap
 from bokeh.palettes import Spectral10
 from tqdm import tqdm
-from autopilot.core import subject
+from autopilot.data import subject
 import colorcet as cc
 import numpy as np
-import json
 
 
 def load_subject_data(data_dir, subject_name, steps=True, grad=True):
@@ -69,7 +67,7 @@ def load_subject_data(data_dir, subject_name, steps=True, grad=True):
 def load_subject_dir(data_dir, steps=True, grad=True, which = None):
     """
     Args:
-        data_dir (str): A path to a directory with :class:`~.core.subject.Subject` style hdf5 files
+        data_dir (str): A path to a directory with :class:`~.data.subject.Subject` style hdf5 files
         steps (bool): Whether to return full trial-level data for each step
         grad (bool): Whether to return summarized step graduation data.
         which (list): A list of subjects to subset the loaded subjects to

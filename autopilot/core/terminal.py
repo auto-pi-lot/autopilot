@@ -15,7 +15,7 @@ import threading
 from collections import OrderedDict as odict
 import numpy as np
 
-from PySide2 import QtCore, QtGui, QtSvg, QtWidgets
+from PySide2 import QtCore, QtGui, QtWidgets
 
 from autopilot import prefs
 from autopilot.core import styles
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # init prefs for module access
     prefs.init(prefs_file)
 
-from autopilot.core.subject import Subject
+from autopilot.data.subject import Subject
 from autopilot.core.plots import Plot_Widget
 from autopilot.networking import Net_Node, Terminal_Station
 from autopilot.utils.invoker import get_invoker
@@ -49,6 +49,8 @@ from autopilot.core.gui import Weights, Reassign, Calibrate_Water, Bandwidth_Tes
 from autopilot.gui.widgets.protocol import Protocol_Wizard
 from autopilot.gui.widgets.terminal import Control_Panel
 from autopilot.core.loggers import init_logger
+from autopilot.gui.widgets.model import Model_Filler_Dialogue
+from autopilot.data.models.biography import Biography
 
 # Try to import viz, but continue if that doesn't work
 IMPORTED_VIZ = False
@@ -58,8 +60,6 @@ try:
     IMPORTED_VIZ = True
 except ImportError as e:
     VIZ_ERROR = str(e)
-import pdb
-
 
 # TODO: Be more complete about generating logs
 # TODO: Make exit graceful
@@ -115,9 +115,12 @@ class Terminal(QtWidgets.QMainWindow):
             stored in ``prefs.get("TERMINAL_SETTINGS_FN")``
     """
 
-    def __init__(self):
+    def __init__(self, warn_defaults=True):
         # type: () -> None
         super(Terminal, self).__init__()
+
+        if warn_defaults:
+            os.environ['AUTOPILOT_WARN_DEFAULTS'] = '1'
 
         # store instance
         globals()['_TERMINAL'] = self
@@ -265,10 +268,12 @@ class Terminal(QtWidgets.QMainWindow):
         # Add "New Pilot" and "New Protocol" actions to File menu
         new_pilot_act = QtWidgets.QAction("New &Pilot", self, triggered=self.new_pilot)
         new_prot_act  = QtWidgets.QAction("New Pro&tocol", self, triggered=self.new_protocol)
+        new_subject = QtWidgets.QAction("New &Subject", self, triggered=self.new_subject)
         #batch_create_subjects = QtWidgets.QAction("Batch &Create subjects", self, triggered=self.batch_subjects)
         # TODO: Update pis
         self.file_menu.addAction(new_pilot_act)
         self.file_menu.addAction(new_prot_act)
+        self.file_menu.addAction(new_subject)
         #self.file_menu.addAction(batch_create_subjects)
 
         # Create a Tools menu
@@ -595,7 +600,7 @@ class Terminal(QtWidgets.QMainWindow):
         if self.subjects[subject_name].did_graduate.is_set() is True:
             self.node.send(to=value['pilot'], key="STOP", value={'graduation':True})
             self.subjects[subject_name].stop_run()
-            self.subjects[subject_name].graduate()
+            self.subjects[subject_name]._graduate()
             task = self.subjects[subject_name].prepare_run()
             task['pilot'] = value['pilot']
 
@@ -741,6 +746,10 @@ class Terminal(QtWidgets.QMainWindow):
                 protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), placeholder_name + '.json')
                 with open(protocol_file, 'w') as pfile_open:
                     json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
+
+    def new_subject(self):
+        new_subject = Model_Filler_Dialogue(Biography)
+        new_subject.exec_()
 
     def subject_weights(self):
         """

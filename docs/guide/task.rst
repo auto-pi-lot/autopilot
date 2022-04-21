@@ -140,7 +140,7 @@ Specify each variable that will be returned and its type using a :class:`tables.
 The column types are names with their type and their bit depth except for the :class:`~tables.StringCol`
 which takes a string length in characters.
 
-The ``TrialData`` object is used by the :class:`~autopilot.core.subject.Subject` class when a task is assigned to create the data storage table.
+The ``TrialData`` object is used by the :class:`~autopilot.data.subject.Subject` class when a task is assigned to create the data storage table.
 
 PLOT
 ~~~~
@@ -338,7 +338,7 @@ request rewards (see :ref:`training`), it adds an additional trigger to open the
                                   change_to_blue]
 
 Finally, the data for this stage of the trial is gathered and returned to the Pilot.
-Since stimuli have variable numbers and names of parameters, both the table set up by the :class:`~autopilot.core.subject.Subject` and
+Since stimuli have variable numbers and names of parameters, both the table set up by the :class:`~autopilot.data.subject.Subject` and
 the data returning routine here extract stimulus parameters programmatically.
 
 .. code-block:: python
@@ -406,7 +406,7 @@ this stage completes.
 The results of the current trial are given to the stimulus manager's :meth:`~autopilot.stim.managers.Stimulus_Manager.update` method
 so that it can keep track of trial history and do things like bias correction, etc.
 
-The ``TRIAL_END`` flag in the data signals to the :class:`~autopilot.core.subject.Subject` class that the trial is finished
+The ``TRIAL_END`` flag in the data signals to the :class:`~autopilot.data.subject.Subject` class that the trial is finished
 and its row of data should be written to disk. This, along with providing the ``trial_num`` on each stage,
 ensure that data is not misaligned between trials.
 

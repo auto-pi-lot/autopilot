@@ -24,6 +24,12 @@ Some parts might accidentally work in Windows but we make no guarantees.
 We have tried to take care to make certain platform-specific dependencies not break the entire package,
 so if you have some difficulty installing autopilot on a non-raspberry-pi linux machine please submit an issue!
 
+.. note::
+
+    The latest version of raspiOS (bullseye) causes a lot of problems with the Jack audio that we have not figured out a workaround for.
+    If you intend to use sound, we recommend sticking with Buster for now (available from their `legacy downloads <https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-legacy>`_ section).
+
+
 
 Pre-installation
 =====================
@@ -138,6 +144,20 @@ cloned repository, rather than from the system/venv libraries::
 
     Development work is done on the ``dev`` branch, which may have additional features/bugfixes but is much less stable!
     To use it just ``git checkout dev`` from your repository directory.
+
+Extra Dependencies
+-------------------
+
+Different deployments depend on different packages! Eg. `Pilot`s on raspberry pis need some means of interacting with the GPIO pins, and
+`Terminal`s need packages for the GUI. Rather than requiring them all for every installation, we use a set of optional dependencies.
+
+Depending on how you intend to use it, you will likely need some additional set of packages, specified like::
+
+    pip install auto-pi-lot[pilot]
+    # or
+    pip install auto-pi-lot[terminal]
+    # or if using an editable install
+    pip install .[pilot]
 
 
 Configuration

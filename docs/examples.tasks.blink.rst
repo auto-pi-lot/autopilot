@@ -39,7 +39,7 @@ Preamble
         """
 
 Note that we subclass the :class:`~autopilot.tasks.Task` class (``Blink(Task)``) to provide us with some methods
-useful for all Tasks.
+useful for all Tasks, and to make it available to the task registry (see :ref:`guide_plugins`).
 
 Tasks need to have a few class attributes defined to be integrated into the rest of the system
 See here for more about class vs. instance attributes https://www.toptal.com/python/python-class-attributes-an-overly-thorough-guide
@@ -82,7 +82,7 @@ TrialData
         timestamp_off = tables.StringCol(26)
 
 ``TrialData`` declares the data that will be returned for each "trial" -- or complete set of executed task
-stages. It is used by the :class:`~autopilot.core.subject.Subject` object to make a data table with the
+stages. It is used by the :class:`~autopilot.data.subject.Subject` object to make a data table with the
 correct data types. Declare each piece of data using a pytables Column descriptor
 (see https://www.pytables.org/usersguide/libref/declarative_classes.html#col-sub-classes for available
 data types, and the pytables guide: https://www.pytables.org/usersguide/tutorials.html for more information)

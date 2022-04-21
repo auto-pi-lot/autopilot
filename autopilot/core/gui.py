@@ -35,7 +35,8 @@ from operator import ior
 from functools import reduce
 
 # adding autopilot parent directory to path
-from autopilot.core.subject import Subject
+import autopilot
+from autopilot.data.subject import Subject
 from autopilot import prefs
 from autopilot.gui import _MAPS
 from autopilot.gui.gui import gui_event

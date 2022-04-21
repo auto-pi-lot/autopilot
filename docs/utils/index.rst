@@ -9,7 +9,12 @@ Utils
 
 .. toctree::
    common
+   decorators
+   hydration
    invoker
+   log_parsers
    plugins
    registry
+   requires
+   types
    wiki

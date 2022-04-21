@@ -14,6 +14,8 @@ from collections import OrderedDict as odict
 # TODO: Move this to __init__
 TASK = 'Nafc'
 
+
+
 class Nafc(Task):
     """
     A Two-alternative forced choice task.
@@ -41,9 +43,6 @@ class Nafc(Task):
     """
     STAGE_NAMES = ["request", "discrim", "reinforcement"]
 
-    # Class attributes
-
-
     # List of needed params, returned data and data format.
     # Params are [name]={'tag': Human Readable Tag, 'type': 'int', 'float', 'bool', etc.}
     PARAMS = odict()
@@ -67,8 +66,6 @@ class Nafc(Task):
     PARAMS['bias_threshold'] = {'tag': 'Bias Correction Threshold (%)',
                                 'type':'int',
                                 'depends':{'bias_mode':2}}
-    #PARAMS['timeout']        = {'tag':'Delay Timeout (ms)',
-    #                            'type':'int'}
     PARAMS['stim']           = {'tag':'Sounds',
                                 'type':'sounds'}
 
@@ -104,7 +101,6 @@ class Nafc(Task):
             'R': "Digital_In"
         },
         'LEDS':{
-            # TODO: use LEDs, RGB vs. white LED option in init
             'L': "LED_RGB",
             'C': "LED_RGB",
             'R': "LED_RGB"
@@ -225,16 +221,6 @@ class Nafc(Task):
             self.stage_block = stage_block
 
         self.logger.debug('finished initializing Nafc class')
-
-    #
-    # def center_out(self, pin, level, tick):
-    #     """
-    #
-    #     """
-    #     # Called when something leaves the center pin,
-    #     # We use this to handle the subject leaving the port early
-    #     if self.discrim_playing:
-    #         self.bail_trial()
 
 
     ##################################################################################
@@ -436,21 +422,10 @@ class Nafc(Task):
         if self.stim_light:
             self.set_leds({'L':[0,255,0], 'R':[0,255,0]})
 
-    # def bail_trial(self):
-    #     # If a timer ends or the subject pulls out too soon, we punish and bail
-    #     self.bailed = 1
-    #     self.triggers = {}
-    #     self.punish()
-    #     self.stage_block.set()
-
-    # def clear_triggers(self):
-    #     for pin in self.hardware.values():
-    #         pin.clear_cb()
-
     def flash_leds(self):
         """
         flash lights for punish_dir
         """
         for k, v in self.hardware['LEDS'].items():
-            if isinstance(v, autopilot.get_hardware('LED_RGB')):
+            if v.__class__.__name__ == "LED_RGB":
                 v.flash(self.punish_dur)
