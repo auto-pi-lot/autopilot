@@ -4,6 +4,9 @@ import os
 
 from PySide2 import QtWidgets, QtGui
 from autopilot import prefs
+from autopilot.data.models.biography import Biography
+from autopilot.gui.widgets.model import Model_Filler
+from autopilot.core.loggers import init_logger
 
 
 class New_Subject_Wizard(QtWidgets.QDialog):
@@ -26,12 +29,13 @@ class New_Subject_Wizard(QtWidgets.QDialog):
 
     def __init__(self):
         QtWidgets.QDialog.__init__(self)
+        self.logger = init_logger(self)
 
         self.protocol_dir = prefs.get('PROTOCOLDIR')
 
         tabWidget = QtWidgets.QTabWidget()
 
-        self.bio_tab = self.Biography_Tab()
+        self.bio_tab = Model_Filler(Biography)
         tabWidget.addTab(self.bio_tab, "Biography")
 
         if self.protocol_dir:
@@ -39,7 +43,7 @@ class New_Subject_Wizard(QtWidgets.QDialog):
             tabWidget.addTab(self.task_tab, "Protocol")
 
         buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
-        buttonBox.accepted.connect(self.accept)
+        buttonBox.accepted.connect(self._accept)
         buttonBox.rejected.connect(self.reject)
 
         mainLayout = QtWidgets.QVBoxLayout()
@@ -49,110 +53,14 @@ class New_Subject_Wizard(QtWidgets.QDialog):
 
         self.setWindowTitle("Setup New Subject")
 
-    class Biography_Tab(QtWidgets.QWidget):
-        """
-        A widget that allows defining basic biographical attributes about a subject
+    def _accept(self):
+        # validate model
+        self.logger.debug('Clicked OK to create subject')
+        model = self.bio_tab.validate(dialog=True)
+        if not isinstance(model, Biography):
+            return
+        self.accept()
 
-        Creates a set of widgets connected to :py:meth:`~.Biography_Tab.update_return_dict` that stores the parameters.
-
-        Warning:
-            The below attributes are **not** the object attributes, but are descriptions of the parameters
-            available in the values dictionary. The attributes themselves are PySide Widgets that set the values.
-
-        Attributes:
-            id (str): A Subject's ID or name
-            start_date (str): The date the subject started the task. Automatically filled by
-                :py:meth:`datetime.date.today().isoformat()`
-            blmass (float): The subject's baseline mass
-            minmass_pct (int): The percentage of baseline mass that a water restricted subject is allowed to reach
-            minmass (float): The subject's minimum mass, automatically calculated `blmass * (minmass_pct / 100.)`
-            genotype (str): A string describing the subject's genotype
-            expt (str): A tag to describe what experiment this subject is a part of
-        """
-        def __init__(self):
-            QtWidgets.QWidget.__init__(self)
-
-            # Input Labels
-            ID_label = QtWidgets.QLabel("ID:")
-            start_label = QtWidgets.QLabel("Start Date:")
-            blmass_label = QtWidgets.QLabel("Baseline Mass:")
-            minmasspct_label = QtWidgets.QLabel("% of Baseline Mass:")
-            minmass_label = QtWidgets.QLabel("Minimum Mass:")
-            genotype_label = QtWidgets.QLabel("Genotype:")
-            expt_label = QtWidgets.QLabel("Experiment Tag:")
-
-            # Input widgets
-            self.id = QtWidgets.QLineEdit()
-            self.start_date = QtWidgets.QLineEdit(datetime.date.today().isoformat())
-            self.blmass = QtWidgets.QLineEdit()
-            self.blmass.setValidator(QtGui.QDoubleValidator(0.0, 30.0, 1, self.blmass))
-            self.minmass_pct = QtWidgets.QSpinBox()
-            self.minmass_pct.setRange(0,100)
-            self.minmass_pct.setSingleStep(5)
-            self.minmass_pct.setSuffix('%')
-            self.minmass_pct.setValue(80)
-            self.minmass = QtWidgets.QLineEdit()
-            self.minmass.setValidator(QtGui.QDoubleValidator(0.0, 30.0, 1, self.minmass))
-            self.genotype = QtWidgets.QLineEdit()
-            self.expt     = QtWidgets.QLineEdit()
-
-            # Set return dictionary signals
-            self.id.editingFinished.connect(lambda: self.update_return_dict('id', self.id.text()))
-            self.start_date.editingFinished.connect(lambda: self.update_return_dict('start_date', self.start_date.text()))
-            self.blmass.editingFinished.connect(lambda: self.update_return_dict('baseline_mass', self.blmass.text()))
-            self.minmass.editingFinished.connect(lambda: self.update_return_dict('min_mass', self.minmass.text()))
-            self.genotype.editingFinished.connect(lambda: self.update_return_dict('genotype', self.genotype.text()))
-            self.expt.editingFinished.connect(lambda: self.update_return_dict('experiment', self.expt.text()))
-
-            # Set update minmass signals
-            self.blmass.editingFinished.connect(self.calc_minmass)
-            self.minmass_pct.valueChanged.connect(self.calc_minmass)
-
-            # Setup Layout
-            mainLayout = QtWidgets.QVBoxLayout()
-            mainLayout.addWidget(ID_label)
-            mainLayout.addWidget(self.id)
-            mainLayout.addWidget(start_label)
-            mainLayout.addWidget(self.start_date)
-            mainLayout.addWidget(blmass_label)
-            mainLayout.addWidget(self.blmass)
-            mainLayout.addWidget(minmasspct_label)
-            mainLayout.addWidget(self.minmass_pct)
-            mainLayout.addWidget(minmass_label)
-            mainLayout.addWidget(self.minmass)
-            mainLayout.addWidget(genotype_label)
-            mainLayout.addWidget(self.genotype)
-            mainLayout.addWidget(expt_label)
-            mainLayout.addWidget(self.expt)
-            mainLayout.addStretch(1)
-
-            self.setLayout(mainLayout)
-
-            # Dictionary to return values
-            self.values = {}
-
-        def update_return_dict(self, key, val):
-            """
-            Called by lambda functions by the widgets, eg.::
-
-                self.id.editingFinished.connect(lambda: self.update_return_dict('id', self.id.text()))
-
-            Args:
-                key (str): The key of the value being stored
-                val: The value being stored.
-            """
-            self.values[key] = val
-            # When values changed, update return dict
-
-        def calc_minmass(self):
-            """
-            Calculates the minimum mass for a subject based on its baseline mass
-            and the allowable percentage of that baseline
-            """
-            # minimum mass automatically from % and baseline
-            baseline = float(self.blmass.text())
-            pct = float(self.minmass_pct.text()[:-1])/100
-            self.minmass.setText(str(baseline*pct))
 
     class Task_Tab(QtWidgets.QWidget):
         """

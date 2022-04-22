@@ -1,6 +1,7 @@
 import base64
 import multiprocessing
 import os
+import pdb
 import socket
 import threading
 import time
@@ -11,6 +12,7 @@ import socket
 import struct
 import blosc2 as blosc
 from collections import deque
+import atexit
 from copy import copy
 from itertools import count
 import typing
@@ -101,7 +103,7 @@ class Station(multiprocessing.Process):
         # init instance attrs that are populated either by a child object or
         # in run
         self.context = None
-        self.loop = None
+        self.loop = None # type: Optional[IOLoop]
         self.push_ip = push_ip
         self.push_port = push_port
         self.push_id = push_id.encode('utf-8') if isinstance(push_id, str) else push_id
@@ -137,7 +139,8 @@ class Station(multiprocessing.Process):
         self.listens = listens
         self.listens.update({
             'CONFIRM': self.l_confirm,
-            'STREAM' : self.l_stream
+            'STREAM' : self.l_stream,
+            'KILL'   : self.l_kill
         })
 
         # even tthat signals when we are closing
@@ -194,10 +197,12 @@ class Station(multiprocessing.Process):
             self.loop.start()
         except KeyboardInterrupt:
             # normal quitting behavior
+            self.logger.debug("Stopped with KeyboardInterrupt")
             pass
         finally:
             self.context.destroy()
             self.loop.close()
+            self.logger.debug("Reached finally, closing Station")
             # self.release()
 
     def prepare_message(self, to, key, value, repeat=True, flags=None):
@@ -495,6 +500,31 @@ class Station(multiprocessing.Process):
             msg.value = v
             listen_fn(msg)
 
+    def l_kill(self, msg: Message):
+        """
+        Terminal wants us to die :(
+
+        Stop the :attr:`.Station.loop`
+
+        Args:
+            msg (:class:`.Message`):
+        """
+        self.logger.info('Received kill request')
+
+        self.closing.set()
+
+        # Stopping the loop should kill the process, as it's what's holding us in run()
+        self.listener.stop_on_recv()
+        self.listener.close()
+
+        if self.pusher:
+            self.listener.stop_on_recv()
+            self.pusher.close()
+
+        self.loop.add_callback(lambda:IOLoop.instance().stop())
+        self.logger.debug(self.loop)
+        self.logger.info('Stopped IOLoop')
+
     def handle_listen(self, msg:typing.List[bytes]):
         """
         Upon receiving a message, call the appropriate listen method
@@ -759,7 +789,6 @@ class Terminal_Station(Station):
             'INIT':      self.l_init,  # We should ask all the pilots to confirm that they are alive
             'CHANGE':    self.l_change,  # Change a parameter on the Pi
             'STOPALL':   self.l_stopall, # Stop all pilots and plots
-            'KILL':      self.l_kill,  # Terminal wants us to die :(
             'DATA':      self.l_data,  # Stash incoming data from an autopilot
             'CONTINUOUS': self.l_continuous, # handle incoming continuous data
             'STATE':     self.l_state,  # The Pi is confirming/notifying us that it has changed state
@@ -776,6 +805,8 @@ class Terminal_Station(Station):
         else:
             self.data_fps = 20
         self.data_ifps = 1.0/self.data_fps
+
+        self.loop = None
 
 
 
@@ -860,21 +891,6 @@ class Terminal_Station(Station):
             self.send("P_{}".format(p), 'STOP')
 
 
-    def l_kill(self, msg:Message):
-        """
-        Terminal wants us to die :(
-
-        Stop the :attr:`.Station.loop`
-
-        Args:
-            msg (:class:`.Message`):
-        """
-        self.logger.info('Received kill request')
-
-        self.closing.set()
-
-        # Stopping the loop should kill the process, as it's what's holding us in run()
-        self.loop.stop()
 
 
     def l_data(self, msg:Message):
@@ -923,16 +939,6 @@ class Terminal_Station(Station):
             if self.sent_plot[msg.sender].is_set():
                 self.send(to=plot_id, msg=msg)
                 self.sent_plot[msg.sender].clear()
-
-
-    # def l_continuous(self, msg):
-    #
-    #     # Send through to terminal
-    #     msg.value.update({'continuous':True})
-    #     self.send('_T', 'DATA', msg.value, flags=msg.flags)
-    #
-    #     # Send to plot widget, which should be listening to "P_{pilot_name}"
-    #     self.send('P_{}'.format(msg.value['pilot']), 'DATA', msg.value, flags=msg.flags)
 
 
 

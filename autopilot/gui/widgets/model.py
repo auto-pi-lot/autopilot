@@ -8,11 +8,12 @@ from pydantic.fields import ModelField
 from pydantic.error_wrappers import ValidationError
 from pydantic.main import ModelMetaclass
 from datetime import datetime
-
+from pprint import pformat
 from PySide2 import QtWidgets, QtGui
 
 from autopilot.root import Autopilot_Type
 from autopilot.gui.dialog import pop_dialog
+from autopilot.core.loggers import init_logger
 
 
 class _Input(BaseModel):
@@ -217,9 +218,12 @@ class Model_Filler(QtWidgets.QWidget):
 
         return kwargs
 
-    def validate(self, kwargs:Optional[dict] = None) -> Union[List[dict], Autopilot_Type, BaseModel]:
+    def validate(self, kwargs:Optional[dict] = None, dialog:bool=False) -> Union[List[dict], Autopilot_Type, BaseModel]:
         """
         Test whether the given inputs pass model validation, and if not return which fail
+
+        Args:
+            dialog (bool): Whether or not to pop a dialogue showing which fields failed to validate
         """
         if kwargs is None:
             kwargs = self._value(self._inputs)
@@ -230,6 +234,11 @@ class Model_Filler(QtWidgets.QWidget):
         except ValidationError as e:
             # get errors and return!
             errors = e.errors()
+            if dialog:
+                pop_dialog("Validation Error!",
+                           details=f"Validation errors with the following fields:\n{pformat(errors)}",
+                           msg_type='error', modality='modal').exec_()
+
             return errors
 
 
@@ -241,6 +250,7 @@ class Model_Filler_Dialogue(QtWidgets.QDialog):
         super(Model_Filler_Dialogue, self).__init__(**kwargs)
         self.model = model
         self.filler = Model_Filler(model)
+        self.logger = init_logger(self)
 
         self.value = None
 
@@ -257,10 +267,12 @@ class Model_Filler_Dialogue(QtWidgets.QDialog):
         """
         Pre-wrapper before :meth:`.accept`, check that the model validates. If not, raise error dialogue
         """
+        self.logger.debug('Clicked OK button')
         model = self.filler.validate()
         if isinstance(model, self.model):
             self.value = model
             self.accept()
+            self.logger.debug("Accepted model input")
         else:
             pop_dialog("Validation Error!",
                        details=f"Validation errors with the following fields:\n{model}",

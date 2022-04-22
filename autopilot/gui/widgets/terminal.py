@@ -133,6 +133,7 @@ class Control_Panel(QtWidgets.QWidget):
         new_subject_wizard = New_Subject_Wizard()
         new_subject_wizard.exec_()
 
+
         # If the wizard completed successfully, get its values
         if new_subject_wizard.result() == 1:
 

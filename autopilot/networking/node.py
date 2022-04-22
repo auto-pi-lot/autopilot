@@ -641,4 +641,7 @@ class Net_Node(object):
 
     def release(self):
         self.closing.set()
-        self.loop.stop()
+        self.sock.close()
+        if self.router:
+            self.router.close()
+        self.loop.add_callback(lambda:IOLoop.current().stop())

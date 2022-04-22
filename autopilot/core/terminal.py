@@ -947,10 +947,6 @@ class Terminal(QtWidgets.QMainWindow):
         """
         When Closing the Terminal Window, close any running subject objects,
         'KILL' our networking object.
-
-        Since the `:class:`.Net_Node` keeping us alive is a `daemon`, no need
-        to explicitly kill it.
-
         """
         # Save the window geometry, to be optionally restored next time
         self.settings.setValue("geometry", self.saveGeometry())
@@ -965,6 +961,9 @@ class Terminal(QtWidgets.QMainWindow):
         # Stop networking
         # send message to kill networking process
         self.node.send(key="KILL")
+        time.sleep(0.5)
+        self.node.release()
+        self.logger.debug("Released net node and sent kill message to station")
 
         event.accept()
 
