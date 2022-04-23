@@ -28,7 +28,8 @@ class Trial_Data(Table):
     group: Optional[str] = Field(None, description="Path of the parent step group")
     session: int = Field(..., description="Current training session, increments every time the task is started")
     session_uuid: Optional[str] = Field(None, description="Each session gets a unique uuid, regardless of the session integer, to enable independent addressing of sessions when session numbers might overlap (eg. reassignment)")
-    trial_num: int = Field(..., description="Trial data is grouped within, well, trials, which increase (rather than resetting) across sessions within a task")
+    trial_num: int = Field(..., description="Trial data is grouped within, well, trials, which increase (rather than resetting) across sessions within a task",
+                           datajoint={"key":True})
 
 
 

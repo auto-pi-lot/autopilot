@@ -1,6 +1,8 @@
 from abc import abstractmethod
 import typing
+from datetime import datetime
 from typing import Union, Type, Optional
+
 from autopilot.root import Autopilot_Type
 from autopilot.data.modeling.base import Schema, Group, Node
 from pydantic import Field
@@ -16,6 +18,8 @@ class Interface_Map(Autopilot_Type):
     args: Optional[typing.List] = None
     kwargs: Optional[typing.Dict] = None
     conversion: Optional[typing.Callable] = None
+
+
 
 
 class Interface_Mapset(Autopilot_Type):
@@ -40,21 +44,26 @@ class Interface_Mapset(Autopilot_Type):
     int: Union[Interface_Map, Type]
     float: Union[Interface_Map, Type]
     str: Union[Interface_Map, Type]
-    bytes: Union[Interface_Map, Type]
+    bytes: Optional[Union[Interface_Map, Type]]
     datetime: Union[Interface_Map, Type]
     group: Optional[Union[Interface_Map, Type]]
     node: Optional[Union[Interface_Map, Type]]
 
-    def get(self, key):
+    def get(self, key, args:Optional[list]=None, kwargs:Optional[dict]=None):
         ret = getattr(self, key)
         if isinstance(ret, Interface_Map):
-            args = ret.args
-            if args is None:
-                args = []
-            kwargs = ret.kwargs
-            if kwargs is None:
-                kwargs = {}
-            return ret.equals(*args, **kwargs)
+            _args = ret.args
+            if _args is None:
+                _args = []
+            if args is not None:
+                _args = args
+
+            _kwargs = ret.kwargs
+            if _kwargs is None:
+                _kwargs = {}
+            if kwargs is not None:
+                _kwargs.update(kwargs)
+            return ret.equals(*_args, **_kwargs)
         else:
             return ret()
 
@@ -78,3 +87,40 @@ class Interface(Autopilot_Type):
         """
 
 
+def _resolve_type(type_) -> typing.Type:
+    """
+    Get the "inner" type of a model field, sans Optionals and Unions and the like
+    """
+    if not hasattr(type_, '__args__') or (hasattr(type_, '__origin__') and type_.__origin__ == typing.Literal):
+        # already resolved
+        return type_
+
+    subtypes = [t for t in type_.__args__ if t in _permissiveness.keys()]
+    if len(subtypes) == 0:
+        raise ValueError(f'Dont know how to resolve type {type_}')
+
+    # sort by permissiveness
+    types = [(t, _permissiveness[t]) for t in subtypes]
+    types.sort(key=lambda x: x[1])
+    return types[-1][0]
+
+
+_permissiveness = {
+    bool:0,
+    int:1,
+    float:2,
+    str:3,
+    dict:0,
+    datetime:0
+}
+_NUMPY_TO_BUILTIN = {
+    'b': bool,
+    'i': int,
+    'u': int,
+    'f': float,
+    'c': complex,
+    'M': datetime,
+    'O': str,
+    'S': str,
+    'U': str
+}

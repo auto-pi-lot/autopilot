@@ -4,11 +4,14 @@ import itertools
 import tables
 import threading
 import typing
+from typing import Literal
 
 import autopilot
 from autopilot.tasks import Task
 from autopilot.stim import init_manager
+from autopilot.data.models.protocol import Trial_Data
 from collections import OrderedDict as odict
+from pydantic import Field
 
 # This declaration allows Subject to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
 # TODO: Move this to __init__
@@ -83,16 +86,20 @@ class Nafc(Task):
 
     # PyTables Data descriptor
     # for numpy data types see http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html#arrays-dtypes-constructing
-    class TrialData(tables.IsDescription):
+    class TrialData(Trial_Data):
+        """
+        Trialwise Data for a Two-Alternative Forced Choice Task
+        """
         # This class allows the Subject object to make a data table with the correct data types. You must update it for any new data you'd like to store
-        trial_num = tables.Int32Col()
-        target = tables.StringCol(1)
-        response = tables.StringCol(1)
-        correct = tables.Int32Col()
-        correction = tables.Int32Col()
-        RQ_timestamp = tables.StringCol(26)
-        DC_timestamp = tables.StringCol(26)
-        bailed = tables.Int32Col()
+        target: Literal['L', 'R'] = Field(..., description="Which side is the correct side this trial",
+                                          datajoint={'datatype': 'enum', 'kwargs': {'args': ['L', 'R']}})
+        response: Literal['L', 'R'] = Field(..., description="The side that was poked",
+                                          datajoint={'datatype': 'enum', 'kwargs': {'args': ['L', 'R']}})
+        correct: bool = Field(..., description="Whether the subject's response matched the target")
+        correction: bool = Field(..., description="Whether this trial was a correction trial or not")
+        RQ_timestamp: datetime.datetime = Field(..., description="The time where the stimulus was presented and the trial was requested")
+        DC_timestamp: datetime.datetime = Field(..., description="The time when the subject responded")
+        bailed: bool = Field(..., description="Whether the subject bailed the trial from a timeout or any other reason they did not finish")
 
     HARDWARE = {
         'POKES':{

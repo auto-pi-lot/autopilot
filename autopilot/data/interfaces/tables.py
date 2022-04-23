@@ -2,7 +2,7 @@
 Interfaces for pytables and hdf5 generally
 """
 import typing
-from typing import List, Union
+from typing import Union
 from abc import abstractmethod
 from typing import Optional, List
 from pydantic import create_model
@@ -12,7 +12,8 @@ from datetime import datetime
 import tables
 
 from autopilot import Autopilot_Type
-from autopilot.data.interfaces.base import Interface, Interface_Mapset, Interface_Map, Interface
+from autopilot.data.interfaces.base import Interface_Mapset, Interface_Map, Interface, _resolve_type, _NUMPY_TO_BUILTIN
+
 if typing.TYPE_CHECKING:
     from autopilot.data.modeling.base import Table
 
@@ -206,31 +207,6 @@ Tables_Mapset = Interface_Mapset(
     group = H5F_Group
 )
 
-_permissiveness = {
-    bool:0,
-    int:1,
-    float:2,
-    str:3,
-    dict:0,
-    datetime:0
-}
-
-def _resolve_type(type_) -> typing.Type:
-    """
-    Get the "inner" type of a model field, sans Optionals and Unions and the like
-    """
-    if not hasattr(type_, '__args__') or (hasattr(type_, '__origin__') and type_.__origin__ == typing.Literal):
-        # already resolved
-        return type_
-
-    subtypes = [t for t in type_.__args__ if t in _permissiveness.keys()]
-    if len(subtypes) == 0:
-        raise ValueError(f'Dont know how to resolve type {type_}')
-
-    # sort by permissiveness
-    types = [(t, _permissiveness[t]) for t in subtypes]
-    types.sort(key=lambda x: x[1])
-    return types[-1][0]
 
 class Tables_Interface(Interface):
     map = Tables_Mapset
@@ -260,17 +236,6 @@ def model_to_table(table: typing.Type['Table']) -> typing.Type[tables.IsDescript
     return description
 
 
-_NUMPY_TO_BUILTIN = {
-    'b': bool,
-    'i': int,
-    'u': int,
-    'f': float,
-    'c': complex,
-    'M': datetime,
-    'O': str,
-    'S': str,
-    'U': str
-}
 """
 Mapping between dtype.kind and builtin types
 
