@@ -81,6 +81,7 @@ class Protocol_Status(Attributes):
     step: int
     protocol: typing.List[dict]
     protocol_name: str
+    pilot: str = Field(..., description="Pilot that this subject runs on")
     assigned: datetime = Field(default_factory=datetime.now)
 
 

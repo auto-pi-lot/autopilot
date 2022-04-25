@@ -228,7 +228,7 @@ def model_to_table(table: typing.Type['Table']) -> typing.Type[tables.IsDescript
     # get column descriptions
     cols = {}
     for key, field in table.__fields__.items():
-        type_ = _resolve_type(field.type_)
+        type_ = _resolve_type(field.type_, resolve_literal=True)
         type_str = type_.__name__
         cols[key] = Tables_Mapset.get(type_str)
 

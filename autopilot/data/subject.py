@@ -516,6 +516,7 @@ class Subject(object):
 
     def assign_protocol(self, protocol:typing.Union[Path, str, typing.List[dict]],
                         step_n:int=0,
+                        pilot: Optional[str] = None,
                         protocol_name:Optional[str]=None):
         """
         Assign a protocol to the subject.
@@ -558,6 +559,7 @@ class Subject(object):
             session=session,
             step=step_n,
             protocol=protocol,
+            pilot = pilot,
             protocol_name=protocol_name,
         )
         # set current status (this will also stash any existing status and update the trial history tables as needed)

@@ -1,5 +1,4 @@
 """Methods for running the Terminal GUI"""
-
 import typing
 import argparse
 import json
@@ -52,6 +51,7 @@ from autopilot.gui.menus.tools import Calibrate_Water, Reassign, Weights
 from autopilot.gui.menus.tests import Bandwidth_Test
 from autopilot.gui.menus.file import Protocol_Wizard
 from autopilot.gui.widgets.terminal import Control_Panel
+from autopilot.gui.widgets.subject import New_Subject_Wizard
 from autopilot.core.loggers import init_logger
 from autopilot.gui.widgets.model import Model_Filler_Dialogue
 from autopilot.data.models.biography import Biography
@@ -64,14 +64,6 @@ try:
     IMPORTED_VIZ = True
 except ImportError as e:
     VIZ_ERROR = str(e)
-
-# TODO: Be more complete about generating logs
-# TODO: Make exit graceful
-# TODO: Make 'edit subject' button
-# TODO: Make experiment tags, save and populate?
-
-# http://zetcode.com/gui/pysidetutorial/layoutmanagement/
-# https://wiki.qt.io/PySide_Tutorials
 
 _TERMINAL = None
 
@@ -752,8 +744,10 @@ class Terminal(QtWidgets.QMainWindow):
                     json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
 
     def new_subject(self):
-        new_subject = Model_Filler_Dialogue(Biography)
-        new_subject.exec_()
+        pop_dialog("Not Implemented", details="Creating subjects from the File menu needs some cleaning up, in the meantime use the + button within a Pilot control panel",
+                   msg_type="warning").exec_()
+        # new_subject = New_Subject_Wizard()
+        # new_subject.exec_()
 
     def subject_weights(self):
         """

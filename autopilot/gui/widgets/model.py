@@ -120,6 +120,10 @@ class Model_Filler(QtWidgets.QWidget):
                 # handle nested models recursively
                 subinputs, subcontainer = self._make_fields(field.type_)
                 inputs[key] = subinputs
+                if not field.required:
+                    # make optional, selectable by check!
+                    subcontainer.setCheckable(True)
+                    subcontainer.setChecked(False)
                 layout.addWidget(subcontainer)
 
             else:
@@ -213,6 +217,14 @@ class Model_Filler(QtWidgets.QWidget):
                 value = self._value(widget)
             else:
                 raise ValueError(f"Dont know how to handle widget type {widget}")
+
+            # filter values from unchecked groupboxes
+            if not isinstance(widget, dict):
+                if widget.parent().isCheckable() and not widget.parent().isChecked():
+                    continue
+            else:
+                if len(value) == 0:
+                    continue
 
             kwargs[key] = value
 

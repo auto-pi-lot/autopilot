@@ -133,37 +133,31 @@ class Control_Panel(QtWidgets.QWidget):
         new_subject_wizard = New_Subject_Wizard()
         new_subject_wizard.exec_()
 
-
         # If the wizard completed successfully, get its values
         if new_subject_wizard.result() == 1:
 
-            biography_vals = new_subject_wizard.bio_tab.values
-            self.logger.debug(f'subject wizard exited with 1, got biography vals {biography_vals}')
-            # TODO: Make a "session" history table that stashes pilot, git hash, step, etc. for each session - subjects might run on different pilots
-            biography_vals['pilot'] = pilot
+            biography = new_subject_wizard.bio_tab.value()
 
-            # Make a new subject object, make it temporary because we want to close it
-            subject_obj = Subject(biography_vals['id'], new=True,
-                                biography=biography_vals)
-            self.subjects[biography_vals['id']] = subject_obj
+            self.logger.debug(f'subject wizard exited with 1, got biography {biography}')
 
-            # If a protocol was selected in the subject wizard, assign it.
+            new_subject = Subject.new(biography)
+            self.subjects[biography.id] = new_subject
+
+            # assign protocol if one was assigned
             try:
                 protocol_vals = new_subject_wizard.task_tab.values
-                if 'protocol' in protocol_vals.keys() and 'step' in protocol_vals.keys():
-                    protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), protocol_vals['protocol'] + '.json')
-                    subject_obj.assign_protocol(protocol_file, int(protocol_vals['step']))
-                    self.logger.debug(f'assigned protocol with {protocol_vals}')
-                else:
-                    self.logger.warning(f'protocol couldnt be assigned, no step and protocol keys in protocol_vals.\ngot protocol_vals: {protocol_vals}')
+                new_subject.assign_protocol(
+                    protocol=protocol_vals['protocol'],
+                    step_n = int(protocol_vals['step']),
+                    pilot=pilot
+                )
+                self.logger.debug(f"Successfully assigned protocol with status:\n{new_subject.protocol}")
             except Exception as e:
                 self.logger.exception(f'exception when assigning protocol, continuing subject creation. \n{e}')
-                # the wizard couldn't find the protocol dir, so no task tab was made
-                # or no task was assigned
 
             # Add subject to pilots dict, update it and our tabs
-            self.pilots[pilot]['subjects'].append(biography_vals['id'])
-            self.subject_lists[pilot].addItem(biography_vals['id'])
+            self.pilots[pilot]['subjects'].append(biography.id)
+            self.subject_lists[pilot].addItem(biography.id)
             self.update_db()
 
     def update_db(self, pilots:typing.Optional[dict]=None, **kwargs):
