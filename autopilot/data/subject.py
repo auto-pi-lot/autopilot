@@ -554,6 +554,10 @@ class Subject(object):
             session = 0
             current_trial = 0
 
+        if self.protocol is not None and pilot is None:
+            self.logger.debug("Using pilot from previous assignation")
+            pilot = self.protocol.pilot
+
         status = Protocol_Status(
             current_trial=current_trial,
             session=session,
@@ -1165,6 +1169,8 @@ def _update_current(h5f) -> Protocol_Status:
         active_step = group_stx.steps[step]
         trial_tab = h5f.get_node(active_step.path, 'trial_data')
         got_protocol = True
+    except tables.NoSuchNodeError:
+        print("Couldnt find trial_data node, not able to retreive data from trial table. Using zeros for current trial and session")
     except ValueError:
         print("Couldnt find task, not able to retrieve data from trial table. Using zeros for current trial and session")
 
@@ -1187,11 +1193,18 @@ def _update_current(h5f) -> Protocol_Status:
                 print('couldnt get session from trial table, using 0')
                 session = 0
 
+    try:
+        pilot = h5f.root.info._v_attrs.__dict__.get('pilot', '')
+    except Exception as e:
+        print(f'couldnt get pilot from subject info, leaving blank got exception {e}')
+        pilot = ''
+
     status = Protocol_Status(
         current_trial=current_trial,
         protocol=protocol,
         step=step,
         session=session,
-        protocol_name=protocol_name
+        protocol_name=protocol_name,
+        pilot=pilot
     )
     return status

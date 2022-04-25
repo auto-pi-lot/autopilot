@@ -469,8 +469,10 @@ class Terminal(QtWidgets.QMainWindow):
             if subject not in self.subjects.keys():
                 self.subjects[subject] = Subject(subject)
 
-            subjects_protocols[subject] = [self.subjects[subject].protocol_name, self.subjects[subject].step]
-
+            try:
+                subjects_protocols[subject] = [self.subjects[subject].protocol.protocol_name, self.subjects[subject].protocol.step]
+            except AttributeError:
+                subjects_protocols[subject] = [None, None]
         return subjects_protocols
 
     @property
@@ -816,25 +818,13 @@ class Terminal(QtWidgets.QMainWindow):
                 step = protocol[1]
                 protocol = protocol[0]
 
-                # since assign_protocol also changes the step, stash the step number here to tell if it's changed
-                subject_orig_step = self.subjects[subject].step
-
-                # if the protocol is the blank protocol, do nothing
                 if not protocol:
                     self.logger.info(f'Protocol for {subject} set to blank, not setting')
                     continue
 
-                if self.subjects[subject].protocol_name != protocol or subject_orig_step != step:
-                    self.logger.info('Setting {} protocol from {} to {}'.format(subject, self.subjects[subject].protocol_name, protocol))
-                    protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), protocol + '.json')
-                    self.subjects[subject].assign_protocol(protocol_file, step)
+                self.subjects[subject].assign_protocol(protocol, step)
+                self.logger.debug(f"Assigned protocol {protocol}, step {step} to subject {subject}")
 
-                if subject_orig_step != step:
-                    self.logger.info('Setting {} step from {} to {}'.format(subject, subject_orig_step, step))
-                    # this now happens in .assign_protocol
-                    #step_name = self.subjects[subject].current[step]['step_name']
-                    #update history also flushes current - aka it also actually changes the step number
-                    #self.subjects[subject].update_history('step', step_name, step)
         else:
             self.logger.debug('reassign cancelled')
 
