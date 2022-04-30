@@ -150,6 +150,10 @@ class Subject(object):
             except Exception as e:
                 self.logger.exception(f"Unable to update! Got exception:\n{e}")
 
+        if self.protocol:
+            self.logger.debug("Attempting to update protocol")
+            self._check_protocol_changed()
+
     @contextmanager
     def _h5f(self, lock:bool=True) -> tables.file.File:
         """
@@ -468,6 +472,17 @@ class Subject(object):
             history_row['value'] = value
             history_row.append()
 
+    def _check_protocol_changed(self):
+        """Check whether the protocol on disk has changed. If it has, update!"""
+        try:
+            prot_name, disk_protocol = self._find_protocol(self.protocol_name)
+        except Exception as e:
+            self.logger.warning(f"Could not find protocol file to update internal representation of it. Got exception {e}")
+            return
+
+        if disk_protocol != self.protocol.protocol:
+            self.logger.info('Protocol on disk changed from stored protocol. Updating')
+            self.assign_protocol(disk_protocol, step_n=self.protocol.step, pilot=self.protocol.pilot, protocol_name=prot_name)
 
     def _find_protocol(self, protocol:typing.Union[Path, str, typing.List[dict]],
                        protocol_name: Optional[str]=None) -> typing.Tuple[str, typing.List[dict]]:
