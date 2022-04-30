@@ -704,12 +704,18 @@ class Subject(object):
                         # fine, use the whole thing
                         pass
                     else:
-                        slice_start = discontinuities[-1]+1
+                        slice_start = int(discontinuities[-1]+1)
 
             except Exception as e:
                 self.logger.exception(
                     f"Couldnt trim data given to graduation objects to current set of sessions, using full data history. got exception\n {e}")
 
+
+            if not slice_start and slice_start is not 0:
+                self.logger.info(f"Could not trim trial data, full trial table given to graduation objects")
+                slice_start = 0
+            elif not isinstance(slice_start, int):
+                slice_start = slice_start[0]
             self.logger.debug(f"Trimming trial table with slice_start: {slice_start}")
             trial_tab = trial_table.read(start=slice_start)
             return trial_tab
@@ -866,13 +872,16 @@ class Subject(object):
                 continue
 
             try:
-                if trial_row[k] is not None:
+                if trial_row[k] not in (None, b'', 0) and k != 'trial_num':
                     self.logger.warning(
                         f"Received two values for key, making new row.: {k} and trial row: {trial_row.nrow}, existing value: {trial_row[k]}, new value: {v}")
                     self._increment_trial(trial_row)
                 trial_row[k] = v
             except KeyError:
                 # TODO: expand trial_table!
+                if k in ('pilot', 'subject'):
+                    # normal, just move on.
+                    continue
                 self.logger.exception(f"Trial data dropped because no column for key: {k}, value: {v}")
 
         if 'TRIAL_END' in data.keys() or all([v is not None for v in trial_row.fetch_all_fields()]):
@@ -882,7 +891,7 @@ class Subject(object):
         trial_table.flush()
 
     def _sync_trial_row(self, trial_num:int, trial_row:Row, trial_table:tables.table.Table) -> Row:
-        if trial_row['trial_num'] is None:
+        if trial_row['trial_num'] in (None, b''):
             trial_row['trial_num'] = trial_num
 
         elif trial_num == trial_row['trial_num'] + 1:

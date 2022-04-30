@@ -297,6 +297,8 @@ class Pilot:
             self.logger.warning("Asked to a run a task when already running")
             return
 
+        self.logger.info(f"Starting task: {value}")
+
         self.state = 'RUNNING'
         self.running.set()
         try:

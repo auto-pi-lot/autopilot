@@ -553,27 +553,19 @@ class Terminal(QtWidgets.QMainWindow):
                 return
 
         else:
+            # Send message to pilot to stop running,
+            self.node.send(to=pilot, key="STOP")
+            # also let the plot know to start
+            self.node.send(to="P_{}".format(pilot), key="STOP")
+            # TODO: Start coherence checking ritual
+            # TODO: Auto-select the next subject in the list.
             # Get Weights
             stop_weight, ok = QtWidgets.QInputDialog.getDouble(self, "Set Stopping Weight",
-                                                           "Stopping Weight:")
-            
-            if ok:
-                # Send message to pilot to stop running,
-                # it should initiate a coherence checking routine to make sure
-                # its data matches what the Terminal got,
-                # so the terminal will handle closing the subject object
-                self.node.send(to=pilot, key="STOP")
-                # also let the plot know to start
-                self.node.send(to="P_{}".format(pilot), key="STOP")
-                # TODO: Start coherence checking ritual
-                # TODO: Auto-select the next subject in the list.
+                                                               "Stopping Weight:")
 
-                self.subjects[subject].stop_run()
-                self.subjects[subject].update_weights(stop=float(stop_weight))
+            self.subjects[subject].stop_run()
+            self.subjects[subject].update_weights(stop=float(stop_weight))
 
-            else:
-                # pressed cancel
-                return
 
 
     ############################

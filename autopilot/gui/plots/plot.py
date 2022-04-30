@@ -250,7 +250,7 @@ class Plot(QtWidgets.QWidget):
         self.xrange = range(self.last_trial - self.x_width + 1, self.last_trial + 1)
         self.plot.setXRange(self.xrange[0], self.xrange[-1])
 
-        self.plot.getPlotItem().hideAxis('left')
+        # self.plot.getPlotItem().hideAxis('left')
         self.plot.setBackground(None)
         self.plot.getPlotItem().getAxis('bottom').setPen({'color':'k'})
         self.plot.getPlotItem().getAxis('bottom').setTickFont('FreeMono')
@@ -336,6 +336,10 @@ class Plot(QtWidgets.QWidget):
             # No big deal, chance bar wasn't set
             pass
 
+        self.x_width = self.plot_params.get('x_width', self.x_width)
+        if 'y_range' in self.plot_params:
+            self.plot.setYRange(*self.plot_params['y_range'])
+
         # Make plot items for each data type
         for data, plot in self.plot_params.get('data', {}).items():
             # TODO: Better way of doing params for plots, redo when params are refactored
@@ -367,6 +371,8 @@ class Plot(QtWidgets.QWidget):
         Args:
             value (dict): Value field of a data message sent during a task.
         """
+        self.logger.debug(f'got data {value}')
+
         if self.state == "INITIALIZING":
             return
 
