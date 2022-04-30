@@ -181,7 +181,14 @@ class Subject(object):
 
         else:
             try:
-                h5f = tables.open_file(str(self.file), mode="r")
+                try:
+                    h5f = tables.open_file(str(self.file), mode="r")
+                except ValueError as e:
+                    if 'already opened, but not in read-only mode' in e.args[0]:
+                        h5f = tables.open_file(str(self.file), mode='r+')
+                    else:
+                        raise e
+
                 yield h5f
             finally:
                 h5f.flush()
@@ -648,7 +655,7 @@ class Subject(object):
 
         with self._h5f(lock=False) as h5f:
             # tasks without TrialData will have some default table, so this should always be present
-            trial_table = h5f.get_node(group_path, 'trial_data')
+            trial_table = h5f.get_node(group_path, 'trial_data') # type: tables.Table
 
             ##################################3
             # try to filter rows based on contiguous session numbers
@@ -658,6 +665,10 @@ class Subject(object):
             # be present (though they should be) and they might differ from the history timestamps
             # if a terminal and pilot are on different timezones, for example.
             slice_start = 0
+
+            if trial_table.nrows == 0:
+                return trial_table.read()
+
             try:
                 sessions = trial_table.col('session')
 
@@ -680,6 +691,7 @@ class Subject(object):
                 self.logger.exception(
                     f"Couldnt trim data given to graduation objects to current set of sessions, using full data history. got exception\n {e}")
 
+            self.logger.debug(f"Trimming trial table with slice_start: {slice_start}")
             trial_tab = trial_table.read(start=slice_start)
             return trial_tab
 

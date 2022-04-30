@@ -14,6 +14,7 @@ import json
 import base64
 import subprocess
 import warnings
+import typing
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -55,6 +56,8 @@ if __name__ == '__main__':
 from autopilot.networking import Message, Net_Node, Pilot_Station
 from autopilot import external
 from autopilot.hardware import gpio
+if typing.TYPE_CHECKING:
+    from autopilot.tasks import Task
 
 
 ########################################
@@ -228,7 +231,9 @@ class Pilot:
         self.handshake()
         self.logger.debug('handshake sent')
 
-        # TODO Synchronize system clock w/ time from terminal.
+        # Set attributes filled later
+        self.task = None # type: typing.Optional[Task]
+
 
     #################################################################
     # Station
@@ -704,7 +709,7 @@ class Pilot:
 
 
 
-            table = h5f.create_table(subject_group, datestring, table_descriptor,
+            table = h5f.create_table(subject_group, datestring, table_descriptor.to_pytables_description(),
                                                "Subject {} on {}".format(self.subject, datestring))
 
             # The Row object is what we write data into as it comes in

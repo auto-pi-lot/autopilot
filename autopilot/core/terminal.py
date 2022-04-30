@@ -539,9 +539,10 @@ class Terminal(QtWidgets.QMainWindow):
                 if subject not in self.subjects.keys():
                     self.subjects[subject] = Subject(subject)
 
+
+                self.subjects[subject].update_weights(start=float(start_weight))
                 task = self.subjects[subject].prepare_run()
                 task['pilot'] = pilot
-                self.subjects[subject].update_weights(start=float(start_weight))
 
                 self.node.send(to=pilot, key="START", value=task)
                 # also let the plot know to start

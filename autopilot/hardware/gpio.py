@@ -382,7 +382,7 @@ class Digital_Out(GPIO):
         except TypeError:
             ret = self.pig.write(self.pin_bcm, value)
             self.logger.warning('Could not use the result argument, please update pigpio to at least 1.79 of sneakers-the-rat\'s fork')
-            
+
         return ret
 
     def turn(self, direction='on'):
