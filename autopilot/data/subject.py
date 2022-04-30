@@ -243,6 +243,7 @@ class Subject(object):
     def protocol(self, protocol:Protocol_Status):
         if self.protocol is not None and protocol.protocol != self.protocol.protocol:
             archive_name = f"{self._get_timestamp(simple=True)}_{self.protocol_name}"
+            # make the group
             self._write_attrs('/history/past_protocols/' + archive_name, self.protocol.dict())
             self.logger.debug(f"Stashed old protocol details in {'/history/past_protocols/' + archive_name}")
 
@@ -351,6 +352,9 @@ class Subject(object):
 
             except tables.exceptions.NoSuchNodeError:
                 pathpieces = path.split('/')
+                # if path was absolute, remove the blank initial one
+                if pathpieces[0] == '':
+                    pathpieces = pathpieces[1:]
                 parent = '/' + '/'.join(pathpieces[:-1])
                 node = h5f.create_group(parent, pathpieces[-1],
                                      title=pathpieces[-1], createparents=True)
