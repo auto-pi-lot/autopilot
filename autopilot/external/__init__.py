@@ -1,22 +1,15 @@
 import subprocess
-import os
 import sys
 from autopilot import prefs
 import atexit
 from time import sleep
-import threading
 import shutil
 import signal
+from autopilot.external.process import Process
 
-PIGPIO = False
-PIGPIO_DAEMON = None
-PIGPIO_LOCK = threading.Lock()
-try:
-    if shutil.which('pigpiod') is not None:
-        PIGPIO = True
 
-except ImportError:
-    pass
+
+
 
 JACKD = False
 # JACKD_MODULE = None # Whether jackd is a module in autopilot.external (True) or use system jackd (False)
@@ -58,42 +51,6 @@ except (ImportError, OSError):
     #     # no need to do anything, just setting module variables that test what the system is configured to do
     #     pass
 
-
-def start_pigpiod():
-    if not PIGPIO:
-        raise ImportError('the pigpiod daemon was not found! use autopilot.setup.')
-
-    with globals()['PIGPIO_LOCK']:
-        if globals()['PIGPIO_DAEMON'] is not None:
-            return globals()['PIGPIO_DAEMON']
-
-        launch_pigpiod = shutil.which('pigpiod')
-        if launch_pigpiod is None:
-            raise RuntimeError('the pigpiod binary was not found!')
-
-        if prefs.get( 'PIGPIOARGS'):
-            launch_pigpiod += ' ' + prefs.get('PIGPIOARGS')
-
-        if prefs.get( 'PIGPIOMASK'):
-            # if it's been converted to an integer, convert back to a string and zfill any leading zeros that were lost
-            if isinstance(prefs.get('PIGPIOMASK'), int):
-                prefs.set('PIGPIOMASK', str(prefs.get('PIGPIOMASK')).zfill(28))
-            launch_pigpiod += ' -x ' + prefs.get('PIGPIOMASK')
-
-        proc = subprocess.Popen('sudo ' + launch_pigpiod, shell=True)
-        globals()['PIGPIO_DAEMON'] = proc
-
-        # kill process when session ends
-        def kill_proc(*args):
-            proc.kill()
-            sys.exit(1)
-        atexit.register(kill_proc)
-        signal.signal(signal.SIGTERM, kill_proc)
-
-        # sleep to let it boot up
-        sleep(1)
-
-        return proc
 
 def start_jackd():
     if not JACKD:

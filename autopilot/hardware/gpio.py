@@ -26,6 +26,7 @@ import typing
 import warnings
 from collections import deque as dq
 
+import autopilot.external.processes.pigpiod
 from autopilot import prefs
 from autopilot.hardware import Hardware, BOARD_TO_BCM
 from autopilot import external
@@ -205,7 +206,7 @@ class GPIO(Hardware):
         Returns:
             bool: True if connection was successful, False otherwise
         """
-        self.pigpiod = external.start_pigpiod()
+        self.pigpiod = autopilot.external.processes.pigpiod.start_pigpiod()
         self.pig = pigpio.pi()
         if self.pig.connected:
             return True

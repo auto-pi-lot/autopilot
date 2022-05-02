@@ -2,6 +2,8 @@ import os
 import typing
 import sys
 import warnings
+
+import autopilot.external.processes.pigpiod
 from autopilot import prefs
 from autopilot.networking import Net_Node
 from autopilot.hardware import Hardware
@@ -208,7 +210,7 @@ class I2C_9DOF(Hardware):
         self._mag = np.zeros((3), float)
 
         # Initialize the pigpio connection
-        self.pigpiod = external.start_pigpiod()
+        self.pigpiod = autopilot.external.processes.pigpiod.start_pigpiod()
         self.pig = pigpio.pi()
 
         # Open I2C buses

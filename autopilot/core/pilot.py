@@ -21,6 +21,9 @@ from pathlib import Path
 from scipy.stats import linregress
 
 import tables
+
+import autopilot.external.processes.pigpiod
+
 warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
 
 import autopilot
@@ -622,7 +625,7 @@ class Pilot:
 
     def init_pigpio(self):
         try:
-            self.pigpiod = external.start_pigpiod()
+            self.pigpiod = autopilot.external.processes.pigpiod.start_pigpiod()
             self.logger.debug('pigpio daemon started')
         except ImportError as e:
             self.pigpiod = None
