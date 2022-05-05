@@ -467,8 +467,13 @@ class Pilot:
         rate = float(value['rate'])
         payload = int(value['payload'])
         confirm = bool(value['confirm'])
+        blosc = bool(value['blosc'])
+        random = bool(value['random'])
 
-        payload = np.zeros(payload*1024, dtype=np.bool)
+        if random:
+            payload = np.random.rand(int(payload*16))
+        else:
+            payload = np.zeros(payload*1024, dtype=np.bool)
         payload_size = sys.getsizeof(payload)
 
         message = {
@@ -478,7 +483,7 @@ class Pilot:
 
         # make a fake message to test how large the serialized message is
         test_msg = Message(to='bandwith', key='BANDWIDTH_MSG', value=message, repeat=confirm, flags={'MINPRINT':True},
-                           id="test_message", sender="test_sender")
+                           id="test_message", sender="test_sender", blosc=blosc)
         msg_size = sys.getsizeof(test_msg.serialize())
 
         message['message_size'] = msg_size
@@ -516,7 +521,8 @@ class Pilot:
 
         self.node.send(to='bandwidth',key='BANDWIDTH_MSG', value={'pilot':self.name, 'test_end':True,
                                                                   'rate': rate, 'payload':payload,
-                                                                  'n_msg':n_msg, 'confirm':confirm},
+                                                                  'n_msg':n_msg, 'confirm':confirm,
+                                                                  'blosc':blosc, 'random':random},
                        flags={'MINPRINT':True})
 
         #self.networking.set_logging(True)

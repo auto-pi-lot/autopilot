@@ -862,16 +862,16 @@ class Terminal(QtWidgets.QMainWindow):
 
         """
         # turn off logging while we run
-        prev_networking_loglevel = self.networking.logger.level
-        prev_node_loglevel = self.node.logger.level
-        self.networking.logger.setLevel(logging.ERROR)
-        self.node.logger.setLevel(logging.ERROR)
+        # prev_networking_loglevel = self.networking.logger.level
+        # prev_node_loglevel = self.node.logger.level
+        # self.networking.logger.setLevel(logging.ERROR)
+        # self.node.logger.setLevel(logging.ERROR)
 
         bandwidth_test = Bandwidth_Test(self.pilots)
         bandwidth_test.exec_()
 
-        self.networking.logger.setLevel(prev_networking_loglevel)
-        self.node.logger.setLevel(prev_node_loglevel)
+        # self.networking.logger.setLevel(prev_networking_loglevel)
+        # self.node.logger.setLevel(prev_node_loglevel)
 
     def plot_psychometric(self):
         """

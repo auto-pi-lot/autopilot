@@ -81,6 +81,10 @@ class Bandwidth_Test(QtWidgets.QDialog):
         self.receipts = QtWidgets.QCheckBox('Get receipts?')
         self.receipts.setChecked(True)
 
+        self.random = QtWidgets.QCheckBox()
+
+        self.blosc = QtWidgets.QCheckBox()
+
         self.rates = QtWidgets.QLineEdit('50')
         self.rates.setObjectName('rates')
         self.rates.editingFinished.connect(self.validate_list)
@@ -117,6 +121,8 @@ class Bandwidth_Test(QtWidgets.QDialog):
         # combine settings
         self.settings.addRow('N messages per test', self.n_messages)
         self.settings.addRow('Confirm sent messages?', self.receipts)
+        self.settings.addRow('Use Random Arrays? (otherwise zeros)', self.random)
+        self.settings.addRow('Compress with blosc?', self.blosc)
         self.settings.addRow('Message Rates per Pilot \n(in Hz, list of integers like "[1, 2, 3]")',
                              self.rates)
         self.settings.addRow('Payload sizes per message \n(in KB, list of integers like "[32, 64, 128]")',
@@ -195,6 +201,8 @@ class Bandwidth_Test(QtWidgets.QDialog):
         # stash some run parameters
         get_receipts = self.receipts.isChecked()
         n_messages = self.n_messages.text()
+        random = self.random.isChecked()
+        blosc = self.blosc.isChecked()
         # 'n messages for this test' in case user changes it during run
         self.n_messages_test = int(n_messages)
 
@@ -213,7 +221,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
         self.all_pbar.reset()
 
         # save tests to do, disable play button, and get to doing it
-        self.tests_todo = [x for x in itertools.product(self.rate_list, self.payload_list, [self.n_messages_test], [get_receipts])]
+        self.tests_todo = [x for x in itertools.product(self.rate_list, self.payload_list, [self.n_messages_test], [get_receipts], [blosc], [random])]
 
 
 
@@ -237,7 +245,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
 
 
 
-    def send_test(self, rate, payload, n_msg, confirm):
+    def send_test(self, rate, payload, n_msg, confirm, blosc, random):
         """
         Send a message describing the test to each of the pilots in :attr:`Bandwidth_Test.test_pilots`
 
@@ -246,6 +254,8 @@ class Bandwidth_Test(QtWidgets.QDialog):
             payload (int): Size of message payload in bytes
             n_msg (int): Number of messages to send
             confirm (bool): If True, use message confirmation, if False no confirmation.
+            blosc (bool): Use blosc compression?
+            random (bool): Use random arrays?
 
         Returns:
 
@@ -257,7 +267,10 @@ class Bandwidth_Test(QtWidgets.QDialog):
         msg = {'rate': rate,
                'payload': payload,
                'n_msg': n_msg,
-               'confirm': confirm}
+               'confirm': confirm,
+               'blosc':blosc,
+               'random':random
+        }
 
         self.end_test.clear()
         self.this_pbar.reset()
@@ -267,7 +280,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
             self.node.send(to=p, key="BANDWIDTH", value=msg)
 
     @gui_event
-    def process_test(self, rate, n_msg, confirm):
+    def process_test(self, rate, n_msg, confirm, blosc, random):
         """
         Process the results of the test and update the plot window.
 
@@ -327,7 +340,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
         self.speeds.append(mean_speed)
 
 
-        self.results.append((rate, mean_payload, mean_message, n_msg, confirm, len(self.test_pilots), mean_delay, drop_rate, mean_speed, send_jitter, delay_jitter))
+        self.results.append((rate, mean_payload, mean_message, n_msg, confirm, blosc, random, len(self.test_pilots), mean_delay, drop_rate, mean_speed, send_jitter, delay_jitter))
 
         self.delay_line.setData(x=self.rates, y=self.delays)
         self.drop_line.setData(x=self.rates, y=self.drops)
@@ -373,7 +386,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
         # make and save results df
         try:
             res_df = pd.DataFrame.from_records(self.results,
-                                               columns=['rate', 'payload_size', 'message_size', 'n_messages', 'confirm',
+                                               columns=['rate', 'payload_size', 'message_size', 'n_messages', 'confirm', 'blosc', 'random',
                                                         'n_pilots', 'mean_delay', 'drop_rate',
                                                         'actual_rate', 'send_jitter', 'delay_jitter'])
 
@@ -411,7 +424,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
             self.finished_pilots.append(value['pilot'])
 
             if len(self.finished_pilots) == len(self.test_pilots):
-                self.process_test(value['rate'], value['n_msg'], value['confirm'])
+                self.process_test(value['rate'], value['n_msg'], value['confirm'], value['blosc'], value['random'])
 
             return
 
