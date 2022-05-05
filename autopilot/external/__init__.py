@@ -7,6 +7,8 @@ from time import sleep
 import threading
 import shutil
 import signal
+import re
+import warnings
 
 PIGPIO = False
 PIGPIO_DAEMON = None
@@ -24,44 +26,36 @@ JACKD_PROCESS = None
 try:
     import jack
     JACKD = True
-    # from autopilot.external import jack as autopilot_jack
-    #
-    # # set env variables
-    # jackd_path = os.path.join(autopilot_jack.__path__._path[0])
-    #
-    # # specify location of libraries when starting jackd
-    #
-    #
-    # if 'LD_LIBRARY_PATH' in os.environ.keys():
-    #
-    #     os.environ['LD_LIBRARY_PATH'] = ":".join([os.path.join(jackd_path, 'lib'),
-    #                                               os.environ.get('LD_LIBRARY_PATH',"")])
-    # else:
-    #     os.environ['LD_LIBRARY_PATH'] = os.path.join(jackd_path, 'lib')git pu
-    # # lib_string = "LD_LIBRARY_PATH=" + os.path.join(jackd_path, 'lib')
-    #
-    # # specify location of drivers when starting jackd
-    # os.environ['JACK_DRIVER_DIR'] = os.path.join(jackd_path, 'lib', 'jack')
-    # # driver_string = "JACK_DRIVER_DIR=" + os.path.join(jackd_path, 'lib', 'jack')
-    #
-    # JACKD = True
-    # JACKD_MODULE = True
 
 except (ImportError, OSError):
     pass
-    # # try to import jack client, it will look for system jack by default
-    # try:
-    #     import jack
-    #     JACKD = True
-    #     JACKD_MODULE = False
-    # except OSError:
-    #     # no need to do anything, just setting module variables that test what the system is configured to do
-    #     pass
+
+def check_open(procname:str) -> bool:
+    """
+    Check if a process with a given procname is currently running
+
+    Args:
+        procname (str): short name of process like 'jack' or 'pigpio'
+
+    Returns:
+        bool: ``True`` if process found
+    """
+    ps = subprocess.run([shutil.which('ps'), '-e'], capture_output=True)
+    # do a simple 'in' search for now. if this ends up being unreliable we'll need to parse the output more carefully
+    matches = re.findall(procname, ps.stdout.decode('utf-8'))
+    if matches:
+        return True
+    else:
+        return False
 
 
 def start_pigpiod():
     if not PIGPIO:
         raise ImportError('the pigpiod daemon was not found! use autopilot.setup.')
+
+    if check_open('pigpiod'):
+        warnings.warn('pigpiod is already running')
+        return
 
     with globals()['PIGPIO_LOCK']:
         if globals()['PIGPIO_DAEMON'] is not None:
@@ -99,6 +93,10 @@ def start_jackd():
     if not JACKD:
         raise ImportError('jackd was not found in autopilot.external or as a system install')
 
+    if check_open('jackd'):
+        warnings.warn('jackd already running')
+        return
+
     # get specific launch string from prefs
     if prefs.get("JACKDSTRING"):
         jackd_string = prefs.get('JACKDSTRING').lstrip('jackd')
@@ -114,29 +112,7 @@ def start_jackd():
     if prefs.get('ALSA_NPERIODS'):
         jackd_string = jackd_string.replace('-nper', f"-n{prefs.get('ALSA_NPERIODS')}")
 
-    # construct rest of launch string!
-    # if JACKD_MODULE:
-    #     jackd_path = os.path.join(autopilot_jack.__path__._path[0])
-    #
-    #     # now set as env variables...
-    #     # specify location of libraries when starting jackd
-    #     # lib_string = "LD_LIBRARY_PATH=" + os.path.join(jackd_path, 'lib')
-    #     #
-    #     # specify location of drivers when starting jackd
-    #     # os.environ['JACK_DRIVER_DIR'] = os.path.join(jackd_path, 'lib', 'jack')
-    #     # driver_string = "JACK_DRIVER_DIR=" + os.path.join(jackd_path, 'lib', 'jack')
-    #
-    #     jackd_bin = os.path.join(jackd_path, 'bin', 'jackd')
-    #
-    #     # combine all the pieces
-    #     # launch_jackd = " ".join([lib_string, driver_string, jackd_bin, jackd_string])
-    #
-    # else:
     jackd_bin = shutil.which('jackd')
-
-    #jackd_bin = 'jackd'
-
-        # launch_jackd = " ".join([jackd_bin, jackd_string])
 
     launch_jackd = " ".join([jackd_bin, jackd_string])
 
