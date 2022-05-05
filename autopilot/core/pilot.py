@@ -180,7 +180,9 @@ class Pilot:
         self.quitting.clear()
 
         # init pigpiod process
-        self.init_pigpio()
+        # do the check in reverse because we should default to doing it even when prefs maybe messes up
+        if prefs.get('PIGPIOD'):
+            self.init_pigpio()
 
         # Init audio server
         if prefs.get('AUDIOSERVER') or 'AUDIO' in prefs.get('CONFIG'):

@@ -334,6 +334,12 @@ _DEFAULTS = odict({
         'default': str(_basedir / 'calibration'),
         'scope': Scopes.DIRECTORY
     },
+    'PIGPIO': {
+        'type': 'bool',
+        'text': 'Launch pigpio daemon on start?',
+        'default': True,
+        'scope': Scopes.PILOT
+    },
     'PIGPIOMASK': {
         'type': 'str',
         'text': 'Binary mask controlling which pins pigpio controls according to their BCM numbering, see the -x parameter of pigpiod',
