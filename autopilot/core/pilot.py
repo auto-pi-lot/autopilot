@@ -470,10 +470,14 @@ class Pilot:
         blosc = bool(value['blosc'])
         random = bool(value['random'])
 
-        if random:
-            payload = np.random.rand(int(payload*16))
+        if payload == 0:
+            payload = []
         else:
-            payload = np.zeros(payload*1024, dtype=np.bool)
+            if random:
+                payload = np.random.rand(int(payload*16))
+            else:
+                payload = np.zeros(payload*1024, dtype=np.bool)
+
         payload_size = sys.getsizeof(payload)
 
         message = {
