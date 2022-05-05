@@ -460,8 +460,8 @@ class Pilot:
         Send messages with a poissonian process according to the settings in value
         """
         #turn off logging for now
-        self.networking.logger.setLevel(logging.ERROR)
-        self.node.logger.setLevel(logging.ERROR)
+        # self.networking.logger.setLevel(logging.ERROR)
+        # self.node.logger.setLevel(logging.ERROR)
 
         n_msg = int(value['n_msg'])
         rate = float(value['rate'])

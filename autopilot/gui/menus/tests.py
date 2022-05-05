@@ -58,6 +58,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
                              upstream='T',
                              port = prefs.get('MSGPORT'),
                              listens=self.listens)
+        self.node.send('T', 'INIT')
 
         self.init_ui()
 
