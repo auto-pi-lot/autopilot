@@ -17,6 +17,7 @@ from queue import Empty
 import time
 from threading import Thread
 from collections import deque
+import gc
 if typing.TYPE_CHECKING:
     from autopilot.stim.sound.base import Jack_Sound
 
@@ -137,7 +138,8 @@ class JackClient(mp.Process):
                  name='jack_client',
                  outchannels: typing.Optional[list] = None,
                  debug_timing:bool=False,
-                 play_q_size:int=2048):
+                 play_q_size:int=2048,
+                 disable_gc=False):
         """
         Args:
             name:
@@ -186,6 +188,8 @@ class JackClient(mp.Process):
         # Something calls process() before boot_server(), so this has to
         # be initialized
         self.mono_output = True
+
+        self._disable_gc = disable_gc
 
         # store a reference to us and our values in the module
         globals()['SERVER'] = self
@@ -329,6 +333,10 @@ class JackClient(mp.Process):
         self.boot_server()
         self.logger.debug('server booted')
 
+        if self._disable_gc:
+            gc.disable()
+            self.logger.info('GC Disabled!')
+
         if self.debug_timing:
             self.querythread = Thread(target=self._query_timebase)
             self.querythread.start()
@@ -448,7 +456,10 @@ class JackClient(mp.Process):
                 # Thread(target=self._wait_for_end, args=(self.client.last_frame_time+self.blocksize,)).start()
                 if self.debug_timing:
                     self.logger.debug(f'Sound has ended, requesting end event at {self.wait_until}')
-                
+
+                if self._disable_gc:
+                    gc.collect()
+
             else:
                 ## There is data available
                 if data.shape[0] < self.blocksize:
