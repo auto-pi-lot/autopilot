@@ -16,6 +16,7 @@ from copy import copy
 from queue import Empty
 import time
 from threading import Thread
+from collections import deque
 if typing.TYPE_CHECKING:
     from autopilot.stim.sound.base import Jack_Sound
 
@@ -135,7 +136,8 @@ class JackClient(mp.Process):
     def __init__(self,
                  name='jack_client',
                  outchannels: typing.Optional[list] = None,
-                 debug_timing:bool=False):
+                 debug_timing:bool=False,
+                 play_q_size:int=2048):
         """
         Args:
             name:
@@ -153,6 +155,7 @@ class JackClient(mp.Process):
         #self.pipe = pipe
         self.q = mp.Queue()
         self.q_lock = mp.Lock()
+        self._play_q = deque(maxlen=play_q_size)
 
         self.play_evt = mp.Event()
         self.stop_evt = mp.Event()
@@ -413,10 +416,10 @@ class JackClient(mp.Process):
 
             # Try to get data
             try:
-                data = self.q.get_nowait()
+                data = self._play_q.popleft()
                 if self.debug_timing:
                     self.logger.debug('Got new audio samples')
-            except queue.Empty:
+            except IndexError:
                 data = None
                 self.logger.warning('Queue Empty')
 
@@ -465,6 +468,14 @@ class JackClient(mp.Process):
             if self.querythread is None:
                 self.querythread = Thread(target=self._wait_for_end)
                 self.querythread.start()
+
+        # try to get samples every loop, store and wait for the play event to be set
+        try:
+            self._play_q.append(self.q.get_nowait())
+        except queue.Empty:
+            # fine, no samples have been given to us
+            pass
+
     
     def write_to_outports(self, data):
         """Write the sound in `data` to the outport(s).
