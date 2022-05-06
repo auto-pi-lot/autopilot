@@ -125,7 +125,7 @@ SCRIPTS = odict({
         'type': 'bool',
         'text': 'Install jack audio from source, try this if youre having compatibility or runtime issues with jack (required if AUDIOSERVER == jack)',
         'commands': [
-            "git clone git://github.com/jackaudio/jack2 --depth 1",
+            "git clone https://github.com/jackaudio/jack2 --depth 1",
             "cd jack2",
             "./waf configure --alsa=yes --libdir=/usr/lib/arm-linux-gnueabihf/",
             "./waf build -j6",
