@@ -487,6 +487,8 @@ class Jack_Sound(Stim):
         if callable(self.trigger):
             threading.Thread(target=self.wait_trigger).start()
 
+        self.logger.debug('played!')
+
     def play_continuous(self, loop=True):
         """
         Play the sound continuously.
