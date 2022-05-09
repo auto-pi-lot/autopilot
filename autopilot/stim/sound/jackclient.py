@@ -479,6 +479,7 @@ class JackClient(mp.Process):
             # if self.querythread is None:
             #     self.querythread = Thread(target=self._wait_for_end)
             #     self.querythread.start()
+            self.stop_evt.set()
 
         # try to get samples every loop, store and wait for the play event to be set
         try:
