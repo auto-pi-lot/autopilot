@@ -476,14 +476,13 @@ class JackClient(mp.Process):
 
 
             # start timer if we haven't yet
-            # if self.querythread is None:
-            #     self.querythread = Thread(target=self._wait_for_end)
-            #     self.querythread.start()
-            self.stop_evt.set()
+            if self.querythread is None:
+                self.querythread = Thread(target=self._wait_for_end)
+                self.querythread.start()
 
         # try to get samples every loop, store and wait for the play event to be set
         try:
-            self._play_q.append(self.q.get_nowait())
+            self._play_q.extend(self.q.get_nowait())
         except queue.Empty:
             # fine, no samples have been given to us
             pass

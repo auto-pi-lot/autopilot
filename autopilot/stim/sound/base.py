@@ -398,19 +398,19 @@ class Jack_Sound(Stim):
             # empty queue
             # FIXME: Testing whether this is where we get held up on the 'fail after sound play' bug
             # n_gets = 0
-            while not self.q.empty():
-                try:
-                    _ = self.q.get_nowait()
-                except Empty:
-                    # normal, get until it's empty
-                    break
+            # while not self.q.empty():
+            #     try:
+            #         _ = self.q.get_nowait()
+            #     except Empty:
+            #         # normal, get until it's empty
+            #         break
                 # n_gets += 1
                 # if n_gets > 100000:
                 #     break
-            for frame in self.chunks:
-                self.q.put_nowait(frame)
+            # for frame in self.chunks:
+            self.q.put_nowait([*self.chunks, None])
             # The jack server looks for a None object to clear the play flag
-            self.q.put_nowait(None)
+            # self.q.put_nowait(None)
             self.buffered = True
 
     def _init_continuous(self):
