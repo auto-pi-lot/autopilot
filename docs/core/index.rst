@@ -10,11 +10,7 @@ core
 .. toctree::
    :maxdepth: 10
 
-   gui
    loggers
    pilot
-   plots
-   styles
-   subject
    terminal
 

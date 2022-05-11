@@ -61,6 +61,7 @@ This documentation is very young and is very much a work in progress! Please `su
 
    Core Modules <core/index>
    Data <data/index>
+   GUI <gui/index>
    Hardware <hardware/index>
    Networking <networking/index>
    Stimuli <stim/index>
