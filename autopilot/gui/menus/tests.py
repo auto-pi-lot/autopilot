@@ -12,6 +12,7 @@ from PySide2 import QtWidgets, QtGui
 from autopilot import prefs
 from autopilot.gui.gui import gui_event
 from autopilot.networking import Net_Node
+from autopilot.core.loggers import init_logger
 
 
 class Bandwidth_Test(QtWidgets.QDialog):
@@ -59,6 +60,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
                              port = prefs.get('MSGPORT'),
                              listens=self.listens)
         self.node.send('T', 'INIT')
+        self.logger = init_logger(self)
 
         self.init_ui()
 
@@ -434,8 +436,10 @@ class Bandwidth_Test(QtWidgets.QDialog):
         receive_time = datetime.datetime.now().isoformat()
 
         try:
-            assert isinstance(value['payload'], np.ndarray)
-            assert value['payload'].shape[0] == int(value['payload_n'])
+            if value['payload_n']>0:
+                assert isinstance(value['payload'], np.ndarray)
+                #print(value['payload'].shape, value['payload_n'], type(value['payload']))
+                assert value['payload'].shape[0] == int(value['payload_n']*128)
 
             self.messages.append((value['pilot'],
                       int(value['n_msg']),
@@ -444,8 +448,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
                       payload_size,
                       value['message_size']))
         except AssertionError:
-            self.logger.exception(f"Payload was not a numpy array or didnt have the expected size")
-            return
+            self.logger.exception(f"Payload was not a numpy array or didnt have the expected size\ngot a {type(value['payload'])}")
 
         #payload_size = np.frombuffer(base64.b64decode(value['payload']),dtype=np.bool).nbytes
 
