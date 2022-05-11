@@ -485,6 +485,10 @@ class Pilot:
         message = {
             'pilot': self.name,
             'payload': payload,
+            'timestamp': datetime.datetime.now().isoformat(),
+            'n_msg': 0,
+            'message_size': payload_size, # put in dummy value here to simulate size
+            'payload_size': payload_size
         }
 
         # make a fake message to test how large the serialized message is
@@ -509,12 +513,10 @@ class Pilot:
                 message['n_msg'] = i
                 message['timestamp'] = datetime.datetime.now().isoformat()
                 self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
-                               value=message, repeat=confirm, flags={'MINPRINT':True})
+                               value=message, repeat=confirm, flags={'MINPRINT':True},
+                               blosc=blosc)
                 this_message = time.perf_counter()
                 waitfor = np.clip(spacing-(this_message-last_message), 0, spacing)
-
-                #time.sleep(np.random.exponential(1.0/rate))
-                # just do linear spacing lol.
 
                 time.sleep(waitfor)
                 last_message = time.perf_counter()
@@ -523,7 +525,8 @@ class Pilot:
                 message['n_msg'] = i
                 message['timestamp'] = datetime.datetime.now().isoformat()
                 self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
-                               value=message, repeat=confirm, flags={'MINPRINT':True})
+                               value=message, repeat=confirm, flags={'MINPRINT':True},
+                               blosc=blosc)
 
         self.node.send(to='bandwidth',key='BANDWIDTH_MSG', value={'pilot':self.name, 'test_end':True,
                                                                   'rate': rate, 'payload':payload,

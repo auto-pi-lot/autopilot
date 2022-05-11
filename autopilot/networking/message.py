@@ -117,7 +117,7 @@ class Message(object):
             key:
             value:
         """
-        # self.changed=True
+        self.changed=True
         #value = self._check_enc(value)
         self.__dict__[key] = value
 
