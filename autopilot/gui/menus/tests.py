@@ -431,17 +431,23 @@ class Bandwidth_Test(QtWidgets.QDialog):
 
         payload_size = value['payload_size']
 
+        receive_time = datetime.datetime.now().isoformat()
 
+        try:
+            assert isinstance(value['payload'], np.ndarray)
+            assert value['payload'].shape[0] == int(value['payload_n'])
 
+            self.messages.append((value['pilot'],
+                      int(value['n_msg']),
+                      value['timestamp'],
+                      receive_time,
+                      payload_size,
+                      value['message_size']))
+        except AssertionError:
+            self.logger.exception(f"Payload was not a numpy array or didnt have the expected size")
+            return
 
         #payload_size = np.frombuffer(base64.b64decode(value['payload']),dtype=np.bool).nbytes
-
-        self.messages.append((value['pilot'],
-                              int(value['n_msg']),
-                              value['timestamp'],
-                              datetime.datetime.now().isoformat(),
-                              payload_size,
-                              value['message_size']))
 
         msgs_rcvd = next(self.msg_counter)
         if msgs_rcvd % float(round(self.n_messages_test/100.0)) < 1.0:

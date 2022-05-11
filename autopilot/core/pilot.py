@@ -472,13 +472,17 @@ class Pilot:
         blosc = bool(value['blosc'])
         random = bool(value['random'])
 
+        # store copy of payload n requested for confirmation on receive
+        payload_n = int(value['payload'])
+
         if payload == 0:
             payload = []
         else:
             if random:
-                payload = np.random.rand(int(payload*16))
+                # payload is in kbyte, so with 64 bit numbers...
+                payload = np.random.rand(int(payload*128))
             else:
-                payload = np.zeros(payload*1024, dtype=np.bool)
+                payload = np.zeros(payload*128, dtype=np.float64)
 
         payload_size = sys.getsizeof(payload)
 
@@ -487,6 +491,7 @@ class Pilot:
             'payload': payload,
             'timestamp': datetime.datetime.now().isoformat(),
             'n_msg': 0,
+            'payload_n':payload_n,
             'message_size': payload_size, # put in dummy value here to simulate size
             'payload_size': payload_size
         }
