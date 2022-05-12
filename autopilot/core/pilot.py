@@ -471,6 +471,7 @@ class Pilot:
         confirm = bool(value['confirm'])
         blosc = bool(value['blosc'])
         random = bool(value['random'])
+        preserialized = bool(value['preserialized'])
 
         # store copy of payload n requested for confirmation on receive
         payload_n = int(value['payload'])
@@ -512,14 +513,26 @@ class Pilot:
         # wait for half a second to let the terminal get messages out
         time.sleep(0.25)
 
+        if preserialized:
+            test_msg['n_msg'] = 0
+            test_msg['timestamp'] = datetime.datetime.now().isoformat()
+            test_msg['message_size'] = msg_size
+            test_msg['payload_size'] = payload_size
+            # messages are only serialized once if they don't change
+            _ = test_msg.serialize()
+
+
         if spacing > 0:
             last_message = time.perf_counter()
             for i in range(n_msg):
-                message['n_msg'] = i
-                message['timestamp'] = datetime.datetime.now().isoformat()
-                self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
-                               value=message, repeat=confirm, flags={'MINPRINT':True},
-                               blosc=blosc)
+                if preserialized:
+                    self.node.send(to='bandwidth', msg=test_msg)
+                else:
+                    message['n_msg'] = i
+                    message['timestamp'] = datetime.datetime.now().isoformat()
+                    self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
+                                   value=message, repeat=confirm, flags={'MINPRINT':True},
+                                   blosc=blosc)
                 this_message = time.perf_counter()
                 waitfor = np.clip(spacing-(this_message-last_message), 0, spacing)
 
@@ -527,16 +540,21 @@ class Pilot:
                 last_message = time.perf_counter()
         else:
             for i in range(n_msg):
-                message['n_msg'] = i
-                message['timestamp'] = datetime.datetime.now().isoformat()
-                self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
-                               value=message, repeat=confirm, flags={'MINPRINT':True},
-                               blosc=blosc)
+                if preserialized:
+                    self.node.send(to='bandwidth', msg=test_msg)
+                else:
+                    message['n_msg'] = i
+                    message['timestamp'] = datetime.datetime.now().isoformat()
+                    self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
+                                   value=message, repeat=confirm, flags={'MINPRINT':True},
+                                   blosc=blosc)
 
-        self.node.send(to='bandwidth',key='BANDWIDTH_MSG', value={'pilot':self.name, 'test_end':True,
-                                                                  'rate': rate, 'payload':payload,
-                                                                  'n_msg':n_msg, 'confirm':confirm,
-                                                                  'blosc':blosc, 'random':random},
+        self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
+                       value={'pilot':self.name, 'test_end':True,
+                              'rate': rate, 'payload':payload,
+                              'n_msg':n_msg, 'confirm':confirm,
+                              'blosc':blosc, 'random':random,
+                              'preserialized':preserialized},
                        flags={'MINPRINT':True})
 
         #self.networking.set_logging(True)
