@@ -292,13 +292,15 @@ class JackClient(mp.Process):
             for n in range(len(listified_outchannels)):
                 self.client.outports.register('out_{}'.format(n))
 
-        # Activate the client
-        self.client.activate()
-        self.logger.debug('client activated')
 
         if self.freewheel:
             self.client.set_freewheel(self.freewheel)
             self.logger.debug("Freewheel activated")
+
+        # Activate the client
+        self.client.activate()
+        self.logger.debug('client activated')
+
 
         ## Hook up the outports (data sinks) to physical ports
         # Get the actual physical ports that can play sound
