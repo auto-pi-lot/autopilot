@@ -119,6 +119,9 @@ class JackClient(mp.Process):
         outchannels (list): Optionally manually pass outchannels rather than getting
             from prefs. A list of integers corresponding to output channels to initialize.
             if ``None`` (default), get ``'OUTCHANNELS'`` from prefs
+        play_q_size (int): Number of frames that can be buffered (with :meth:`~.sound.base.Jack_Sound.buffer` ) at a time
+        freewheel (bool): Whether to use jackd's freewheel mode (see the `JACK-Client <https://jackclient-python.readthedocs.io/en/latest/api.html#jack.Client.set_freewheel>`_ docs)
+        disable_gc (bool): If ``True``, turn off garbage collection in the jack client process (experimental)
 
     Attributes:
         q (:class:`~.multiprocessing.Queue`): Queue that stores buffered frames of audio
@@ -139,6 +142,7 @@ class JackClient(mp.Process):
                  outchannels: typing.Optional[list] = None,
                  debug_timing:bool=False,
                  play_q_size:int=2048,
+                 freewheel:bool=False,
                  disable_gc=False):
         """
         Args:
@@ -188,6 +192,7 @@ class JackClient(mp.Process):
         # Something calls process() before boot_server(), so this has to
         # be initialized
         self.mono_output = True
+        self.freewheel = freewheel
 
         self._disable_gc = disable_gc
 
@@ -291,7 +296,10 @@ class JackClient(mp.Process):
         self.client.activate()
         self.logger.debug('client activated')
 
-        
+        if self.freewheel:
+            self.client.set_freewheel(self.freewheel)
+            self.logger.debug("Freewheel activated")
+
         ## Hook up the outports (data sinks) to physical ports
         # Get the actual physical ports that can play sound
         target_ports = self.client.get_ports(

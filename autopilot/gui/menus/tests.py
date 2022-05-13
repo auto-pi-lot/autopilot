@@ -126,7 +126,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
         self.settings.addRow('Confirm sent messages?', self.receipts)
         self.settings.addRow('Use Random Arrays? (otherwise zeros)', self.random)
         self.settings.addRow('Compress with blosc?', self.blosc)
-        self.settings.addRow('Preserialize message? (serialize once rather than serialize each message separately)', self.preserialized)
+        self.settings.addRow('Preserialize message? \n(dont serialize each message separately)', self.preserialized)
         self.settings.addRow('Message Rates per Pilot \n(in Hz, list of integers like "[1, 2, 3]")',
                              self.rates)
         self.settings.addRow('Payload sizes per message \n(in KB, list of integers like "[32, 64, 128]")',
