@@ -5,7 +5,7 @@ Blink
 
 A very simple task: Blink an LED
 
-Written by @mikewehr in the ``mike`` branch: https://github.com/wehr-lab/autopilot/blob/mike/autopilot/tasks/blink.py
+Written by @mikewehr in the ``mike`` branch: https://github.com/auto-pi-lot/autopilot/blob/mike/autopilot/tasks/blink.py
 
 Demonstrates the basic structure of a task with one stage,
 described in the comments throughout the task.

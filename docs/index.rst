@@ -39,7 +39,7 @@ For a detailed overview of Autopilot's motivation, design, and structure, see ou
     * See the :ref:`changelog <changelog_v040>` for more!
 
 
-This documentation is very young and is very much a work in progress! Please `submit an issue <https://github.com/wehr-lab/autopilot/issues/new>`_ with any incompletenesses, confusion, or errors!
+This documentation is very young and is very much a work in progress! Please `submit an issue <https://github.com/auto-pi-lot/autopilot/issues/new>`_ with any incompletenesses, confusion, or errors!
 
 
 .. toctree::
@@ -79,7 +79,7 @@ This documentation is very young and is very much a work in progress! Please `su
     :caption: Meta:
 
     Wiki <https://wiki.auto-pi-lot.com/>
-    Discussion <https://github.com/wehr-lab/autopilot/discussions>
+    Discussion <https://github.com/auto-pi-lot/autopilot/discussions>
     Changelog <changelog/index>
     To-Do <todo>
     References <references>

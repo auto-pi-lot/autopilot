@@ -4,7 +4,7 @@
 Changelog
 *********
 
-For full details, see commit logs and issues at http://github.com/wehr-lab/autpilot
+For full details, see commit logs and issues at http://github.com/auto-pi-lot/autpilot
 
 Version 0.4
 -----------

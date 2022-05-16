@@ -113,14 +113,14 @@ Method 2: Installation from source
 ----------------------------------
 
 If you want to start writing your own experiments and tinkering with Autopilot,
-suggest you clone or fork `the repository <https://github.com/wehr-lab/autopilot/>`_ .
+suggest you clone or fork `the repository <https://github.com/auto-pi-lot/autopilot/>`_ .
 One of the design goals of autopilot is to minimize the distinction between "developer" and "user,"
 so we like to encourage people to get their hands dirty with the source so your wonderful
 work can be integrated later.
 
 First clone the repository::
 
-    git clone https://github.com/wehr-lab/autopilot.git
+    git clone https://github.com/auto-pi-lot/autopilot.git
     cd autopilot
 
 **Install with poetry** - if you have poetry installed (``pip install poetry``), it is easiest to use it
@@ -240,7 +240,7 @@ Networking
 
     Networking is a point of major future development, particularly how agents discover one another and how ports are assigned.
     Getting networking to work is still a bit cumbersome, but you can track progress or contribute to improving networking
-    at `issue #48 <https://github.com/wehr-lab/autopilot/issues/48>`_
+    at `issue #48 <https://github.com/auto-pi-lot/autopilot/issues/48>`_
 
 IP Addresses
 ------------

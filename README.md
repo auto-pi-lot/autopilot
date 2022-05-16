@@ -9,8 +9,8 @@
 Status:
 
 [![Documentation Status](https://readthedocs.org/projects/auto-pi-lot/badge/?version=latest)](https://docs.auto-pi-lot.com/en/latest/?badge=latest)
-[![Travis (.com) branch](https://img.shields.io/travis/com/wehr-lab/autopilot/main)](https://app.travis-ci.com/github/wehr-lab/autopilot/branches)
-[![Coveralls branch](https://img.shields.io/coveralls/github/wehr-lab/autopilot/main)](https://coveralls.io/github/wehr-lab/autopilot)
+[![Travis (.com) branch](https://img.shields.io/travis/com/auto-pi-lot/autopilot/main)](https://app.travis-ci.com/github/auto-pi-lot/autopilot/branches)
+[![Coveralls branch](https://img.shields.io/coveralls/github/auto-pi-lot/autopilot/main)](https://coveralls.io/github/auto-pi-lot/autopilot)
 ![Jonny Status](https://img.shields.io/badge/jonny-dissertating-critical)
 
 
@@ -19,9 +19,9 @@ Status:
 
 ![Autopilot Banner Logo](docs/_images/autopilot_logo_banner.png)
 
-| [Docs](https://docs.auto-pi-lot.com) | [Paper](https://www.biorxiv.org/content/10.1101/807693v1) | [Forum](https://github.com/wehr-lab/autopilot/discussions) | [Wiki](https://wiki.auto-pi-lot.com) |
+| [Docs](https://docs.auto-pi-lot.com) | [Paper](https://www.biorxiv.org/content/10.1101/807693v1) | [Forum](https://github.com/auto-pi-lot/autopilot/discussions) | [Wiki](https://wiki.auto-pi-lot.com) |
 | :-: | :-: | :-: | :-: |
-| [![Read the Docs](docs/_images/docs_link.png)](https://docs.auto-pi-lot.com) | [![Paper](docs/_images/paper_link.png)](https://www.biorxiv.org/content/10.1101/807693v1)  | [![Forum](docs/_images/discussion_link.png)](https://github.com/wehr-lab/autopilot/discussions) | [![Wiki](docs/_images/hardware_link.png)](https://wiki.auto-pi-lot.com)
+| [![Read the Docs](docs/_images/docs_link.png)](https://docs.auto-pi-lot.com) | [![Paper](docs/_images/paper_link.png)](https://www.biorxiv.org/content/10.1101/807693v1)  | [![Forum](docs/_images/discussion_link.png)](https://github.com/auto-pi-lot/autopilot/discussions) | [![Wiki](docs/_images/hardware_link.png)](https://wiki.auto-pi-lot.com)
 
 Autopilot is a Python framework for performing complex, hardware-intensive behavioral experiments with swarms of networked Raspberry Pis. 
 As a tool, it provides researchers with a toolkit of flexible modules to design experiments without rigid programming & API limitations. 
@@ -91,7 +91,7 @@ python3 -m autopilot.setup.setup
 ![Autopilot Setup Console](docs/_images/installer.png)
 
 All of Autopilot is quite new, so bugs, incomplete documentation, missing features are very much expected! Don't be shy about
-[raising issues](https://github.com/wehr-lab/autopilot/issues) or [asking questions in the forum](https://github.com/wehr-lab/autopilot/discussions).
+[raising issues](https://github.com/auto-pi-lot/autopilot/issues) or [asking questions in the forum](https://github.com/auto-pi-lot/autopilot/discussions).
 
 
 # Development Status
@@ -102,17 +102,17 @@ Jonny is trying to graduate! Autopilot will be slow and maybe a little chaotic u
 
 We're working on a formal contribution system, pardon the mess! Until we get that and our CI coverage up, `main` will lag a bit behind the development branches:
 
-* [`dev`](https://github.com/wehr-lab/autopilot/tree/dev) - main development branch that collects hotfixes, PRs, etc. Unstable but usually has lots of extra goodies
-* [`hotfix`](https://github.com/wehr-lab/autopilot/tree/hotfix) - branches from `dev` for building and testing hotfixes, PRs back to `dev`.
-* [`lab`](https://github.com/wehr-lab/autopilot/tree/lab) - branches from `dev` but doesn't necessarily PR back, the local branch used in the maintaining ([Wehr](http://uoneuro.uoregon.edu/wehr/)) lab
-* [`parallax`](https://github.com/wehr-lab/autopilot/tree/parallax) - experimental departure from `dev` to implement a particular experiment and rebuild a lot of components along the way, will eventually return to `dev` <3
+* [`dev`](https://github.com/auto-pi-lot/autopilot/tree/dev) - main development branch that collects hotfixes, PRs, etc. Unstable but usually has lots of extra goodies
+* [`hotfix`](https://github.com/auto-pi-lot/autopilot/tree/hotfix) - branches from `dev` for building and testing hotfixes, PRs back to `dev`.
+* [`lab`](https://github.com/auto-pi-lot/autopilot/tree/lab) - branches from `dev` but doesn't necessarily PR back, the local branch used in the maintaining ([Wehr](http://uoneuro.uoregon.edu/wehr/)) lab
+* [`parallax`](https://github.com/auto-pi-lot/autopilot/tree/parallax) - experimental departure from `dev` to implement a particular experiment and rebuild a lot of components along the way, will eventually return to `dev` <3
 
 ## Short-Term
 
 See the short-term development goals in our version milestones:
 
-* [`v0.4.0`](https://github.com/wehr-lab/autopilot/milestone/1) - Implement registries to separate user code extensions like tasks and local hardware devices in a user directory, preserve source code in produced data so local development isn't lost. 
-* [`v0.5.0`](https://github.com/wehr-lab/autopilot/milestone/2) - Make a unitary inheritance structure from a root Autopilot object such that a) common operations like logging and networking are implemented only once, b) the plugin system for `v0.4.0` can not only add new objects, but replace core objects while maintaining provenance (ie. no monkey patching needed), c) object behavior that requires coordination across multiple instances gets much easier, making some magical things like self-healing self-discovering networking possible. This will also include a major refactoring of the code structure, finally breaking up some of the truly monstrous thousand-line modules in `core` into an actually modular system we can build from <3
+* [`v0.4.0`](https://github.com/auto-pi-lot/autopilot/milestone/1) - Implement registries to separate user code extensions like tasks and local hardware devices in a user directory, preserve source code in produced data so local development isn't lost. 
+* [`v0.5.0`](https://github.com/auto-pi-lot/autopilot/milestone/2) - Make a unitary inheritance structure from a root Autopilot object such that a) common operations like logging and networking are implemented only once, b) the plugin system for `v0.4.0` can not only add new objects, but replace core objects while maintaining provenance (ie. no monkey patching needed), c) object behavior that requires coordination across multiple instances gets much easier, making some magical things like self-healing self-discovering networking possible. This will also include a major refactoring of the code structure, finally breaking up some of the truly monstrous thousand-line modules in `core` into an actually modular system we can build from <3
 
 ## Long-Term
 

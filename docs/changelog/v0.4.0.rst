@@ -4,7 +4,7 @@ v0.4.4 - Timing and Sound (February 2nd, 2022)
 ------------------------------------------------
 Several parts to this update!
 
-* See `PR#146 <https://github.com/wehr-lab/autopilot/pull/146>`_ for details about improvements to jackd sound timing! In short:
+* See `PR#146 <https://github.com/auto-pi-lot/autopilot/pull/146>`_ for details about improvements to jackd sound timing! In short:
 * Changed the way that continuous sounds work. Rather than cycling through an array, which was easy to drop, now pass a sound object that can generate its own samples on the fly using the `hydration` module.
 * More accurate timing of sound ending callbacks. Before, the event would be called immediately on buffering the sounds into the jack ports, but that was systematically too early. Instead, use jack timing methods to account for delay from blocksize and n_periods to wait_until a certain delay to `set()` the event. See `_wait_for_end`
 
@@ -34,7 +34,7 @@ Bugfixes
 * Correctly identify filenames in logging, before the last module name was treated as a suffix on the path and removed, and so only the most recent logger created would actually log to disk. Logging now works across threads and processes.
 * Fall back to a non-multiprocessing-based prefs if for some reason we can't use a mp.Manager in the given context (eg. ipython) - Still need to figure out a way to not print the exception because it is thrown asynchronously.
 * as much as i love it, the splash screen being absent for whatever reason shouldn't crash the program.
-* Raise an exception when instantiating a picamera without having picamera installed, re: https://github.com/wehr-lab/autopilot/issues/142
+* Raise an exception when instantiating a picamera without having picamera installed, re: https://github.com/auto-pi-lot/autopilot/issues/142
 * Raise ImportError when ffmpeg is not present and trying to use a videowriter class
 * Use a deque rather than an infinitely growing list to store GPIO events.
 
@@ -57,7 +57,7 @@ New Features
 Minor Improvements
 ~~~~~~~~~~~~~~~~~~~
 
-* `579ef1a <https://github.com/wehr-lab/autopilot/commit/579ef1a41518f57721decd7ecfc289f2b358b356>`_ -
+* `579ef1a <https://github.com/auto-pi-lot/autopilot/commit/579ef1a41518f57721decd7ecfc289f2b358b356>`_ -
   En route to implementing universal calibrations, load and save them in a specified place for each hardware object
   instead of the horrific olde way which was built into ``prefs`` for some reason
 * prefs attempts to make directories if they don't exist
@@ -66,15 +66,15 @@ Minor Improvements
 Bugfixes
 ~~~~~~~~
 
-* `a775723 <https://github.com/wehr-lab/autopilot/commit/a775723acc66e327492145066eea0e7dff59331e>`_ -
+* `a775723 <https://github.com/auto-pi-lot/autopilot/commit/a775723acc66e327492145066eea0e7dff59331e>`_ -
   Sleep before graduating tasks, lateral fix until we rework the task initiation ritual
-* `360062d <https://github.com/wehr-lab/autopilot/commit/360062d3ad4cd30cdba1c53eebe5ff7d7698ffad>`_ -
+* `360062d <https://github.com/auto-pi-lot/autopilot/commit/360062d3ad4cd30cdba1c53eebe5ff7d7698ffad>`_ -
   pad sounds with silence or continuous sounds if they aren't a full period length
-* `6614c80 <https://github.com/wehr-lab/autopilot/commit/6614c808ec2f3fc86e01df17b78aa976e8843b5a>`_ -
+* `6614c80 <https://github.com/auto-pi-lot/autopilot/commit/6614c808ec2f3fc86e01df17b78aa976e8843b5a>`_ -
   Revert to old way of making chunks to make it work with both padded and unpadded sounds
 * Import sounds module directly instead of referring from the package root in tests
 * Terminal node pings pilots instead of an erroneous reference to a nonexistent ``Terminal.send`` method
-* `47dd4c2 <https://github.com/wehr-lab/autopilot/commit/47dd4c2345df081fb5f3ca1c1705d2f696fc62c9>`_ -
+* `47dd4c2 <https://github.com/auto-pi-lot/autopilot/commit/47dd4c2345df081fb5f3ca1c1705d2f696fc62c9>`_ -
   Fix pinging by passing pilot id, and handle pressing start/stop button when subject not selected
 * Fixed some GUI exceptions from trying to make blank lines in reassign window, improperly handling the Subject class.
 
@@ -138,7 +138,7 @@ make using the tool a whole lot easier and more powerful).
 New Features
 ~~~~~~~~~~~~~
 
-* `Registries & Plugins <https://github.com/wehr-lab/autopilot/pull/109>`_ - Autopilot now supports users writing their code
+* `Registries & Plugins <https://github.com/auto-pi-lot/autopilot/pull/109>`_ - Autopilot now supports users writing their code
   outside of the library as plugins! To support this, a registry system was implemented throughout the program. Plugin objects
   can be developed as objects that inherit from the Autopilot object tree -- eg. implementing a GPIO object by subclassing
   :class:`.hardware.gpio.GPIO` , or a new task by subclassing :class:`~.tasks.task.Task` . This system is flexible enough
@@ -162,8 +162,8 @@ New Features
   completely trivial. As a first pass, the Wiki will be the place to index plugins, the system for submitting them, querying them,
   and downloading them only took a few hours and few dozen lines of code to implement. The wiki is infinitely malleable -- that's the point --
   and I am very excited to see how people use it.
-* Tests & Continuous Integration with Travis! We are on the board with having nonzero tests! The travis page is here: https://travis-ci.com/github/wehr-lab/autopilot
-  and the coveralls page is here: https://coveralls.io/github/wehr-lab/autopilot .  At the moment we have a whopping 27% coverage,
+* Tests & Continuous Integration with Travis! We are on the board with having nonzero tests! The travis page is here: https://travis-ci.com/github/auto-pi-lot/autopilot
+  and the coveralls page is here: https://coveralls.io/github/auto-pi-lot/autopilot .  At the moment we have a whopping 27% coverage,
   but as we build out our testing suite we hope that it will become much easier for people to contribute to Autopilot and be
   confident that it works!
 * New Hardware Objects
@@ -188,15 +188,15 @@ New Features
 Major Improvements
 ~~~~~~~~~~~~~~~~~~~
 
-* Stereo Sound (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/102
-* Multihop messages & direct messaging - https://github.com/wehr-lab/autopilot/pull/99 - it is now possible to
+* Stereo Sound (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/auto-pi-lot/autopilot/pull/102
+* Multihop messages & direct messaging - https://github.com/auto-pi-lot/autopilot/pull/99 - it is now possible to
   send multihop messages through multiple Station objects, as well as easier to send messages directly
   between net nodes. See the examples in the network tests section of the docs.
-* Multiple Children  (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/103 -
+* Multiple Children  (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/auto-pi-lot/autopilot/pull/103 -
   the ``CHILDID`` field now accepts a list, allowing a Pilot to initialize child tasks on multiple children. (this syntax and
   the hierarchical nature of pilots and children will be deprecated as we refactor the networking modules into a general mesh system,
   but this is lovely to have for now :)
-* Programmatic Setup - https://github.com/wehr-lab/autopilot/issues/33 - noninteractive setup of prefs and
+* Programmatic Setup - https://github.com/auto-pi-lot/autopilot/issues/33 - noninteractive setup of prefs and
   scripts by using ``autopilot.setup -f prefs.json -p PREFNAME=VALUE -s scriptname1 -s scriptname2``
 * Widget to stream video, en route to more widgets for direct GUI control of hardware objects connected to pilots
 * Support python 3.8 and 3.9 essentially by not insisting that the spinnaker SDK be installable by all users (which at the time
@@ -206,14 +206,14 @@ Major Improvements
 Minor Improvements
 ~~~~~~~~~~~~~~~~~~~
 
-* Terminal can be opened maximized, or have its size and position set explicitly, preserve between launches (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/70
-* Pilots will periodically ping the Terminal again, Terminal can manually ping Pilots that may have gone silent - https://github.com/wehr-lab/autopilot/pull/91
-* Pilots share their prefs with the Terminal in their initial handshake - https://github.com/wehr-lab/autopilot/pull/91
-* Reintroduce router ports for net-nodes to allow them to bind a port to receive messages - https://github.com/wehr-lab/autopilot/pull/115/commits/35be5d634d98a7983ec3d3d6c5b94da6965a2579
+* Terminal can be opened maximized, or have its size and position set explicitly, preserve between launches (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/auto-pi-lot/autopilot/pull/70
+* Pilots will periodically ping the Terminal again, Terminal can manually ping Pilots that may have gone silent - https://github.com/auto-pi-lot/autopilot/pull/91
+* Pilots share their prefs with the Terminal in their initial handshake - https://github.com/auto-pi-lot/autopilot/pull/91
+* Reintroduce router ports for net-nodes to allow them to bind a port to receive messages - https://github.com/auto-pi-lot/autopilot/pull/115/commits/35be5d634d98a7983ec3d3d6c5b94da6965a2579
 * Listen methods are now optional for net_nodes
-* Allowed the creation of dataless tasks - https://github.com/wehr-lab/autopilot/pull/115/commits/628e1fb9c8fcd15399b19b351fed87e4826bc9ab
-* Allowed the creation of plotless tasks - https://github.com/wehr-lab/autopilot/pull/115/commits/08d99d55a32b45f54e3853813c7c71ea230b25dc
-* The ``I2C_9DOF`` clas uses memoryviews rather than buffers for a small performance boost - https://github.com/wehr-lab/autopilot/pull/115/commits/890f2c500df8010b50d61f64e2755cd2c7a8aeed
+* Allowed the creation of dataless tasks - https://github.com/auto-pi-lot/autopilot/pull/115/commits/628e1fb9c8fcd15399b19b351fed87e4826bc9ab
+* Allowed the creation of plotless tasks - https://github.com/auto-pi-lot/autopilot/pull/115/commits/08d99d55a32b45f54e3853813c7c71ea230b25dc
+* The ``I2C_9DOF`` clas uses memoryviews rather than buffers for a small performance boost - https://github.com/auto-pi-lot/autopilot/pull/115/commits/890f2c500df8010b50d61f64e2755cd2c7a8aeed
 * Phasing out using ``Queue`` s in favor of ``collections.deque`` for applications that only need thread and not process safety because they
   are way faster and what we wanted in the first place anyway.
 * New Scripts - ``i2c``, ``picamera``, ``env_terminal``
@@ -228,13 +228,13 @@ Minor Improvements
 Bugfixes
 ~~~~~~~~
 
-* Loggers would only work for the last object that was instantiated, which was really embarassing. fixed - https://github.com/wehr-lab/autopilot/pull/91
-* Graduation criteria were calculated incorrectly when subjects were demoted in stages of a protocol - https://github.com/wehr-lab/autopilot/pull/91
-* fix durations in solenoid class (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/63
-* LED_RGB ignores zero - https://github.com/wehr-lab/autopilot/pull/98
-* Fix batch assignment window crashing when there are subjects that are unassigned to a task - https://github.com/wehr-lab/autopilot/pull/115/commits/e42fc5802792822ff5a53a2379041a4a8b301e9e
-* Catch malformed protocols in batch assignment widget - https://github.com/wehr-lab/autopilot/pull/115/commits/2cc8508a4bf3a6d49512197dc72433c60d0c656e
-* Remove broken ``Terminal.reset_ui`` method and made control panel better at adding/removing pilots - https://github.com/wehr-lab/autopilot/pull/91
+* Loggers would only work for the last object that was instantiated, which was really embarassing. fixed - https://github.com/auto-pi-lot/autopilot/pull/91
+* Graduation criteria were calculated incorrectly when subjects were demoted in stages of a protocol - https://github.com/auto-pi-lot/autopilot/pull/91
+* fix durations in solenoid class (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/auto-pi-lot/autopilot/pull/63
+* LED_RGB ignores zero - https://github.com/auto-pi-lot/autopilot/pull/98
+* Fix batch assignment window crashing when there are subjects that are unassigned to a task - https://github.com/auto-pi-lot/autopilot/pull/115/commits/e42fc5802792822ff5a53a2379041a4a8b301e9e
+* Catch malformed protocols in batch assignment widget - https://github.com/auto-pi-lot/autopilot/pull/115/commits/2cc8508a4bf3a6d49512197dc72433c60d0c656e
+* Remove broken ``Terminal.reset_ui`` method and made control panel better at adding/removing pilots - https://github.com/auto-pi-lot/autopilot/pull/91
 * Subject class handles unexpected state a lot better (eg. no task assigned, no step assigned, tasks with no data.) but is still
   an absolute travesty that needs to be refactored badly.
 * The jackclient would crash with long-running continuous sounds as the thread feeding it samples eventually hiccuped.
@@ -242,7 +242,7 @@ Bugfixes
 * PySide2 references still incorrectly used ``QtGui`` rather than ``QtWidgets``
 * pigpio scripts would not be stopped and removed when a task was stopped, the :func:`.gpio.clear_scripts` function now handles that.
 * ``xcb`` was removed from ``PySide2`` distributions, so it's now listed in the requirements for the Terminal and made available in the ``env_terminal`` script.
-* ``LED_RGB`` didn't appropriately raise a ``ValueError`` when called with a single ``pin`` - https://github.com/wehr-lab/autopilot/issues/117
+* ``LED_RGB`` didn't appropriately raise a ``ValueError`` when called with a single ``pin`` - https://github.com/auto-pi-lot/autopilot/issues/117
 * A fistful of lingering Python 2 artifacts
 
 Code Structure

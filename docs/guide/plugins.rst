@@ -192,9 +192,9 @@ or you can pass an object itself as the registry type in order to only find subc
     modules to be much simpler to use.
 
     That work will be the defining feature of v0.5.0, you can track progress and contribute by seeing the relevant
-    issue: https://github.com/wehr-lab/autopilot/issues/31
+    issue: https://github.com/auto-pi-lot/autopilot/issues/31
 
-    as well as the issues in the v0.5.0 milestone: https://github.com/wehr-lab/autopilot/milestone/2
+    as well as the issues in the v0.5.0 milestone: https://github.com/auto-pi-lot/autopilot/milestone/2
 
 The Wiki API
 ============

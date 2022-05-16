@@ -10,7 +10,7 @@ packages = [
 include = ['autopilot/setup/welcome_msg.txt']
 readme = "README.md"
 homepage = "https://docs.auto-pi-lot.com"
-repository = "https://github.com/wehr-lab/autopilot"
+repository = "https://github.com/auto-pi-lot/autopilot"
 classifiers = [
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
