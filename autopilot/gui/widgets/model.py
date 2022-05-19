@@ -3,73 +3,142 @@ Widget to fill fields for a pydantic model
 """
 import typing
 from typing import Union, List, Optional, Tuple, Type, Dict
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from pydantic.fields import ModelField
 from pydantic.error_wrappers import ValidationError
 from pydantic.main import ModelMetaclass
-from datetime import datetime
 from pprint import pformat
-from PySide2 import QtWidgets, QtGui
+from PySide2 import QtWidgets
+from ast import literal_eval
 
 from autopilot.root import Autopilot_Type
 from autopilot.gui.dialog import pop_dialog
-from autopilot.core.loggers import init_logger
-
-
-class _Input(BaseModel):
-    """
-    Container for holding a widget and any applicable validators
-    """
-    widget: typing.Type
-    validator: Optional[typing.Type] = None
-    args: Optional[list] = Field(default_factory=list)
-    kwargs: Optional[dict] = Field(default_factory=dict)
-    range: Optional[Tuple[Union[int, float], Union[int, float]]] = None
-    method_calls: Optional[List[Tuple[str, typing.List]]] = None
-    """
-    Names of methods to call after instantiation, passed as a tuple of (method_name, [method_args])
-    """
-    permissiveness: int = 0
-    """
-    When a type is annotated with a Union, the more permissive (higher number) 
-    one will be chosen. Arbitrary units.
-    """
-
-    def make(self,
-             widget_kwargs:Optional[dict]=None,
-             validator_kwargs:Optional[dict]=None) -> QtWidgets.QWidget:
-        if widget_kwargs is not None:
-            kwargs = widget_kwargs
-        else:
-            kwargs = self.kwargs
-
-        if validator_kwargs is not None:
-            v_kwargs = validator_kwargs
-        else:
-            v_kwargs = {}
-
-        widget = self.widget(*self.args, **kwargs)
-        if self.validator:
-            validator = self.validator(**v_kwargs)
-            widget.setValidator(validator)
-
-        if self.method_calls is not None:
-            for methname, meth_args in self.method_calls:
-                getattr(widget, methname)(*meth_args)
-
-        return widget
+from autopilot.utils.loggers import init_logger
+from autopilot.data.interfaces.base import resolve_type
 
 
 
-_INPUT_MAP = {
-    bool: _Input(widget=QtWidgets.QCheckBox),
-    int: _Input(widget=QtWidgets.QLineEdit, validator=QtGui.QIntValidator, permissiveness=1),
-    float: _Input(widget=QtWidgets.QLineEdit, validator=QtGui.QIntValidator, permissiveness=2),
-    str: _Input(widget=QtWidgets.QLineEdit, permissiveness=3),
-    datetime: _Input(widget=QtWidgets.QDateTimeEdit, method_calls=[('setCalendarPopup', [True])]),
-    list: _Input(widget=QtWidgets.QLineEdit),
-    typing.Literal: _Input(widget=QtWidgets.QComboBox)
-}
+#
+# class _Input(ABC):
+#     """
+#     Container for holding a widget and any applicable validators
+#     """
+#     widget: typing.Type
+#     validator: Optional[typing.Type] = None
+#     args: Optional[list] = Field(default_factory=list)
+#     kwargs: Optional[dict] = Field(default_factory=dict)
+#     range: Optional[Tuple[Union[int, float], Union[int, float]]] = None
+#     method_calls: Optional[List[Tuple[str, typing.List]]] = None
+#     """
+#     Names of methods to call after instantiation, passed as a tuple of (method_name, [method_args])
+#     """
+#     permissiveness: int = 0
+#     """
+#     When a type is annotated with a Union, the more permissive (higher number)
+#     one will be chosen. Arbitrary units.
+#     """
+#     python_type: typing.Type
+#
+#     @classmethod
+#     def from_type(cls, type_:typing.Type) -> 'Input':
+#         # TODO: Use @overload to make from_types for all subtypes.
+#         # TODO2: No, actually just make a class attirbute with the return type
+#         # and return that????? https://stackoverflow.com/questions/58089300/python-how-to-override-type-hint-on-an-instance-attribute-in-a-subclass
+#         pass
+#
+#
+#     @abstractmethod
+#     def value(self) -> typing.Any:
+#
+#
+#     def make(self,
+#              widget_kwargs:Optional[dict]=None,
+#              validator_kwargs:Optional[dict]=None) -> QtWidgets.QWidget:
+#         if widget_kwargs is not None:
+#             kwargs = widget_kwargs
+#         else:
+#             kwargs = self.kwargs
+#
+#         if validator_kwargs is not None:
+#             v_kwargs = validator_kwargs
+#         else:
+#             v_kwargs = {}
+#
+#         widget = self.widget(*self.args, **kwargs)
+#         if self.validator:
+#             validator = self.validator(**v_kwargs)
+#             widget.setValidator(validator)
+#
+#         if self.method_calls is not None:
+#             for methname, meth_args in self.method_calls:
+#                 getattr(widget, methname)(*meth_args)
+#
+#         return widget
+#
+#
+#
+# _INPUT_MAP = {
+#     bool: _Input(
+#         widget=QtWidgets.QCheckBox,
+#         python_type=bool),
+#     int:  _Input(
+#         widget=QtWidgets.QLineEdit,
+#         validator=QtGui.QIntValidator,
+#         permissiveness=1,
+#         python_type=int),
+#     float: _Input(
+#         widget=QtWidgets.QLineEdit,
+#         validator=QtGui.QIntValidator,
+#         permissiveness=2,
+#         python_type=float),
+#     str: _Input(
+#         widget=QtWidgets.QLineEdit,
+#         permissiveness=3,
+#         python_type=str),
+#     datetime: _Input(
+#         widget=QtWidgets.QDateTimeEdit,
+#         method_calls=[('setCalendarPopup', [True])],
+#         python_type=datetime
+#     ),
+#     list: _Input(
+#         widget=QtWidgets.QLineEdit,
+#
+#     ),
+#     typing.Literal: _Input(widget=QtWidgets.QComboBox)
+# }
+#
+# class Model_Input(QtWidgets.QWidget):
+#     """
+#     GUI input method of a single attribute of a model
+#     """
+#
+#     INPUT_MAP = _INPUT_MAP
+#
+# class Model_Form(QtWidgets.QWidget):
+#     """
+#     Recursive collection of all inputs for a given model.
+#
+#     Each attribute that has a single input (eg. a single number, string, and so on)
+#     that can be resolved by :func:`~.interfaces.base.resolve_type` is represented
+#     by a :class:`.Model_Input`.
+#
+#     Otherwise, attributes that are themselves other models are recusursively added
+#     additional :class:`.Model_Form`s.
+#
+#     Each ``Model_Form`` has a few meta-options that correspond to special python types:
+#
+#     * :class:`typing.Optional` - :attr:`.Model_Form.optional` - The groupbox for the model has
+#       a checkbox. WHen it is unchecked, the model fields are inactive and it is returned by :meth:`.value` as ``None``.
+#       Cannot be used with a top-level model.
+#     * :class:`typing.List` - :attr:`.Model_Form.list` - The model can have additional versions
+#     """
+#
+#     def __init__(self):
+#
+#         self.optional = None
+#         self.parent = None
+#
+#
 
 
 class Model_Filler(QtWidgets.QWidget):
@@ -148,7 +217,8 @@ class Model_Filler(QtWidgets.QWidget):
         Returns:
 
         """
-        type_ = self._resolve_type(field.type_)
+        # type_ = self._resolve_type(field.type_)
+        type_ = resolve_type(field.type_)
 
         # handle special cases
         if type_ in _INPUT_MAP.keys():
@@ -225,6 +295,13 @@ class Model_Filler(QtWidgets.QWidget):
             else:
                 if len(value) == 0:
                     continue
+
+            # try to do a literal value in case we are trying to enter dicts or lists as strings
+            try:
+                value = literal_eval(value)
+            except (ValueError, SyntaxError):
+                # no problem, doing it speculatively anyway
+                pass
 
             kwargs[key] = value
 

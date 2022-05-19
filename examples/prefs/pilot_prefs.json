@@ -1,0 +1,106 @@
+{
+  "AGENT": "PILOT",
+  "AUDIOSERVER": true,
+  "BASEDIR": "/home/pi/autopilot",
+  "CHILDID": "",
+  "CONFIG": "",
+  "DATADIR": "/home/pi/autopilot/data",
+  "FS": 96000,
+  "HARDWARE": {
+    "FLAGS": {
+      "L": "",
+      "R": ""
+    },
+    "LEDS": {
+      "C": {
+        "pins": [
+          22,
+          18,
+          16
+        ],
+        "polarity": 0
+      },
+      "L": {
+        "pins": [
+          11,
+          13,
+          15
+        ],
+        "polarity": 0
+      },
+      "R": {
+        "pins": [
+          19,
+          21,
+          23
+        ],
+        "polarity": 0
+      },
+      "TOP": {
+        "name": "LED_TOP",
+        "pin": 32
+      }
+    },
+    "LASERS": {
+      "LR": {
+        "name": "LASER",
+        "pin": 36
+      }
+    },
+    "POKES": {
+      "C": {
+        "pin": 8,
+        "polarity": 0
+      },
+      "L": {
+        "pin": 24,
+        "polarity": 0
+      },
+      "R": {
+        "pin": 10,
+        "polarity": 0
+      }
+    },
+    "PORTS": {
+      "C": 33,
+      "L": 31,
+      "R": 37
+    }
+  },
+  "JACKDSTRING": "jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &",
+  "LINEAGE": "NONE",
+  "LOGDIR": "/home/pi/autopilot/logs",
+  "LOGLEVEL": "DEBUG",
+  "MSGPORT": 5565,
+  "NAME": "pilot_1",
+  "NCHANNELS": 1,
+  "OUTCHANNELS": [
+    1
+  ],
+  "PARENTID": "",
+  "PARENTIP": "",
+  "PARENTPORT": "",
+  "PIGPIOARGS": "-t 0 -l",
+  "PIGPIOMASK": "1111110000111111111111110000",
+  "PROTOCOLDIR": "/home/pi/autopilot/protocols",
+  "PULLDOWNS": "",
+  "PULLUPS": [
+    7
+  ],
+  "PUSHPORT": 5560,
+  "REPODIR": "/home/pi/git/autopilot",
+  "SOUNDDIR": "/home/pi/autopilot/sounds",
+  "TERMINALIP": "192.168.0.100",
+  "VENV": "/home/pi/git/autopilot/venv",
+  "VIZDIR": "/home/pi/autopilot/viz",
+  "HASH": "04983eec393db4d51790a92080594753430468e0",
+  "PORT_CALIBRATION": {
+    "L": {
+      "intercept": 2.667731629392975,
+      "slope": 5.591054313099041
+    }
+  },
+  "SUBJECT": "1007",
+  "PLUGINDIR": "/home/pi/autopilot/plugins",
+  "CALIBRATIONDIR": "/home/pi/autopilot/calibration"
+}

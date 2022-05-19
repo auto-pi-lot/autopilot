@@ -80,7 +80,6 @@ from ctypes import c_bool
 from enum import Enum, auto
 import warnings
 
-#from autopilot.core.loggers import init_logger
 from collections import OrderedDict as odict
 from autopilot.exceptions import DefaultPrefWarning
 from autopilot.root import Autopilot_Pref
@@ -155,7 +154,7 @@ else:
 
 _LOGGER = None # type: typing.Union[logging.Logger, None]
 """
-Logger used by prefs initialized by :func:`.core.loggers.init_logger`
+Logger used by prefs initialized by :func:`.utils.loggers.init_logger`
 
 Initially None, created once prefs are populated because init_logger requires some prefs to be set (uh the logdir and level and stuff)
 """
@@ -187,7 +186,7 @@ class Agent_Prefs(Autopilot_Pref):
 
 class Terminal_Prefs(Agent_Prefs):
     """
-    Prefs for the :class:`~autopilot.core.terminal.Terminal`
+    Prefs for the :class:`~autopilot.agents.terminal.Terminal`
     """
 
     class Config:
@@ -195,7 +194,7 @@ class Terminal_Prefs(Agent_Prefs):
 
 class Pilot_Prefs(Agent_Prefs):
     """
-    Prefs for the :class:`~autopilot.core.pilot.Pilot`
+    Prefs for the :class:`~autopilot.agents.pilot.Pilot`
     """
 
     class Config:
@@ -619,7 +618,7 @@ def init(fn=None):
     Todo:
 
         This function may be deprecated in the future -- in its current form it serves to allow the sorta janky launch
-        methods in the headers/footers of autopilot/core/pilot.py and autopilot/core/terminal.py that will eventually
+        methods in the headers/footers of autopilot/agents/pilot.py and autopilot/agents/terminal.py that will eventually
         be transformed into a unified agent framework to make launching easier. Ideally one would be able to just
         import prefs without having to explicitly initialize it, but we need to formalize the full launch process
         before we make the full lurch to that model.

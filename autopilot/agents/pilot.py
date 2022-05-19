@@ -11,8 +11,6 @@ import threading
 import time
 import socket
 import json
-import base64
-import subprocess
 import warnings
 import typing
 import numpy as np
@@ -25,7 +23,7 @@ warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
 
 import autopilot
 from autopilot import prefs
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 
 if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
@@ -56,13 +54,14 @@ if __name__ == '__main__':
 from autopilot.networking import Message, Net_Node, Pilot_Station
 from autopilot import external
 from autopilot.hardware import gpio
+from autopilot.agents.base import Agent
 if typing.TYPE_CHECKING:
     from autopilot.tasks import Task
 
 
 ########################################
 
-class Pilot:
+class Pilot(Agent):
     """
     Drives the Raspberry Pi
 
@@ -162,6 +161,8 @@ class Pilot:
             os.environ['AUTOPILOT_WARN_DEFAULTS'] = '1'
 
         self.name = prefs.get('NAME')
+        super(Pilot, self).__init__(id=self.name)
+
         if prefs.get('LINEAGE') == "CHILD":
             self.child = True
             self.parentid = prefs.get('PARENTID')

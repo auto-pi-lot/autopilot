@@ -1,6 +1,6 @@
 from datetime import datetime
 import typing
-from typing import Type, List, Union
+from typing import Type, List, Union, Optional
 import tables
 from pydantic import Field, validator
 
@@ -13,17 +13,15 @@ from autopilot.data.models.protocol import Protocol_Data
 class History(Table):
     """
     Table to describe parameter and protocol change history
-
-    Attributes:
-        time (str): timestamps
-        type (str): Type of change - protocol, parameter, step
-        name (str): Name - Which parameter was changed, name of protocol, manual vs. graduation step change
-        value (str): Value - What was the parameter/protocol/etc. changed to, step if protocol.
     """
     time: List[datetime]
+    """Timestamps for history changes"""
     type: List[str]
+    """Type of change - protocol, parameter, step"""
     name: List[str]
+    """Which parameter was changed, name of protocol, manual vs. graduation step change"""
     value: List[Union[str, List[dict]]]
+    """What was the parameter/protocol/etc. changed to, step if protocol."""
 
     @validator('time', each_item=True, allow_reuse=True, pre=True)
     def simple_time(cls, v):
@@ -81,7 +79,7 @@ class Protocol_Status(Attributes):
     step: int
     protocol: typing.List[dict]
     protocol_name: str
-    pilot: str = Field(..., description="Pilot that this subject runs on")
+    pilot: Optional[str] = Field(None, description="Pilot that this subject runs on")
     assigned: datetime = Field(default_factory=datetime.now)
 
 

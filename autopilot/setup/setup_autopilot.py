@@ -188,14 +188,14 @@ def make_launch_script(prefs:dict, prefs_fn=None, launch_file=None, permissions:
             launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n')
             if prefs['VENV']:
                 launch_file_open.write("source " + os.path.join(prefs['VENV'], 'bin', 'activate')+'\n')
-            launch_file_open.write('python3 -m autopilot.core.pilot -f {}'.format(prefs_fn))
+            launch_file_open.write('python3 -m autopilot.agents.pilot -f {}'.format(prefs_fn))
 
     elif prefs['AGENT'] == 'TERMINAL':
         with open(launch_file, 'w') as launch_file_open:
             launch_file_open.write('#!/bin/bash\n')
             if prefs['VENV']:
                 launch_file_open.write("source " + os.path.join(prefs['VENV'], 'bin', 'activate')+'\n')
-            launch_file_open.write("python3 -m autopilot.core.terminal -f " + str(prefs_fn) + "\n")
+            launch_file_open.write("python3 -m autopilot.agents.terminal -f " + str(prefs_fn) + "\n")
 
     os.chmod(launch_file, permissions)
     return launch_file

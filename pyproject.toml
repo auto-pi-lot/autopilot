@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "auto-pi-lot"
-version = "0.4.5"
+version = "0.5.0a1"
 description = "Distributed behavioral experiments"
 authors = ["Jonny Saunders <j@nny.fyi>"]
 license = "MPL-2.0"
@@ -74,6 +74,8 @@ importlib-metadata = {version = "^4.9.0", python = "<3.8"}
 typing-extensions = {version = "^4.1.1", python = "<3.8"}
 pip = {version = "^21.0.0", python="<3.8"}
 datajoint-babel = {version="^0.1.9", optional = true}
+autodoc_pydantic = {version="^1.7.0", optional=true}
+myst_parser = {version="^0.17.2", optional = true}
 
 [tool.poetry.dev-dependencies]
 sphinx-autobuild = "^2021.3.14"
@@ -83,7 +85,7 @@ pilot = ["pigpio", "JACK-Client"]
 terminal = ["pyqtgraph", "PySide2"]
 docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex",
         "scikit-learn", "altair", "bokeh", "colorcet", "sphinx-rtd-theme", "sphinx-sass", "pytest", "rich",
-        "PySide2", "pyqtgraph"]
+        "PySide2", "pyqtgraph", "autodoc_pydantic", "myst_parser"]
 tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio", "PySide2", "pyqtgraph", "rich"]
 plotting = ["altair", "bokeh", "colorcet"]
 datajoint = ["datajoint-babel"]

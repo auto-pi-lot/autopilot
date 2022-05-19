@@ -35,11 +35,10 @@ import typing
 import warnings
 import json
 from pathlib import Path
-import importlib
 
 from autopilot import prefs
 from autopilot.networking import Net_Node
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 from autopilot.utils.common import NumpyEncoder, NumpyDecoder
 
 # FIXME: Hardcoding names of metaclasses, should have some better system of denoting which classes can be instantiated

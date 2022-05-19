@@ -21,7 +21,7 @@ Autopilot performs experiments by distributing them over a network of desktop co
 Each Computer or Pi runs an Autopilot **agent**, like the user-facing :class:`~.Terminal` or a Raspberry Pi
 :class:`~.Pilot` .
 
-The :class:`.Terminal` agent provides a :mod:`~.core.gui` to operate the system, manage :class:`~.subject.Subject` s and
+The :class:`.Terminal` agent provides a :mod:`~autopilot.gui` to operate the system, manage :class:`~.subject.Subject` s and
 experimental protocols, and :mod:`~.core.plots` for visualizing data from ongoing experiments.
 
 Each :class:`.Terminal` manages a swarm of :class:`.Pilot` s that actually perform the experiments. Each :class:`.Pilot`
@@ -48,28 +48,37 @@ Multiple Tasks can be combined to make **protocols**, in which subjects move bet
 :mod:`.graduation` criteria like accuracy or number of trials. Protocols can thus be used to automate shaping routines
 that introduce a subject to the experimental apparatus and task structure.
 
-For more details on tasks, see :ref:`guide_task`
-
-
+For more details on tasks, see the guide for :ref:`writing tasks <guide_task>`
 
 Module Tour
 ===============================
 
-.. todo::
+Autopilot is intended to be used as a toolkit where you can pick and choose which parts of it you want to use for
+your experiments. Most of the documentation is thus contained in the API-level documentation, though we attempt to
+keep that as friendly and readable as we can.
 
-    A more comprehensive overview is forthcoming, but the documentation for the most important modules can be found in the
-    API documentation. A short tour for now...
-
-* :class:`.Terminal` - user facing agent class used to control and configure program operation. See
-  :ref:`setup_terminal` and :mod:`.setup.setup_terminal`
-* :mod:`.gui` - GUI classes built with PySide2/Qt5 used by the terminal
-* :mod:`.plots` - Classes to plot data from ongoing tasks
+* :class:`.Terminal` - user facing agent class used to control and configure program operation.
 * :mod:`.pilot` - Experimental agent that runs tasks on Raspberry Pis
+* :mod:`.data` - Data modeling, storage, and interfaces to external formats
+* :mod:`~autopilot.gui` - GUI classes built with PySide2/Qt5 used by the terminal. Plots, menus, and widgets!
+* :mod:`.hardware` - Hardware objects that can be used both independently and as part of Tasks
 * :mod:`.networking` - Networking modules used for communication between agents, tasks, and hardware objects
-* :mod:`.subject` - Data and metadata storage
-* :mod:`.hardware` - Hardware objects that can be used in tasks
-* :mod:`.tasks` - Customizable and extendable Task templates
+* :mod:`.setup` - Setting up and configuring Autopilot and the system it runs on
 * :mod:`.stim` - Stimulus generation & presentation, of which sound is currently the most heavily developed
+* :mod:`.tasks` - Tasks implement experimental logic, coordinating hardware and data to perform an experiment!
+* :mod:`.transform` - Composable data transformations, for analyzing or converting data on the fly for use within a task,
+  as well as implementations of common algorithms and procedures used in experiments.
+* :mod:`.utils` - Utility functions, most of which are either basic functions used everywhere, or modules that are placeholders
+  until they can split off into their own more formal organization
+
+    * :mod:`.utils.common` - Common operations used across multiple modules
+    * :mod:`.utils.decorators` - Decorators and mixins that augment the functionality of other Autopilot Objects
+    * :mod:`.utils.hydration` - Utilities for making serializable versions of autopilot objects that can be recreated in other processes/agents
+    * :mod:`.utils.log_parsers` - Tools to analyze logs, load them into memory to be able to extract information for better debugging
+    * :mod:`.utils.loggers` - The main logging facility used by nearly all autopilot objects to coordinate stdout and logs written to disk
+    * :mod:`.utils.plugins` - Functions for loading plugins
+    * :mod:`.utils.registry` - the :func:`autopilot.get` functions that return autopilot objects from both the main library and plugins
+    * :mod:`.utils.wiki` - Tools to integrate the `Autopilot Wiki <https://wiki.auto-pi-lot.com>`_ with the software
 
 .. raw:: html
    :file: ../includes/module_map.html

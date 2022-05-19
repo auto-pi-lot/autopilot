@@ -4,15 +4,13 @@ Utility functions for handling plugins, eg. importing, downloading, listing, con
 import sys
 import inspect
 import importlib
-from typing import Union, Optional
+from typing import Optional
 from pathlib import Path
 from multiprocessing import Value
 from ctypes import c_bool
 from collections import OrderedDict as odict
 
-import requests
-
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 from autopilot import prefs
 from autopilot.utils import wiki
 

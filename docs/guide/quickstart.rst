@@ -16,7 +16,7 @@ Minimal Installation
 Say you have a Raspberry Pi with `Raspbian installed <https://www.raspberrypi.org/documentation/installation/installing-images/README.md>`_ .
 Install autopilot and its basic system dependencies & configuration like this::
 
-    pip3 install auto-pi-lot
+    pip3 install auto-pi-lot[pilot]
     python3 -m autopilot.setup.run_script env_pilot pigpiod
 
 Blink an LED

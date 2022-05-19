@@ -1,6 +1,6 @@
 from PySide2 import QtWidgets
 
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 from autopilot.utils import registry, plugins
 
 

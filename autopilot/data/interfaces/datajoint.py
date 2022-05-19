@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from datajoint_babel.constants import DATATYPES, TIERS
 from datajoint_babel.model.attribute import Attribute, DJ_Type, Comment
 from datajoint_babel.model.table import Table as DJTable
-from autopilot.data.interfaces.base import Interface_Mapset, Interface_Map, _resolve_type
+from autopilot.data.interfaces.base import Interface_Mapset, Interface_Map, resolve_type
 from autopilot.exceptions import InterfaceError
 
 if typing.TYPE_CHECKING:
@@ -63,7 +63,7 @@ def model_to_datajoint(table: typing.Type['Table'], tier: TIERS='Manual' ) -> DJ
             type_str = table.schema()['properties'][key]['datajoint']['datatype']
             dj_type = DJ_Type(datatype=type_str, **dj_kwargs.get('kwargs', {}))
         else:
-            type_ = _resolve_type(field.type_)
+            type_ = resolve_type(field.type_)
             type_str = type_.__name__
             dj_type = Datajoint_Mapset.get(type_str, kwargs=dj_kwargs.get('kwargs', {}))
 

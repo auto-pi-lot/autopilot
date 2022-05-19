@@ -1,5 +1,4 @@
 import json
-import os
 import typing
 
 from PySide2 import QtWidgets, QtCore
@@ -8,7 +7,7 @@ from autopilot import prefs
 from autopilot.gui import styles
 from autopilot.gui.gui import gui_event
 from autopilot.gui.widgets.subject import New_Subject_Wizard
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 from autopilot.data.subject import Subject
 
 
@@ -17,16 +16,16 @@ class Control_Panel(QtWidgets.QWidget):
 
     Args:
         subjects (dict): See :py:attr:`.Control_Panel.subjects`
-        start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): the Terminal's
-            toggle_start function, propagated down to each :class:`~core.gui.Pilot_Button`
+        start_fn (:py:meth:`~autopilot.agents.terminal.Terminal.toggle_start`): the Terminal's
+            toggle_start function, propagated down to each :class:`~.Pilot_Button`
         pilots: Usually the Terminal's :py:attr:`~.Terminal.pilots` dict. If not passed,
             will try to load :py:attr:`.params.PILOT_DB`
 
     Attributes:
         subjects (dict): A dictionary with subject ID's as keys and
-                :class:`core.subject.Subject` objects as values. Shared with the
+                :class:`data.subject.Subject` objects as values. Shared with the
                 Terminal object to manage access conflicts.
-        start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): See :py:attr:`.Control_Panel.start_fn`
+        start_fn (:py:meth:`~autopilot.agents.terminal.Terminal.toggle_start`): See :py:attr:`.Control_Panel.start_fn`
         pilots (dict): A dictionary with pilot ID's as keys and nested dictionaries
                     containing subjects, IP, etc. as values
         subject_lists (dict): A dict mapping subject ID to :py:class:`.subject_List`
@@ -267,7 +266,7 @@ class Pilot_Panel(QtWidgets.QWidget):
     Args:
         pilot (str): The name of the pilot this panel controls
         subject_list (:py:class:`.Subject_List`): The :py:class:`.Subject_List` we control
-        start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): Passed by :class:`Control_Panel`
+        start_fn (:py:meth:`~autopilot.agents.terminal.Terminal.toggle_start`): Passed by :class:`Control_Panel`
         create_fn (:py:meth:`Control_Panel.create_subject`): Passed by :class:`Control_Panel`
 
     Attributes:
@@ -362,7 +361,7 @@ class Pilot_Button(QtWidgets.QPushButton):
             pilot (str): The ID of the pilot that this button controls
             subject_list (:py:class:`.Subject_List`): The Subject list used to determine which
                 subject is starting/stopping
-            start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): The final
+            start_fn (:py:meth:`~autopilot.agents.terminal.Terminal.toggle_start`): The final
                 resting place of the toggle_start method
 
         Attributes:

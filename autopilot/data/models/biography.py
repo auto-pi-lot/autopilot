@@ -60,7 +60,7 @@ class Genotype(Data):
 
     """
     strain: Optional[str] = Field(None, description="The strain or background line of this subject, if any")
-    genes: Optional[typing.List[Gene]] = Field(None, description="A list of any transgenes that this animal has")
+    genes: Optional[Union[List[Gene], Gene]] = Field(None, description="A list of any transgenes that this animal has")
 
 
 class Baselines(Data):
@@ -69,8 +69,8 @@ class Baselines(Data):
     will be integrated with a TrialManager class to titrate trials to ensure experimental
     subjects remain healthy.
     """
-    mass: typing.Optional[Mass] = Field(None, description="Mass (grams) of the animal before any experimental manipulation")
-    minimum_pct: typing.Optional[float] = Field(None, description="The proportion of the baseline mass that the animal is not allowed to fall under")
+    mass: Optional[Mass] = Field(None, description="Mass (grams) of the animal before any experimental manipulation")
+    minimum_pct: Optional[float] = Field(None, description="The proportion of the baseline mass that the animal is not allowed to fall under")
 
     @property
     def minimum_mass(self) -> float:

@@ -12,7 +12,7 @@ from PySide2 import QtWidgets, QtGui
 from autopilot import prefs
 from autopilot.gui.gui import gui_event
 from autopilot.networking import Net_Node
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 
 
 class Bandwidth_Test(QtWidgets.QDialog):

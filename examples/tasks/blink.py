@@ -153,7 +153,7 @@ class Blink(Task):
         We set the stage block and never clear it so that the :class:`.Pilot` doesn't wait for a trigger 
         to call the next stage -- it just does it as soon as the previous one completes. 
         
-        See :meth:`~autopilot.core.pilot.Pilot.run_task` for more detail on this loop.
+        See :meth:`~autopilot.agents.pilot.Pilot.run_task` for more detail on this loop.
         """
 
 

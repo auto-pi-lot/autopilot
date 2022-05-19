@@ -1,7 +1,7 @@
 """
 Utility functions to parse logging files, extracting data, separating by ID, etc.
 
-See also :mod:`autopilot.core.loggers` and the :class:`autopilot.core.loggers.Log` class
+See also :mod:`autopilot.utils.loggers` and the :class:`autopilot.utils.loggers.Log` class
 """
 
 import typing
@@ -9,10 +9,9 @@ from pathlib import Path
 from ast import literal_eval
 import json
 
-from parse import parse
 import pandas as pd
 
-from autopilot.core.loggers import MESSAGE_FORMATS, Log
+from autopilot.utils.loggers import Log
 
 class Data_Extract(typing.TypedDict):
     header: dict

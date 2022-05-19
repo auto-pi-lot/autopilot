@@ -1,12 +1,11 @@
-import datetime
 import json
 import os
 
-from PySide2 import QtWidgets, QtGui
+from PySide2 import QtWidgets
 from autopilot import prefs
 from autopilot.data.models.biography import Biography
 from autopilot.gui.widgets.model import Model_Filler
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 
 
 class New_Subject_Wizard(QtWidgets.QDialog):

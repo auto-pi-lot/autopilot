@@ -1,11 +1,13 @@
+import pdb
 from abc import abstractmethod
 import typing
 from datetime import datetime
 from typing import Union, Type, Optional
 
 from autopilot.root import Autopilot_Type
-from autopilot.data.modeling.base import Schema, Group, Node
+from autopilot.data.modeling.base import Schema
 from pydantic import Field
+
 
 class Interface_Map(Autopilot_Type):
     """
@@ -70,6 +72,7 @@ class Interface_Mapset(Autopilot_Type):
 
 
 
+
 class Interface(Autopilot_Type):
     """
     Create a representation of a given Schema
@@ -87,7 +90,7 @@ class Interface(Autopilot_Type):
         """
 
 
-def _resolve_type(type_, resolve_literal=False) -> typing.Type:
+def resolve_type(type_, resolve_literal=False) -> typing.Type:
     """
     Get the "inner" type of a model field, sans Optionals and Unions and the like
 
@@ -100,11 +103,21 @@ def _resolve_type(type_, resolve_literal=False) -> typing.Type:
 
     if getattr(type_, '__origin__', False) is typing.Literal:
         subtypes = [type(t) for t in type_.__args__ if type(t) in _permissiveness.keys()]
+    elif getattr(type_, '__origin__', False) is typing.Union:
+        subtypes = [resolve_type(t) for t in type_.__args__]
     else:
+        # # check if this is just a list of a data type
+        # if len(type_.__args__) == 1 and isinstance(type_.__args__[0], ModelMetaclass):
+        #     # list of a model type!
+        #     return type_.__args__[0]
         subtypes = [t for t in type_.__args__ if t in _permissiveness.keys()]
 
     if len(subtypes) == 0:
+        pdb.set_trace()
         raise ValueError(f'Dont know how to resolve type {type_}')
+    # elif any([isinstance(t, ModelMetaclass) for t in subtypes]):
+    #     subtypes = [t for t in subtypes if isinstance(t, ModelMetaclass)]
+    #     return subtypes[0]
 
     # sort by permissiveness
     types = [(t, _permissiveness[t]) for t in subtypes]
@@ -113,6 +126,7 @@ def _resolve_type(type_, resolve_literal=False) -> typing.Type:
 
 
 _permissiveness = {
+    type(None):-1,
     bool:0,
     int:1,
     float:2,

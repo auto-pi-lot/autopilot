@@ -1,4 +1,3 @@
-import queue
 import threading
 import time
 import typing
@@ -13,7 +12,7 @@ from tornado.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 
 from autopilot import prefs
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 from autopilot.networking.message import Message
 
 

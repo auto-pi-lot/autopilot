@@ -22,16 +22,16 @@ The rest of this docstring addresses the workaround used to short-circuit
 jackd and JackClient.
 
 Here is the sequence of events that leads to FS and BLOCKSIZE.
-* If an autopilot.core.pilot.Pilot is initialized:
-**  autopilot.core.pilot.Pilot.__init__ checks prefs.AUDIOSERVER,
-    and calls autopilot.core.pilot.Pilot.init_audio.
-**  autopilot.core.pilot.Pilot.init_audio calls 
+* If an autopilot.agents.pilot.Pilot is initialized:
+**  autopilot.agents.pilot.Pilot.__init__ checks prefs.AUDIOSERVER,
+    and calls autopilot.agents.pilot.Pilot.init_audio.
+**  autopilot.agents.pilot.Pilot.init_audio calls
     autopilot.external.__init__.start_jackd.
 **  autopilot.external.__init__.start_jackd takes the JACKDSTRING pref 
     and replaces the token '-rfs' in it with the FS pref. The jackd
     process is launched and stored in autopilot.external.JACKD_PROCESS.
     That process may fail or not, we continue anyway.
-**  Next, autopilot.core.pilot.Pilot.init_audio instantiates an
+**  Next, autopilot.agents.pilot.Pilot.init_audio instantiates an
     autopilot.stim.sound.jackclient.JackClient()
 **  autopilot.stim.sound.jackclient.JackClient.__init__ 
     initalizes a jack.Client

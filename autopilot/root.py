@@ -36,7 +36,7 @@ class Autopilot_Type(BaseModel):
 
 
     def _init_logger(self):
-        from autopilot.core.loggers import init_logger
+        from autopilot.utils.loggers import init_logger
         self._logger = init_logger(self)
 
     def __str__(self):
@@ -67,5 +67,5 @@ class Autopilot_Object(ABC):
         self.logger = self._init_logger()
 
     def _init_logger(self) -> Logger:
-        from autopilot.core.loggers import init_logger
+        from autopilot.utils.loggers import init_logger
         return init_logger(self)

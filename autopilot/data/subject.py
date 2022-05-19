@@ -25,7 +25,7 @@ from autopilot.data.modeling.base import Table
 from autopilot.data.models.subject import Subject_Structure, Protocol_Status, Hashes, History, Weights
 from autopilot.data.models.biography import Biography
 from autopilot.data.models.protocol import Protocol_Group
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 
 if typing.TYPE_CHECKING:
     from autopilot.tasks.graduation import Graduation

@@ -52,9 +52,9 @@ copyright = u'2019, Jonny Saunders'
 author = u'Jonny Saunders'
 
 # The short X.Y version
-version = u'0.3'
+version = '0.5'
 # The full version, including alpha/beta/rc tags
-release = u'0.3.0'
+release = '0.5.0a1'
 
 
 # -- General configuration ---------------------------------------------------
@@ -89,7 +89,9 @@ extensions = [
     #'localext.fulltoc'
     'sphinx_sass',
     'local_directives',
-    'sphinxcontrib.bibtex'
+    'sphinxcontrib.bibtex',
+    'sphinxcontrib.autodoc_pydantic',
+    'myst_parser'
 ]
 
 if try_theme == 'rtd':
@@ -134,6 +136,17 @@ add_module_names = False
 templates_path = ['_templates']
 
 autosummary_generate = True
+
+# --------------------------------------------------
+# pydantic_autodoc
+# --------------------------------------------------
+autodoc_pydantic_field_doc_policy = "both"
+
+
+
+# --------------------------------------------------
+# standard sphinx options
+# --------------------------------------------------
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -180,7 +193,6 @@ html_favicon = '_images/favicon.svg'
 #
 if html_theme == 'sphinx_rtd_theme':
     html_theme_options = {
-        'canonical_url': 'https://docs.auto-pi-lot.com',
         'collapse_navigation': False # keep expanding toc
     }
 
@@ -284,7 +296,7 @@ epub_exclude_files = ['search.html']
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
-                       'PySide2': ('https://doc.qt.io/qtforpython/PySide2/', None),
+                       'PySide2': ('https://doc.qt.io/qtforpython-5/', None),
                        'tables': ('https://pytables.readthedocs.io/en/latest/', None),
                        'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
                        'zmq': ('https://pyzmq.readthedocs.io/en/latest/', None),
@@ -293,7 +305,7 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
                        'numpy': ('https://numpy.readthedocs.io/en/latest/', None),
                        'npyscreen': ('https://npyscreen.readthedocs.io/', None),
                        'jack': ('https://jackclient-python.readthedocs.io/en/0.4.5/', None),
-                       'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+                       'scipy': (' https://docs.scipy.org/doc/scipy/', None),
                        'picamera': ('https://picamera.readthedocs.io/en/release-1.13/', None)}
 
 # -- Options for todo extension ----------------------------------------------

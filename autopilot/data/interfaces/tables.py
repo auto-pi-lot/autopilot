@@ -12,7 +12,7 @@ from datetime import datetime
 import tables
 
 from autopilot import Autopilot_Type
-from autopilot.data.interfaces.base import Interface_Mapset, Interface_Map, Interface, _resolve_type, _NUMPY_TO_BUILTIN
+from autopilot.data.interfaces.base import Interface_Mapset, Interface_Map, Interface, resolve_type, _NUMPY_TO_BUILTIN
 
 if typing.TYPE_CHECKING:
     from autopilot.data.modeling.base import Table
@@ -217,7 +217,7 @@ class Tables_Interface(Interface):
         pass
 
 
-def model_to_table(table: typing.Type['Table']) -> typing.Type[tables.IsDescription]:
+def model_to_description(table: typing.Type['Table']) -> typing.Type[tables.IsDescription]:
     """
     Make a table description from the type annotations in a model
 
@@ -230,7 +230,7 @@ def model_to_table(table: typing.Type['Table']) -> typing.Type[tables.IsDescript
     # get column descriptions
     cols = {}
     for key, field in table.__fields__.items():
-        type_ = _resolve_type(field.type_, resolve_literal=True)
+        type_ = resolve_type(field.type_, resolve_literal=True)
         type_str = type_.__name__
         cols[key] = Tables_Mapset.get(type_str)
 
@@ -245,7 +245,7 @@ see https://numpy.org/doc/stable/reference/generated/numpy.dtype.kind.html#numpy
 
 """
 
-def table_to_model(description: typing.Type[tables.IsDescription], cls:typing.Type['Table']) -> 'Table':
+def description_to_model(description: typing.Type[tables.IsDescription], cls:typing.Type['Table']) -> 'Table':
     """
     Make a pydantic :class:`.modeling.base.Table` from a :class:`tables.IsDescription`
 

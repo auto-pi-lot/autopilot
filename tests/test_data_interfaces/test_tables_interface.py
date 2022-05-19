@@ -13,7 +13,8 @@ from datetime import datetime
 import tables
 
 from autopilot.data.modeling.base import Table
-from autopilot.data.interfaces.tables import model_to_table, table_to_model
+from autopilot.data.interfaces.tables import model_to_description, description_to_model
+from autopilot.data.interfaces.base import resolve_type
 from autopilot.data.models.protocol import Protocol_Group
 from ..fixtures import dummy_protocol
 
@@ -49,7 +50,7 @@ def test_model_to_table():
     Test that a data model can create a pytables description
     """
 
-    table_converted = model_to_table(TEST_TABLE)
+    table_converted = model_to_description(TEST_TABLE)
 
     assert table_converted.columns == TEST_DESCRIPTION.columns
 
@@ -67,11 +68,11 @@ def _compare_fields(tab1, tab2):
     for key, field in t1fields.items():
         if key in skipfields:
             continue
-        assert field.type_ == t2fields[key].type_
+        assert resolve_type(field.type_) == t2fields[key].type_
 
 def test_table_to_model():
     """Test making a TrialTable from a pytables description"""
-    model = table_to_model(TEST_DESCRIPTION, Table)
+    model = description_to_model(TEST_DESCRIPTION, Table)
     _compare_fields(model, TEST_TABLE)
 
     method_converted = Table.from_pytables_description(TEST_DESCRIPTION)

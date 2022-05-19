@@ -1,12 +1,11 @@
 import pytest
-import pdb
 import inspect
 
 import logging
 
 import autopilot
 from autopilot.utils import registry
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 from autopilot.hardware import Hardware
 from autopilot.hardware.gpio import GPIO
 

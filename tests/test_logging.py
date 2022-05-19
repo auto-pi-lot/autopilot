@@ -1,5 +1,5 @@
 import pytest
-from autopilot.core.loggers import LOG_FORMATS, LogEntry, Log
+from autopilot.utils.loggers import LOG_FORMATS, LogEntry, Log
 from pathlib import Path
 
 @pytest.mark.parametrize('format', LOG_FORMATS)

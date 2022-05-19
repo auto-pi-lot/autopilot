@@ -1,7 +1,7 @@
 core
 ===================
 
-.. automodule:: autopilot.core
+.. automodule:: autopilot.agents
     :members:
     :undoc-members:
     :show-inheritance:
@@ -10,7 +10,7 @@ core
 .. toctree::
    :maxdepth: 10
 
-   loggers
+   base
    pilot
    terminal
 

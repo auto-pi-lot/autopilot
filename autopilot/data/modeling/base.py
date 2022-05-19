@@ -2,6 +2,7 @@
 Base classes for data models -- the ``Data`` class itself.
 """
 import typing
+from datetime import datetime
 from typing import Optional, List
 import pandas as pd
 
@@ -54,16 +55,16 @@ class Table(Data):
         """
         Convert the fields of this table to a pytables description
         """
-        from autopilot.data.interfaces.tables import model_to_table
-        return model_to_table(cls)
+        from autopilot.data.interfaces.tables import model_to_description
+        return model_to_description(cls)
 
     @classmethod
     def from_pytables_description(cls, description:typing.Type[tables.IsDescription]) -> 'Table':
         """
         Create an instance of a table from a pytables description
         """
-        from autopilot.data.interfaces.tables import table_to_model
-        return table_to_model(description, cls)
+        from autopilot.data.interfaces.tables import description_to_model
+        return description_to_model(description, cls)
 
     def to_df(self) -> pd.DataFrame:
         """
@@ -106,3 +107,11 @@ class Node(Autopilot_Type):
     """
     args: Optional[list] = None
     kwargs: Optional[dict] = None
+
+
+BASE_TYPES = (
+    bool, int, float, str, bytes, datetime
+)
+"""
+Base Python types that should be suppported by every interface
+"""

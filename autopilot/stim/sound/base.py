@@ -15,7 +15,7 @@ import numpy as np
 
 from autopilot import prefs
 from autopilot import dehydrate
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 from autopilot.utils.requires import Requirements, Python_Package
 from autopilot.stim.stim import Stim
 from autopilot.utils.decorators import Introspect

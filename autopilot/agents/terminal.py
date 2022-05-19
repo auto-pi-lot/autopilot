@@ -51,10 +51,7 @@ from autopilot.gui.menus.tools import Calibrate_Water, Reassign, Weights
 from autopilot.gui.menus.tests import Bandwidth_Test
 from autopilot.gui.menus.file import Protocol_Wizard
 from autopilot.gui.widgets.terminal import Control_Panel
-from autopilot.gui.widgets.subject import New_Subject_Wizard
-from autopilot.core.loggers import init_logger
-from autopilot.gui.widgets.model import Model_Filler_Dialogue
-from autopilot.data.models.biography import Biography
+from autopilot.utils.loggers import init_logger
 
 # Try to import viz, but continue if that doesn't work
 IMPORTED_VIZ = False
@@ -70,7 +67,7 @@ _TERMINAL = None
 class Terminal(QtWidgets.QMainWindow):
     """
     Central host to a swarm of :class:`.Pilot` s and user-facing
-    :mod:`~.core.gui` objects.
+    :mod:`.gui` objects.
 
     Called as a module with the -f flag to give the location of a prefs file, eg::
 
@@ -98,6 +95,11 @@ class Terminal(QtWidgets.QMainWindow):
 
         See :mod:`autopilot.prefs` for full list of prefs needed by terminal!
 
+    .. note::
+
+        The Terminal class is currently a subclass of :class:`PySide2.QtWidgets.QMainWindow` -- it will be refactored to
+        inherit from :class:`~autopilot.agents.base.Agent` as the agent system is formalized.
+
     Attributes:
         node (:class:`~.networking.Net_Node`): Our Net_Node we use to communicate with our main networking object
         networking (:class:`~.networking.Terminal_Station`): Our networking object to communicate with the outside world
@@ -112,7 +114,6 @@ class Terminal(QtWidgets.QMainWindow):
     """
 
     def __init__(self, warn_defaults=True):
-        # type: () -> None
         super(Terminal, self).__init__()
 
         if warn_defaults:

@@ -49,17 +49,20 @@ This documentation is very young and is very much a work in progress! Please `su
    Overview <guide/overview>
    Quickstart <guide/quickstart>
    Installation <guide/installation>
+   Configuration <guide/configuration>
+   The User Directory <guide/userdir>
    Training a Subject <guide/training>
    Writing a Task <guide/task>
    Writing a Hardware Class <guide/hardware>
    Using Plugins <guide/plugins>
    Examples <examples>
+   FAQ <guide/faq>
 
 .. toctree::
    :maxdepth: 1
    :caption: API Documentation:
 
-   Core Modules <core/index>
+   Agents <agents/index>
    Data <data/index>
    GUI <gui/index>
    Hardware <hardware/index>
@@ -67,7 +70,6 @@ This documentation is very young and is very much a work in progress! Please `su
    Stimuli <stim/index>
    Tasks <tasks/index>
    Transformations <transform/index>
-   Visualization Tools <viz/index>
    Utilities <utils/index>
    Setup <setup/index>
    Prefs <prefs>

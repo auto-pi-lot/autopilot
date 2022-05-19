@@ -3,10 +3,11 @@
 
 # You can set these variables from the command line.
 SPHINXOPTS      = -E
+AUTOBUILDOPTS   = -j auto
 SPHINXBUILD     = python -m sphinx
 SOURCEDIR       = ./
 BUILDDIR        = build
-AUTOBUILDDIR    = ./
+AUTOBUILDDIR    = build
 SPHINXAUTOBUILD = sphinx-autobuild
 
 export PYTHONPATH=${PWD}/../
@@ -16,22 +17,10 @@ export PYTHONPATH=${PWD}/../
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-.PHONY: help Makefile
 
 serve:
-	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-# 	@$(SPHINXAUTOBUILD) -b html "$(SOURCEDIR)" "$(AUTOBUILDDIR)" $(SPHINXOPTS) --watch source/changelog --open-browser --delay 1 $(O)
-	#rsync -av $(BUILDDIR)/html/* ./ --remove-source-files
-	# open up the simple node http-server
-	http-server
-	# open firefox
-	#UNAME_S := $(shell uname -s)
-	#ifeq ($(UNAME_S),Linux)
-    #		/usr/bin/firefox http://127.0.0.1:8080#
-	#endif
-	#ifeq ($(UNAME_S),Darwin)
-	#	open -a firefox -g http://127.0.0.1:8080
-	#endif
+	sphinx-autobuild -b html "$(SOURCEDIR)" "$(AUTOBUILDDIR)" $(AUTOBUILDOPTS) --open-browser --delay 1 $(O)
+
 
 buildapi:
 	sphinx-apidoc -e -M -d 5 -o source/rst/ ../autopilot/

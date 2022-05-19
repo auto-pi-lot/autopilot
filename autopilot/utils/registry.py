@@ -6,7 +6,6 @@ using the ``get`` methods in this module. This makes it possible for plugins to
 be integrated across the system.
 
 """
-import pdb
 from enum import Enum
 import multiprocessing as mp
 from typing import TYPE_CHECKING, Union, Optional, List, Type
@@ -16,7 +15,7 @@ import inspect
 from autopilot.utils.common import find_class, recurse_subclasses, list_classes
 from autopilot.utils.plugins import import_plugins, _IMPORTED
 from autopilot import prefs
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 if TYPE_CHECKING:
     from autopilot.hardware import Hardware
     from autopilot.tasks import Task

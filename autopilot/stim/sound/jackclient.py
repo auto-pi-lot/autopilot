@@ -8,7 +8,6 @@ Client that dumps samples directly to the jack client with the :mod:`jack` packa
 
 """
 import typing
-from itertools import cycle
 import multiprocessing as mp
 import queue as queue
 import numpy as np
@@ -19,13 +18,12 @@ from threading import Thread
 from collections import deque
 import gc
 if typing.TYPE_CHECKING:
-    from autopilot.stim.sound.base import Jack_Sound
+    pass
 
 
 # importing configures environment variables necessary for importing jack-client module below
 import autopilot
-from autopilot import external
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 
 try:
     import jack

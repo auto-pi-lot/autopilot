@@ -7,7 +7,7 @@ from PySide2 import QtCore, QtWidgets
 
 import autopilot
 from autopilot import prefs
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 from autopilot.gui.plots.video import Video
 from autopilot.gui.plots.info import Timer
 from autopilot.gui.plots.geom import Roll_Mean, HLine, PLOT_LIST

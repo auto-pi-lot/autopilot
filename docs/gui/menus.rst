@@ -33,7 +33,7 @@ plugins
 swarm
 ------
 
-.. automodule:: autopilot.gui.swarm
+.. automodule:: autopilot.gui.menus.swarm
     :members:
     :undoc-members:
     :show-inheritance:

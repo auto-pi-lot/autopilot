@@ -3,7 +3,6 @@ Object that implement Graduation criteria to move between
 different tasks in a protocol.
 """
 
-from autopilot.core.loggers import init_logger
 from abc import abstractmethod
 from autopilot.root import Autopilot_Object
 from collections import deque

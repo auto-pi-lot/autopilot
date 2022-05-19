@@ -8,7 +8,7 @@ import numpy as np
 from PySide2 import QtWidgets, QtGui
 
 from autopilot import prefs
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 from autopilot.gui.gui import gui_event
 from autopilot.networking import Net_Node
 

@@ -280,7 +280,56 @@ def walk_dicts(adict, keys:Optional[List]=None) -> tuple:
         else:
             yield k, v
 
+def flatten_dict(nested:dict, keys=(), skip=()) -> dict:
+    """
+    Flatten a nested dictionary to a dictionary with tuples of the nested keys
 
+    Similar to :func:`.walk_dicts`, excepts not a generator, and returns a flattened
+    dictionary rather than a series of tuples.
+
+    Examples:
+        ::
+
+            nested_dict = {
+                'a': 1,
+                'b': {
+                    'c': 2,
+                    'd': {
+                        'e': 3
+                    },
+                'f': 4
+                }
+            }
+            flatten_dict(nested_dict)
+            {
+                ('a',): 1,
+                ('b', 'c'): 2,
+                ('b', 'd', 'e'): 3,
+                ('b', 'f'): 4
+            }
+
+
+    Args:
+        nested (dict): A nested dictionary
+        keys (tuple): A tuple of keys used in the recursive function to create the returned key
+        skip (tuple[str]): Tuple of keys to skip flattening
+
+    Returns:
+        dict: A flattened dictionary
+
+    """
+    flat = {}
+    if isinstance(nested, dict):
+        for key, value in nested.items():
+            if key in skip:
+                if not isinstance(key, tuple):
+                    key = (key,)
+                flat.update({key:value})
+            else:
+                flat.update(flatten_dict(value, keys + (key,), skip))
+        return flat
+    else:
+        return {keys:nested}
 
 class NumpyEncoder(json.JSONEncoder):
     """
