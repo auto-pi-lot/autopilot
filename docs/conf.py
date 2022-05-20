@@ -295,18 +295,21 @@ epub_exclude_files = ['search.html']
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
-                       'PySide2': ('https://doc.qt.io/qtforpython-5/', None),
-                       'tables': ('https://pytables.readthedocs.io/en/latest/', None),
-                       'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
-                       'zmq': ('https://pyzmq.readthedocs.io/en/latest/', None),
-                       'tornado': ('https://www.tornadoweb.org/en/stable/', None),
-                       'pyqtgraph': ('https://pyqtgraph.readthedocs.io/en/latest/', None),
-                       'numpy': ('https://numpy.readthedocs.io/en/latest/', None),
-                       'npyscreen': ('https://npyscreen.readthedocs.io/', None),
-                       'jack': ('https://jackclient-python.readthedocs.io/en/0.4.5/', None),
-                       'scipy': (' https://docs.scipy.org/doc/scipy/', None),
-                       'picamera': ('https://picamera.readthedocs.io/en/release-1.13/', None)}
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'PySide2': ('https://doc.qt.io/qtforpython-5/', None),
+    'tables': ('https://pytables.readthedocs.io/en/latest/', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
+    'zmq': ('https://pyzmq.readthedocs.io/en/latest/', None),
+    'tornado': ('https://www.tornadoweb.org/en/stable/', None),
+    'pyqtgraph': ('https://pyqtgraph.readthedocs.io/en/latest/', None),
+    'numpy': ('https://numpy.readthedocs.io/en/latest/', None),
+    'npyscreen': ('https://npyscreen.readthedocs.io/', None),
+    'jack': ('https://jackclient-python.readthedocs.io/en/0.4.5/', None),
+    'scipy': (' https://docs.scipy.org/doc/scipy/', None),
+    'picamera': ('https://picamera.readthedocs.io/en/release-1.13/', None),
+    'rich': ('https://rich.readthedocs.io/en/stable/', None)
+}
 
 # -- Options for todo extension ----------------------------------------------
 

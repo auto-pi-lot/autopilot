@@ -245,7 +245,7 @@ _DEFAULTS = odict({
     'LOGSIZE': {
         'type': 'int',
         "text": "Size of individual log file (in bytes)",
-        "default": 5 * (2 ** 20),  # 50MB
+        "default": 5 * (2 ** 20),  # 5MB
         "scope": Scopes.COMMON
     },
     'LOGNUM': {
