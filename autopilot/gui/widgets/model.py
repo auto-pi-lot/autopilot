@@ -2,14 +2,19 @@
 Widget to fill fields for a pydantic model
 """
 import typing
-from typing import Union, List, Optional, Tuple, Type, Dict
-from pydantic import BaseModel
+from typing import Union, List, Optional, Tuple, Type, Dict, ClassVar
+from abc import ABC, abstractmethod
+from pprint import pformat
+from datetime import datetime
+
+from ast import literal_eval
+
+from pydantic import BaseModel, Field, PrivateAttr
 from pydantic.fields import ModelField
 from pydantic.error_wrappers import ValidationError
 from pydantic.main import ModelMetaclass
-from pprint import pformat
-from PySide2 import QtWidgets
-from ast import literal_eval
+
+from PySide2 import QtWidgets, QtGui
 
 from autopilot.root import Autopilot_Type
 from autopilot.gui.dialog import pop_dialog
@@ -18,127 +23,190 @@ from autopilot.data.interfaces.base import resolve_type
 
 
 
-#
-# class _Input(ABC):
-#     """
-#     Container for holding a widget and any applicable validators
-#     """
-#     widget: typing.Type
-#     validator: Optional[typing.Type] = None
-#     args: Optional[list] = Field(default_factory=list)
-#     kwargs: Optional[dict] = Field(default_factory=dict)
-#     range: Optional[Tuple[Union[int, float], Union[int, float]]] = None
-#     method_calls: Optional[List[Tuple[str, typing.List]]] = None
-#     """
-#     Names of methods to call after instantiation, passed as a tuple of (method_name, [method_args])
-#     """
-#     permissiveness: int = 0
-#     """
-#     When a type is annotated with a Union, the more permissive (higher number)
-#     one will be chosen. Arbitrary units.
-#     """
-#     python_type: typing.Type
-#
-#     @classmethod
-#     def from_type(cls, type_:typing.Type) -> 'Input':
-#         # TODO: Use @overload to make from_types for all subtypes.
-#         # TODO2: No, actually just make a class attirbute with the return type
-#         # and return that????? https://stackoverflow.com/questions/58089300/python-how-to-override-type-hint-on-an-instance-attribute-in-a-subclass
-#         pass
-#
-#
-#     @abstractmethod
-#     def value(self) -> typing.Any:
-#
-#
-#     def make(self,
-#              widget_kwargs:Optional[dict]=None,
-#              validator_kwargs:Optional[dict]=None) -> QtWidgets.QWidget:
-#         if widget_kwargs is not None:
-#             kwargs = widget_kwargs
-#         else:
-#             kwargs = self.kwargs
-#
-#         if validator_kwargs is not None:
-#             v_kwargs = validator_kwargs
-#         else:
-#             v_kwargs = {}
-#
-#         widget = self.widget(*self.args, **kwargs)
-#         if self.validator:
-#             validator = self.validator(**v_kwargs)
-#             widget.setValidator(validator)
-#
-#         if self.method_calls is not None:
-#             for methname, meth_args in self.method_calls:
-#                 getattr(widget, methname)(*meth_args)
-#
-#         return widget
-#
-#
-#
-# _INPUT_MAP = {
-#     bool: _Input(
-#         widget=QtWidgets.QCheckBox,
-#         python_type=bool),
-#     int:  _Input(
-#         widget=QtWidgets.QLineEdit,
-#         validator=QtGui.QIntValidator,
-#         permissiveness=1,
-#         python_type=int),
-#     float: _Input(
-#         widget=QtWidgets.QLineEdit,
-#         validator=QtGui.QIntValidator,
-#         permissiveness=2,
-#         python_type=float),
-#     str: _Input(
-#         widget=QtWidgets.QLineEdit,
-#         permissiveness=3,
-#         python_type=str),
-#     datetime: _Input(
-#         widget=QtWidgets.QDateTimeEdit,
-#         method_calls=[('setCalendarPopup', [True])],
-#         python_type=datetime
-#     ),
-#     list: _Input(
-#         widget=QtWidgets.QLineEdit,
-#
-#     ),
-#     typing.Literal: _Input(widget=QtWidgets.QComboBox)
-# }
-#
-# class Model_Input(QtWidgets.QWidget):
-#     """
-#     GUI input method of a single attribute of a model
-#     """
-#
-#     INPUT_MAP = _INPUT_MAP
-#
-# class Model_Form(QtWidgets.QWidget):
-#     """
-#     Recursive collection of all inputs for a given model.
-#
-#     Each attribute that has a single input (eg. a single number, string, and so on)
-#     that can be resolved by :func:`~.interfaces.base.resolve_type` is represented
-#     by a :class:`.Model_Input`.
-#
-#     Otherwise, attributes that are themselves other models are recusursively added
-#     additional :class:`.Model_Form`s.
-#
-#     Each ``Model_Form`` has a few meta-options that correspond to special python types:
-#
-#     * :class:`typing.Optional` - :attr:`.Model_Form.optional` - The groupbox for the model has
-#       a checkbox. WHen it is unchecked, the model fields are inactive and it is returned by :meth:`.value` as ``None``.
-#       Cannot be used with a top-level model.
-#     * :class:`typing.List` - :attr:`.Model_Form.list` - The model can have additional versions
-#     """
-#
-#     def __init__(self):
-#
-#         self.optional = None
-#         self.parent = None
-#
-#
+
+class Input(BaseModel, ABC):
+    """
+    Metaclass to parametrically spawn a Qt Input widget for a given type.
+
+    Primarily for the purpose of making a unified widget creation and value retreival syntax within the :class:`ModelWidget` class
+    """
+    # class variables set by subtypes
+    widget: ClassVar[Type[QtWidgets.QWidget]]
+    """The widget that is made with the :meth:`.make` method"""
+    validator: ClassVar[Optional[Type[QtGui.QValidator]]] = None
+    """The validator applied to the input widget"""
+    method_calls: ClassVar[Optional[List[Tuple[str, typing.List]]]] = None
+    """Names of methods to call after instantiation, passed as a tuple of (method_name, [method_args])"""
+    python_type: Type
+    """The python type that this input provides interface for"""
+    permissiveness: ClassVar[int] = 0
+    """
+    When a type is annotated with a Union, the more permissive (higher number)
+    one will be chosen. Arbitrary units.
+    """
+
+    # Instance attributes
+    args: Optional[list] = Field(default_factory=list)
+    """Args to pass to the widget on creation"""
+    kwargs: Optional[dict] = Field(default_factory=dict)
+    """Kwargs to pass to the widget on creation"""
+    range: Optional[Tuple[Union[int, float], Union[int, float]]] = None
+    """Limit numerical types to a specific range"""
+
+    _widget: Optional[QtWidgets.QWidget] = PrivateAttr(None)
+    """After creation, keep track of this to be able to get """
+
+    @classmethod
+    def from_type(cls, type_:typing.Type) -> 'Input':
+        # TODO: Use @overload to make from_types for all subtypes.
+        # TODO2: No, actually just make a class attirbute with the return type
+        # and return that????? https://stackoverflow.com/questions/58089300/python-how-to-override-type-hint-on-an-instance-attribute-in-a-subclass
+        pass
+
+    @abstractmethod
+    def setValue(self, value:typing.Any):
+        """
+        Set a value in the created widget
+        """
+
+    @abstractmethod
+    def value(self) -> typing.Any:
+        """Retreive the value from the widget!"""
+
+    def make(self,
+             widget_kwargs:Optional[dict]=None,
+             validator_kwargs:Optional[dict]=None) -> QtWidgets.QWidget:
+        if widget_kwargs is not None:
+            kwargs = widget_kwargs
+        else:
+            kwargs = self.kwargs
+
+        if validator_kwargs is not None:
+            v_kwargs = validator_kwargs
+        else:
+            v_kwargs = {}
+
+        widget = self.widget(*self.args, **kwargs)
+        if self.validator:
+            validator = self.validator(**v_kwargs)
+            widget.setValidator(validator)
+
+        if self.method_calls is not None:
+            for methname, meth_args in self.method_calls:
+                getattr(widget, methname)(*meth_args)
+
+        return widget
+
+class BoolInput(Input):
+    widget = QtWidgets.QCheckBox
+    python_type = bool
+
+class IntInput(Input):
+    widget=QtWidgets.QLineEdit
+    validator = QtGui.QIntValidator,
+    permissiveness = 1,
+    python_type = int
+
+class FloatInput(Input):
+    widget = QtWidgets.QLineEdit,
+    validator = QtGui.QIntValidator,
+    permissiveness = 2,
+    python_type = float
+
+class StrInput(Input):
+    widget = QtWidgets.QLineEdit,
+    permissiveness = 3,
+    python_type = str
+
+class DatetimeInput(Input):
+    widget = QtWidgets.QDateTimeEdit,
+    method_calls = [('setCalendarPopup', [True])],
+    python_type = datetime
+
+class ListInput(Input):
+    widget = QtWidgets.QLineEdit
+    python_type = list
+
+class LiteralInput(Input):
+    widget = QtWidgets.QComboBox
+    python_type = typing.Literal
+
+_INPUT_MAP = {
+    bool: Input(
+        widget=QtWidgets.QCheckBox,
+        python_type=bool),
+    int:  Input(
+        widget=QtWidgets.QLineEdit,
+        validator=QtGui.QIntValidator,
+        permissiveness=1,
+        python_type=int),
+    float: Input(
+        widget=QtWidgets.QLineEdit,
+        validator=QtGui.QIntValidator,
+        permissiveness=2,
+        python_type=float),
+    str: Input(
+        widget=QtWidgets.QLineEdit,
+        permissiveness=3,
+        python_type=str),
+    datetime: Input(
+        widget=QtWidgets.QDateTimeEdit,
+        method_calls=[('setCalendarPopup', [True])],
+        python_type=datetime
+    ),
+    list: Input(
+        widget=QtWidgets.QLineEdit,
+
+    ),
+    typing.Literal: Input(widget=QtWidgets.QComboBox)
+}
+
+
+class ModelWidget(QtWidgets.QWidget):
+    """
+    Recursive collection of all inputs for a given model.
+
+    Each attribute that has a single input (eg. a single number, string, and so on)
+    that can be resolved by :func:`~.interfaces.base.resolve_type` is represented
+    by a :class:`.Model_Input`.
+
+    Otherwise, attributes that are themselves other models are recursively added
+    additional :class:`.ModelWidget`s.
+
+    Each ``ModelWidget`` has a few meta-options that correspond to special python types:
+
+    * :class:`typing.Optional` - :attr:`.Model_Form.optional` - The groupbox for the model has
+      a checkbox. WHen it is unchecked, the model fields are inactive and it is returned by :meth:`.value` as ``None``.
+      Cannot be used with a top-level model.
+    * :class:`typing.List` - :attr:`.Model_Form.list` - The widget can return multiple entries of itself in a list.
+    """
+
+    def __init__(self, model:Union[BaseModel, Type[BaseModel]],optional:bool=False, list:bool=False, parent=None):
+        """
+
+        Args:
+            model (:class:`pydantic.BaseModel`): The model to represent. Can either be a model class or an instantiated
+                model. If an instantiated model, the fields are filled with the current values.
+            optional:
+            list:
+            parent:
+        """
+
+        self.optional = False
+        self.parent = None
+        self.inputs: Dict[str, Input] = {}
+
+    def setValue(self, model):
+        """Set all values of the form given an instantiated.
+
+        To set values of individual inputs, use :meth:`Input.setValue`
+        """
+        pass
+
+    def value(self):
+        pass
+
+
 
 
 class Model_Filler(QtWidgets.QWidget):
