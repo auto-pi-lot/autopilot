@@ -10,5 +10,5 @@ GUI
 
     menus
     plots
-    widgets
+    widgets/index
     dialog

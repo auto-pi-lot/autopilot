@@ -10,12 +10,8 @@ from pydantic import BaseModel
 from pydantic.main import ModelMetaclass
 
 from autopilot.gui.widgets.model import ModelWidget, ListModelWidget
-from autopilot.utils.common import flatten_dict
 from ..fixtures import dummy_biography
 from autopilot.data.models.biography import Biography
-from autopilot.data.modeling.base import Data
-from PySide2.QtWidgets import QLineEdit, QDateTimeEdit, QComboBox
-from PySide2.QtCore import QDateTime, Qt
 
 class InnerModel(BaseModel):
     inner_list: List[int]
@@ -29,46 +25,6 @@ class DummyModel(BaseModel):
     list_model: List[InnerModel]
     list_optional_model: Optional[List[InnerModel]]
     literal: Literal[1,2,3]
-
-
-def fill_model(widget: ModelWidget, model: Data) -> ModelWidget:
-    """
-    Fill a model widget with values from the model!
-
-    Args:
-        widget (:class:`.ModelWidget`): Widget to fille
-        model (:class:`.Data`): Model to fill it with!
-
-    Returns:
-        The filled widget!
-    """
-    # hack -- until we handle multiple input on the form, just handle one
-    if hasattr(model, 'genotype') and isinstance(model.genotype.genes, list):
-        model.genotype.genes = model.genotype.genes[0]
-
-    model_flat = flatten_dict(model.dict(), skip=('tags',))
-    widget_flat = flatten_dict(widget._inputs)
-
-    for key, value in model_flat.items():
-        try:
-            in_widget = widget_flat[key]
-        except KeyError:
-            pdb.set_trace()
-        # enable any disabled groups
-        if in_widget.parent().isCheckable() and not in_widget.parent().isChecked():
-            in_widget.parent().setChecked(True)
-
-        if isinstance(in_widget, QLineEdit):
-            in_widget.setText(str(value))
-        elif isinstance(in_widget, QComboBox):
-            in_widget.setCurrentText(value)
-        elif isinstance(in_widget, QDateTimeEdit):
-            dt = QDateTime.fromString(value.isoformat(), Qt.ISODate)
-            in_widget.setDateTime(dt)
-        else:
-            raise NotImplementedError(f"Widget type {in_widget} not implemented")
-
-    return widget
 
 
 def test_make_input(qtbot):

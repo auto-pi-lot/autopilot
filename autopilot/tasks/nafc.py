@@ -90,16 +90,22 @@ class Nafc(Task):
         """
         Trialwise Data for a Two-Alternative Forced Choice Task
         """
-        # This class allows the Subject object to make a data table with the correct data types. You must update it for any new data you'd like to store
-        target: Literal['L', 'R'] = Field(..., description="Which side is the correct side this trial",
-                                          datajoint={'datatype': 'enum', 'kwargs': {'args': ['L', 'R']}})
-        response: Literal['L', 'R'] = Field(..., description="The side that was poked",
-                                          datajoint={'datatype': 'enum', 'kwargs': {'args': ['L', 'R']}})
-        correct: bool = Field(..., description="Whether the subject's response matched the target")
-        correction: bool = Field(..., description="Whether this trial was a correction trial or not")
-        RQ_timestamp: datetime.datetime = Field(..., description="The time where the stimulus was presented and the trial was requested")
-        DC_timestamp: datetime.datetime = Field(..., description="The time when the subject responded")
-        bailed: bool = Field(..., description="Whether the subject bailed the trial from a timeout or any other reason they did not finish")
+        target: Literal['L', 'R'] = Field(...,
+            description="Which side is the correct side this trial",
+            datajoint={'datatype': 'enum', 'kwargs': {'args': ['L', 'R']}})
+        response: Literal['L', 'R'] = Field(...,
+            description="The side that was poked",
+            datajoint={'datatype': 'enum', 'kwargs': {'args': ['L', 'R']}})
+        correct: bool = Field(...,
+            description="Whether the subject's response matched the target")
+        correction: bool = Field(...,
+            description="Whether this trial was a correction trial or not")
+        RQ_timestamp: datetime.datetime = Field(...,
+            description="The time where the stimulus was presented and the trial was requested")
+        DC_timestamp: datetime.datetime = Field(...,
+            description="The time when the subject responded")
+        bailed: bool = Field(...,
+            description="Whether the subject bailed the trial from a timeout or any other reason they did not finish")
 
     HARDWARE = {
         'POKES':{

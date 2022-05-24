@@ -50,17 +50,16 @@ This documentation is very young and is very much a work in progress! Please `su
    Quickstart <guide/quickstart>
    Installation <guide/installation>
    Configuration <guide/configuration>
-   The User Directory <guide/userdir>
    Training a Subject <guide/training>
    Writing a Task <guide/task>
-   Writing a Hardware Class <guide/hardware>
    Using Plugins <guide/plugins>
-   Examples <examples>
+   Examples <examples/index>
    FAQ <guide/faq>
 
 .. toctree::
    :maxdepth: 1
    :caption: API Documentation:
+   :titlesonly:
 
    Agents <agents/index>
    Data <data/index>

@@ -137,6 +137,8 @@ templates_path = ['_templates']
 
 autosummary_generate = True
 
+graphviz_output_format = 'svg'
+
 # --------------------------------------------------
 # pydantic_autodoc
 # --------------------------------------------------
