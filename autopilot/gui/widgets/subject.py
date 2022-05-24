@@ -4,7 +4,7 @@ import os
 from PySide2 import QtWidgets
 from autopilot import prefs
 from autopilot.data.models.biography import Biography
-from autopilot.gui.widgets.model import Model_Filler
+from autopilot.gui.widgets.model import ModelWidget
 from autopilot.utils.loggers import init_logger
 
 
@@ -34,7 +34,7 @@ class New_Subject_Wizard(QtWidgets.QDialog):
 
         tabWidget = QtWidgets.QTabWidget()
 
-        self.bio_tab = Model_Filler(Biography)
+        self.bio_tab = ModelWidget(Biography)
         tabWidget.addTab(self.bio_tab, "Biography")
 
         if self.protocol_dir:

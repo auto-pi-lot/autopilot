@@ -6,6 +6,7 @@ from typing import Union, Type, Optional
 
 from autopilot.root import Autopilot_Type
 from autopilot.data.modeling.base import Schema
+from autopilot.data.units.base import Autopilot_Unit
 from pydantic import Field
 
 
@@ -98,7 +99,13 @@ def resolve_type(type_, resolve_literal=False) -> typing.Type:
         resolve_literal (bool): If ``True``, return the type of the inside of Literals, rather than the Literal type itself.
     """
     if not hasattr(type_, '__args__') or (hasattr(type_, '__origin__') and type_.__origin__ == typing.Literal and not resolve_literal):
-        # already resolved
+        # not an extended typing object.
+        try:
+            if issubclass(type_, Autopilot_Unit):
+                type_ = type_._base_class()
+        except TypeError:
+            # Not a class, pass
+            pass
         return type_
 
     if getattr(type_, '__origin__', False) is typing.Literal:
@@ -113,6 +120,9 @@ def resolve_type(type_, resolve_literal=False) -> typing.Type:
         subtypes = [t for t in type_.__args__ if t in _permissiveness.keys()]
 
     if len(subtypes) == 0:
+        # if we only have one type, there's no ambiguity to resolve.
+        if len(type_.__args__) == 1:
+            return type_.__args__[0]
         pdb.set_trace()
         raise ValueError(f'Dont know how to resolve type {type_}')
     # elif any([isinstance(t, ModelMetaclass) for t in subtypes]):

@@ -59,7 +59,8 @@ def dummy_biography() -> biography.Biography:
         breeding=breeding,
         enclosure=enclosure,
         baselines=baselines,
-        genotype=genotype
+        genotype=genotype,
+        start_date = datetime(year=np.random.randint(2000,2020), month=np.random.randint(1,12), day=np.random.randint(1,28), hour=np.random.randint(0,23), minute=np.random.randint(0,59), second=np.random.randint(0,59)),
     )
     return bio
 

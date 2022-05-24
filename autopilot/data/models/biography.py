@@ -60,7 +60,7 @@ class Genotype(Data):
 
     """
     strain: Optional[str] = Field(None, description="The strain or background line of this subject, if any")
-    genes: Optional[Union[List[Gene], Gene]] = Field(None, description="A list of any transgenes that this animal has")
+    genes: Optional[List[Gene]] = Field(None, description="A list of any transgenes that this animal has")
 
 
 class Baselines(Data):
@@ -98,7 +98,7 @@ class Biography(Attributes):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="The indentifying string, name, subject_id, etc. for this subject. " + \
                                       "This value is also used to name the related Subject file, like {id}.h5, so these are typically expected to be unique. " + \
                                       "If None is provided, a uuid.uuid4() will be generated (which will be ugly so you probably want to give an id).")
-    start_date: datetime = Field(default_factory=datetime.now, description="The date that this subject file was created. Not that this is not necessarily the date " + \
+    start_date: Optional[datetime] = Field(default_factory=datetime.now, description="The date that this subject file was created. Not that this is not necessarily the date " + \
                                  "that the subject began training, which is more reliably determined from the timestamps within the data. If none is provided, generated from current time.")
     dob: Optional[datetime] = Field(None, description="The subject's date of birth. A datetime is allowed, but hours and minutes are typically not reliable. A time of midnight formally indicates " + \
                                     "that the hour and minute is not precise.")

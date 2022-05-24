@@ -1,6 +1,7 @@
 """
 Base units
 """
+import inspect
 
 class Autopilot_Unit:
     """
@@ -10,6 +11,12 @@ class Autopilot_Unit:
 
         Allow declaration of specific subtypes, like with multiplication, ``unit & 'mg'``
     """
+
+    @classmethod
+    def _base_class(cls) -> type:
+        """Base python type that this unit derives from"""
+        mro = inspect.getmro(cls)
+        return mro[mro.index(Autopilot_Unit)+1]
 
 
 
