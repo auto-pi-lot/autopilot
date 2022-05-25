@@ -19,6 +19,7 @@ def no_underscore_all_caps(input: str) -> str:
     should be considered degenerate, and no future prefs should be declared that depend
     on the presence of the underscore.
 
+    Used by :class:`.Autopilot_Pref` to generate Aliases
 
     Args:
         input (str): input string
@@ -28,12 +29,11 @@ def no_underscore_all_caps(input: str) -> str:
     """
     return input.replace('_', '').upper()
 
-class Autopilot_Type(BaseModel):
+class Autopilot_Type(BaseModel, ABC):
     """
     Root autopilot model for types
     """
     _logger: typing.Optional[Logger] = PrivateAttr()
-
 
     def _init_logger(self):
         from autopilot.utils.loggers import init_logger
@@ -42,6 +42,8 @@ class Autopilot_Type(BaseModel):
     def __str__(self):
         return pformat(self.dict(), indent=2, compact=True)
 
+# remove default __init__ docstring that propagates down to all submodels
+Autopilot_Type.__init__.__doc__ = ""
 
 class Autopilot_Pref(BaseSettings):
     """

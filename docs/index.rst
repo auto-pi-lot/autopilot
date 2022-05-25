@@ -72,6 +72,7 @@ This documentation is very young and is very much a work in progress! Please `su
    Utilities <utils/index>
    Setup <setup/index>
    Prefs <prefs>
+   Root <root/index>
    External <external>
 
 

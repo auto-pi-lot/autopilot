@@ -1,5 +1,9 @@
 # FAQ
 
+```{note}
+This page is a stub! You can recommend things to be added to it on this issue: [#32: Documentation Requests](https://github.com/auto-pi-lot/autopilot/issues/32)
+```
+
 ## Getting Help
 
 - wiki
@@ -14,5 +18,5 @@
 
 ### Using Virtual Environments
 
-See the :ref:`guide_venvs` page
+See the {ref}`guide_venvs` page
 

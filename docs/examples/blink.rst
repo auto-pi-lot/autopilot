@@ -14,6 +14,10 @@ This page is rendered in the docs here in order to provide links to the mentione
 written as source code initially and translated to .rst, so the narrative flow is often inverted: text follows code
 as comments, rather than text introducing and narrating code.
 
+.. note::
+
+    This example was written for versions of autopilot <0.5.0
+
 Preamble
 --------
 

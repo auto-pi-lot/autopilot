@@ -1,6 +1,13 @@
 Distributed Go/No-Go
 =========================================
 
+.. note::
+
+    This example was written for a very early version of Autopilot, v0.1.0, and much has changed since then!
+
+    This example is being preserved as an example of some basic approaches to networked behavior problems,
+    as much of that is still useful, even if the precise syntax of how to use Autopilot has changed.
+
 .. figure:: ../_images/gonogo.png
    :align: right
 

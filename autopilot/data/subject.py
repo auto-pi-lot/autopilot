@@ -60,7 +60,7 @@ class Subject(object):
     Attributes:
         name (str): Subject ID
         file (str): Path to hdf5 file - usually `{prefs.get('DATADIR')}/{self.name}.h5`
-        current_trial (int): number of current trial
+        logger (:class:`logging.Logger`): from :func:`~.utils.loggers.init_logger`
         running (bool): Flag that signals whether the subject is currently running a task or not.
         data_queue (:class:`queue.Queue`): Queue to dump data while running task
         did_graduate (:class:`threading.Event`): Event used to signal if the subject has graduated the current step
@@ -79,7 +79,7 @@ class Subject(object):
             name (str): subject ID
             dir (str): path where the .h5 file is located, if `None`, `prefs.get('DATADIR')` is used
             file (str): load a subject from a filename. if `None`, ignored.
-            structure (:class:`.Subject_Schema`): Structure to use with this subject.
+            structure (:class:`.Subject_Structure`): Structure to use with this subject.
         """
 
         self.structure = structure
@@ -221,6 +221,14 @@ class Subject(object):
 
     @property
     def protocol(self) -> Union[Protocol_Status, None]:
+        """
+        The status of the currently assigned protocol
+
+        See :class:`.Protocol_Status`
+
+        A property with an accompanying setter. When assigned to, stashes the details of the old
+        protocol, and remakes the table structure to support the new task.
+        """
         with self._h5f(lock=False) as h5f:
             protocol = h5f.get_node(self.structure.protocol.path)
             protocoldict = {}
@@ -290,10 +298,22 @@ class Subject(object):
 
     @property
     def protocol_name(self) -> str:
+        """
+        Name of the currently assigned protocol
+
+        Convenience accessor for  :attr:`.Subject.protocol.protocol_name`
+        """
         return self.protocol.protocol_name
 
     @property
     def current_trial(self) -> int:
+        """
+        Current number of trial for the assigned task
+
+        Convenience accessor for ``.protocol.current_trial``
+
+        Has Setter (can be assigned to)
+        """
         return self.protocol.current_trial
 
     @current_trial.setter
@@ -304,6 +324,13 @@ class Subject(object):
 
     @property
     def session(self) -> int:
+        """
+        Current session of assigned protocol.
+
+        Convenience accessor for ``.protocol.session``
+
+        Has setter (can be assigned to)
+        """
         return self.protocol.session
 
     @session.setter
@@ -314,6 +341,13 @@ class Subject(object):
 
     @property
     def step(self) -> int:
+        """
+        Current step of assigned protocol
+
+        Convenience accessor for ``.protocol.step``
+
+        Has setter (can be assigned to) to manually promote/demote subject to different steps of the protocol.
+        """
         return self.protocol.step
 
     @step.setter
@@ -324,24 +358,49 @@ class Subject(object):
 
     @property
     def task(self) -> dict:
+        """
+        Protocol dictionary for the current step
+        """
         return self.protocol.protocol[self.step]
 
     @property
     def session_uuid(self) -> str:
+        """
+        Automatically generated UUID given to each session, regardless of the session number.
+
+        Ensures each session is uniquely addressable in the case of ambiguous session numbers
+        (eg. subject was manually promoted or demoted and session number was unable to be recovered,
+        so there are multiple sessions with the same number)
+        """
         if self._session_uuid is None:
             self._session_uuid = str(uuid.uuid4())
         return self._session_uuid
 
     @property
     def history(self) -> History:
+        """
+        The Subject's history of parameter and other changes.
+
+        See :class:`.History`
+        """
         return self._read_table('/history/history', History)
 
     @property
     def hashes(self) -> Hashes:
+        """
+        History of version hashes and autopilot versions
+
+        See :class:`.Hashes`
+        """
         return self._read_table('/history/hashes', Hashes)
 
     @property
     def weights(self) -> Weights:
+        """
+        History of weights at the start and end of running a session.
+
+        See :class:`.Weights`
+        """
         return self._read_table('/history/weights', Weights)
 
 

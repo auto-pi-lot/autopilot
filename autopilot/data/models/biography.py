@@ -1,5 +1,5 @@
 """
-Data models (and transformations?) for experimental subject biographies
+Data models for experimental subject biographies
 """
 import typing
 from typing import Optional, Literal, List, Union
@@ -52,7 +52,7 @@ class Gene(Data):
 
 class Genotype(Data):
     """
-    Genotyping information, information about :class:`.Gene`s
+    Genotyping information, information about a subject's background and (potentially multiple) :class:`.Gene` s of interest
 
     .. todo::
 
@@ -70,7 +70,7 @@ class Baselines(Data):
     subjects remain healthy.
     """
     mass: Optional[Mass] = Field(None, description="Mass (grams) of the animal before any experimental manipulation")
-    minimum_pct: Optional[float] = Field(None, description="The proportion of the baseline mass that the animal is not allowed to fall under")
+    minimum_pct: Optional[float] = Field(None, description="The proportion (0-1) of the baseline mass that the animal is not allowed to fall under")
 
     @property
     def minimum_mass(self) -> float:
@@ -92,7 +92,6 @@ class Biography(Attributes):
 
     **Development Goals**
 
-    - Replace the implicit biographical structure in the :class:`.gui.New_Subject_Wizard` (embarrassing)
     - Interface with the NWB biographical information schema.
     """
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="The indentifying string, name, subject_id, etc. for this subject. " + \

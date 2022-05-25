@@ -22,18 +22,17 @@ class ModelWidget(QtWidgets.QWidget):
     """
     Recursive collection of all inputs for a given model.
 
-    Each attribute that has a single input (eg. a single number, string, and so on)
+    Each attribute that has a single :class:`.Input` (eg. a single number, string, and so on)
     that can be resolved by :func:`~.interfaces.base.resolve_type` is represented
     by a :class:`.Model_Input`.
 
     Otherwise, attributes that are themselves other models are recursively added
     additional :class:`.ModelWidget`s.
 
-    Each ``ModelWidget`` has a few meta-options that correspond to special python types:
-
-    * :class:`typing.Optional` - :attr:`.Model_Form.optional` - The groupbox for the model has
-      a checkbox. WHen it is unchecked, the model fields are inactive and it is returned by :meth:`.value` as ``None``.
-      Cannot be used with a top-level model.
+    When a model's field is :class:`typing.Optional`, passed as :attr:`.Model_Form.optional` ,
+    The groupbox for the model has a checkbox. When it is unchecked,
+    the model fields are inactive and it is returned by :meth:`.value` as ``None``.
+    (Shouldn't be used with a top-level model.)
     """
 
     def __init__(self, model:Union[BaseModel, Type[BaseModel]],
@@ -249,13 +248,28 @@ class ModelWidget(QtWidgets.QWidget):
 
 class ListModelWidget(QtWidgets.QWidget):
     """
-    Container class to make lists of :class:`.ModelWidget`s
+    Container class to make lists of :class:`.ModelWidget`s for when a field is a ``List``
     """
 
     def __init__(self, model:Union[BaseModel, Type[BaseModel]],
                  optional:bool=False,
                  scroll:bool=True,
                  **kwargs):
+        """
+        Args:
+            model (:class:`pydantic.BaseModel`): The model to represent. Can either be a model class or an instantiated
+                model. If an instantiated model, the fields are filled with the current values.
+            optional (bool): If ``True``, the enclosing groupbox has a checkbox that when unchecked causes :meth:`ModelWidget.value` to return ``None``.
+                If ``False``, :meth:`ModelWidget.value` always attempts to return the model
+            scroll (bool): Whether the widget should be within a scrollbar. ``True`` by default, but should
+                probably be ``False`` for child models
+            **kwargs:
+
+        Attributes:
+            model_layout (:class:`~PySide2.QtWidgets.QVBoxLayout`): Layout containing model widgets
+            add_button (:class:`~PySide2.QtWidgets.QPushButton`): Button pressed to add new models
+            remove_button (:class:`~PySide2.QtWidgets.QPushButton`): Button pressed to remove the bottom-most model
+        """
 
         super(ListModelWidget, self).__init__(**kwargs)
         if isinstance(model, BaseModel):
@@ -307,9 +321,18 @@ class ListModelWidget(QtWidgets.QWidget):
         return [m.dict() for m in self.model_widgets]
 
     def value(self) -> List[BaseModel]:
+        """A list of instantiated models"""
         return [m.value() for m in self.model_widgets]
 
     def add_model(self, checked:bool=False, model:Optional[BaseModel]=None):
+        """
+        When the :attr:`.add_button` is pressed, add an additional :class:`.ModelWidget`
+
+        Args:
+            checked (bool): Whether the button is checked (from the ``clicked`` signal)
+            model (:class:`pydantic.BaseModel`): Manually override the model to construct.
+                (default is to use the ``.model`` attribute)
+        """
         if model is None:
             model = self.model
         widget = ModelWidget(model=model, scroll=False)
@@ -317,12 +340,26 @@ class ListModelWidget(QtWidgets.QWidget):
         self.model_layout.addWidget(widget)
 
     def remove_model(self, checked:bool=False):
+        """
+        When the :attr:`.remove_button` is pressed, remove the last-added :class:`.ModelWidget`
+
+        Args:
+            checked (bool): Whether the button is checked (from the ``clicked`` signal)
+        """
         w = self.model_layout.takeAt(len(self.model_widgets)-1)
         w.widget().deleteLater()
         self.model_widgets = self.model_widgets[:-1]
 
 
     def setValue(self, value: List[BaseModel]):
+        """
+        Create and set values for a list of instantiated data models.
+
+        First clears any existing models that have been made.
+
+        Args:
+            value (list[BaseModel]): List of instantiated base models.
+        """
         self._clear_widgets()
 
         for model in value:
@@ -341,7 +378,7 @@ class ListModelWidget(QtWidgets.QWidget):
 
 class Model_Filler_Dialogue(QtWidgets.QDialog):
     """
-    Dialogue wrapper around :class:`.Model_Filler`
+    Dialogue wrapper around :class:`.ModelWidget`
     """
     def __init__(self, model: Union[Type[Autopilot_Type], Type[BaseModel]], **kwargs):
         super(Model_Filler_Dialogue, self).__init__(**kwargs)
@@ -356,7 +393,7 @@ class Model_Filler_Dialogue(QtWidgets.QDialog):
         buttonBox.rejected.connect(self.reject)
 
         mainLayout = QtWidgets.QVBoxLayout()
-        mainLayout.addWidget(scroll)
+        mainLayout.addWidget(self.filler)
         mainLayout.addWidget(buttonBox)
         self.setLayout(mainLayout)
 

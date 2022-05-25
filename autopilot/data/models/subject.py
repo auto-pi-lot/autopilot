@@ -1,3 +1,7 @@
+"""
+Data models used by the :class:`.Subject` class
+"""
+
 from datetime import datetime
 import typing
 from typing import Type, List, Union, Optional
@@ -31,34 +35,29 @@ class History(Table):
 class Hashes(Table):
     """
     Table to track changes in version over time
-
-    Attributes:
-        time (str): Timestamps for entries
-        hash (str): Hash of the currently checked out commit of the git repository.
-        version (str): Current Version of autopilot, if not run from a cloned repository
-        id (str): ID of the agent whose hash we are stashing (we want to keep track of all connected agents, ideally
-
     """
     time: List[datetime]
+    """Timestamps for entries"""
     hash:  List[str]
+    """Hash of the currently checked out commit of the git repository."""
     version: List[str]
+    """Current Version of autopilot, if not run from a cloned repository"""
     id: List[str]
+    """ID of the agent whose hash we are stashing (we want to keep track of all connected agents, ideally"""
 
 
 class Weights(Table):
     """
     Class to describe table for weight history
-
-    Attributes:
-        start (float): Pre-task mass
-        stop (float): Post-task mass
-        date (str): Timestamp in simple format
-        session (int): Session number
     """
     start: List[float]
+    """Pre-task mass"""
     stop: List[float]
+    """Post-task mass"""
     date: List[datetime]
+    """Timestamp of task start"""
     session: List[int]
+    """Session number"""
 
     @validator('date', each_item=True, allow_reuse=True, pre=True)
     def simple_time(cls, v):
@@ -66,7 +65,9 @@ class Weights(Table):
 
 class History_Group(Group):
     """
-    Group for collecting subject history tables
+    Group for collecting subject history tables.
+
+    Typically stored in ``/history`` in the subject .h5f file
     """
     history: History
     hashes:  Hashes
@@ -74,13 +75,25 @@ class History_Group(Group):
     past_protocols: Group
 
 class Protocol_Status(Attributes):
+    """
+    Status of assigned protocol. Accessible from the :attr:`.Subject.protocol` getter/setter
+
+    See :meth:`.Subject.assign_protocol`.
+    """
     current_trial: int
+    """Current or last trial that was run in the particular level of the protocol. Continues to increment across sessions, resets across different levels of the protocol."""
     session: int
+    """Session number. Increments every time the subject is run."""
     step: int
+    """Current step of the protocol that the subject is running."""
     protocol: typing.List[dict]
+    """The full definition of the steps (individual tasks) that define the protocol"""
     protocol_name: str
+    """Name of the assigned protocol, typically the filename this protocol is stored in minus .json"""
     pilot: Optional[str] = Field(None, description="Pilot that this subject runs on")
+    """The ID of the pilot that this subject does their experiment on"""
     assigned: datetime = Field(default_factory=datetime.now)
+    """The time that this protocol was assigned. If not passed explicitly, generated each time the protocol status is changed."""
 
 
 
@@ -122,6 +135,7 @@ class Subject_Structure(Schema):
     def make(self, h5f:tables.file.File):
         """
         Make all the nodes!
+
         Args:
             h5f (:class:`tables.file.File`): The h5f file to make the groups in!
         """
@@ -136,7 +150,9 @@ class Subject_Schema(Schema):
 
     .. todo::
 
-        Convert this into an abstract representation of data rather than literally hdf5 tables
+        Convert this into an abstract representation of data rather than literally hdf5 tables.
+
+        At the moment twins :class:`.Subject_Structure`
 
     """
     info: Biography

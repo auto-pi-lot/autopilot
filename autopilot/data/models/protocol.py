@@ -1,3 +1,7 @@
+"""
+Representations of experimental protocols: multiple :class:`.Task` s grouped together with :class:`.Graduation` objects.
+"""
+
 import typing
 from typing import Optional, Type
 
@@ -16,6 +20,10 @@ from autopilot.stim.sound.sounds import STRING_PARAMS
 class Task_Params(Autopilot_Type):
     """
     Metaclass for storing task parameters
+
+    .. todo::
+
+        Not yet used in GUI, terminal, and subject classes. Will replace the dictionary structure ASAP
     """
 
 class Trial_Data(Table):
@@ -24,6 +32,8 @@ class Trial_Data(Table):
 
     Tasks should subclass this and add any additional parameters that are needed.
     The subject class will then use this to create a table in the hdf5 file.
+
+    See :attr:`.Nafc.TrialData` for an example
     """
     group: Optional[str] = Field(None, description="Path of the parent step group")
     session: int = Field(..., description="Current training session, increments every time the task is started")
@@ -52,6 +62,17 @@ class Step_Group(H5F_Group):
                  step_name: Optional[str] = None,
                  trial_data: Optional[Type[Trial_Data]] = None,
                  **data):
+        """
+
+        Args:
+            step (int): Step number within a protocol
+            group_path (str): Path to the group within an HDF5 file
+            step_dict (dict): Dictionary of step parameters. Either this or ``step_name`` must be passed
+            step_name (str): Step name -- if ``step_dict`` is not present, use this to generate a name for the created hdf5 group
+            trial_data (:class:`.Trial_Data`): Explicitly passed Trial_Data object. If not passed, get from the ``task_type`` parameter
+                in the ``step_dict``
+            **data: passed to superclass __init__ method
+        """
         self._init_logger()
         if step_name is None and step_dict is None:
             raise ValueError('Need to give us something that will let us identify where to make this table!')
@@ -164,7 +185,16 @@ class Protocol_Group(H5F_Group):
                  protocol: typing.List[dict],
                  **data):
         """
-        Override default __init__ method to populate a task's groups
+        Override default __init__ method to populate a task's groups.
+
+        .. todo::
+
+            When finished, replace the implicit structure of the protocol dictionary with :class:`.Task_Params`
+
+        Args:
+            protocol_name (str): Name of a protocol (filename minus ``.json``)
+            protocol (List[dict]): A list of dictionaries, one with the parameters for each task level.
+            **data: passed to superclass init
 
         """
         path = f'/data/{protocol_name}'

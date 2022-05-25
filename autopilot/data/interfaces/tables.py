@@ -13,6 +13,7 @@ import tables
 
 from autopilot import Autopilot_Type
 from autopilot.data.interfaces.base import Interface_Mapset, Interface_Map, Interface, resolve_type, _NUMPY_TO_BUILTIN
+from autopilot.data.modeling.base import Node, Group
 
 if typing.TYPE_CHECKING:
     from autopilot.data.modeling.base import Table
@@ -20,7 +21,7 @@ if typing.TYPE_CHECKING:
 _datetime_conversion: typing.Callable[[datetime], str] = lambda x: x.isoformat()
 
 
-class H5F_Node(Autopilot_Type):
+class H5F_Node(Node):
     """
     Base class for H5F Nodes
     """
@@ -70,7 +71,7 @@ class H5F_Group(H5F_Node):
     """
     Description of a pytables group and its location
     """
-    children: Optional[List[H5F_Node]] = None
+    children: Optional[List[Union[H5F_Node, 'H5F_Group']]] = None
 
     def make(self, h5f:tables.file.File):
         """
