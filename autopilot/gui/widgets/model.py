@@ -27,11 +27,11 @@ class ModelWidget(QtWidgets.QWidget):
     by a :class:`.Model_Input`.
 
     Otherwise, attributes that are themselves other models are recursively added
-    additional :class:`.ModelWidget`s.
+    additional :class:`.ModelWidget` s.
 
-    When a model's field is :class:`typing.Optional`, passed as :attr:`.Model_Form.optional` ,
+    When a model's field is :class:`typing.Optional`, passed as :attr:`.ModelWidget.optional` ,
     The groupbox for the model has a checkbox. When it is unchecked,
-    the model fields are inactive and it is returned by :meth:`.value` as ``None``.
+    the model fields are inactive and it is returned by :meth:`.ModelWidget.value` as ``None``.
     (Shouldn't be used with a top-level model.)
     """
 
