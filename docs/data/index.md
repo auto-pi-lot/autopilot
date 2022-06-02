@@ -95,7 +95,7 @@ See the main {mod}`.data.subject` module page for further information.
 This too is just a stub, but we will be moving more of our models to using specific SI units when appropriate rather
 than using generic `float`s and `int`s with human-readable descriptions of when they are a mL or a ms vs. second or Liter, etc.
 
-# Transition Status
+## Transition Status
 
 Transitioning to a uniform data modeling system is in progress! The following need to still be transitioned to formal models.
 
