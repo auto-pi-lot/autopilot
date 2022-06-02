@@ -10,7 +10,7 @@ Status:
 
 [![Documentation Status](https://readthedocs.org/projects/auto-pi-lot/badge/?version=latest)](https://docs.auto-pi-lot.com/en/latest/?badge=latest)
 [![Travis (.com) branch](https://img.shields.io/travis/com/auto-pi-lot/autopilot/main)](https://app.travis-ci.com/github/auto-pi-lot/autopilot/branches)
-[![Coveralls branch](https://img.shields.io/coveralls/github/auto-pi-lot/autopilot/main)](https://coveralls.io/github/auto-pi-lot/autopilot)
+[![Coverage Status](https://coveralls.io/repos/github/auto-pi-lot/autopilot/badge.svg?branch=main)](https://coveralls.io/github/auto-pi-lot/autopilot?branch=main)
 ![Jonny Status](https://img.shields.io/badge/jonny-dissertating-critical)
 
 
