@@ -1,5 +1,4 @@
 __author__  = 'Jonny Saunders <j@nny.fyi>'
-__version__ = '0.4.4'
 
 import sys
 if sys.version_info < (3,8):

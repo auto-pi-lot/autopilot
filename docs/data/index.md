@@ -95,8 +95,20 @@ See the main {mod}`.data.subject` module page for further information.
 This too is just a stub, but we will be moving more of our models to using specific SI units when appropriate rather
 than using generic `float`s and `int`s with human-readable descriptions of when they are a mL or a ms vs. second or Liter, etc.
 
+# Transition Status
 
+Transitioning to a uniform data modeling system is in progress! The following need to still be transitioned to formal models.
 
+- `Task.PARAMS` and `Task.HARDWARE`
+- `Task.PLOT` which should be merged into the TrialData field descriptions
+- {mod}`autopilot.prefs` - which currently has a large dictionary of default prefs
+- Hardware parameter descriptions - Need to find better way of having models that represent
+  class arguments.
+- {mod}`.graduation` objects.
+- Verious GUI widgets need to use models rather than the zillions of ad-hoc representations:
+  - {class}`.Protocol_Wizard`
+- {mod}`.utils.plugins` needs its own model to handle dependencies, etc.
+- {mod}`.agents` needs models for defining basic agent attributes.
 
 ```{eval-rst}
 .. automodule:: autopilot.data

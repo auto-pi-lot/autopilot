@@ -248,7 +248,7 @@ class ModelWidget(QtWidgets.QWidget):
 
 class ListModelWidget(QtWidgets.QWidget):
     """
-    Container class to make lists of :class:`.ModelWidget`s for when a field is a ``List``
+    Container class to make lists of :class:`.ModelWidget` s for when a field is a ``List``
     """
 
     def __init__(self, model:Union[BaseModel, Type[BaseModel]],

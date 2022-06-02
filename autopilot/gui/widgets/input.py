@@ -1,3 +1,26 @@
+"""
+Widgets for representing input widgets for different types.
+
+The metaclass {class}`.Input` represents the basic structure, which each of the inheriting classes
+override. Subclasses can be retrieved and instantiated with the overloaded :meth:`.from_type` method::
+
+    # retrieve the class
+    int_input_class = Input.from_type(int)
+    # instantiate the class -- some subtypes (see :class:`.LiteralInput` ) need arguments on instantiation.
+    int_input = int_input_class()
+
+and can then be used to make and manipulate Qt Widgets::
+
+    # make the literal ``QWidget`` to be used
+    widget = int_input.make()
+    # get/set the value of the created widget
+    value = int_input.value()
+    int_input.setValue(value)
+
+This allows the :class:`ModelWidget` class to provide a uniform interface to fill end edit models.
+
+"""
+
 import typing
 from abc import ABC, abstractmethod
 from ast import literal_eval
@@ -75,6 +98,18 @@ class Input(ABC):
 
     @classmethod
     def from_type(cls, type_:type) -> Type['Input']:
+        """
+        Get a subclass of ``Input`` that represents a given type.
+
+        Args:
+            type_ (:class:`typing.Type`): The type (eg. ``float``, ``int``) to be represented
+
+        Returns:
+            An appropriate ``Input`` subclass
+
+        Raises:
+            :class:`ValueError` if either no or more than 1 subclass has been declared for the given type.
+        """
         subclass = [c for c in cls.__subclasses__() if c.python_type is type_]
         if len(subclass) == 0:
             raise ValueError(f"No Input widget has been defined for type_ {type_}")
@@ -87,11 +122,20 @@ class Input(ABC):
     def setValue(self, value:typing.Any):
         """
         Set a value in the created widget
+
+        After the :meth:`Input.make` method is called, returning a widget, the Input instance will
+        store a reference to it. This method then allows its value to be set, doing appropriate
+        type conversions and invoking the correct methods.
         """
 
     @abstractmethod
     def value(self) -> typing.Any:
-        """Retreive the value from the widget!"""
+        """
+        Retrieve the value from the widget!
+
+        After the :meth:`Input.make` method is called, returning a widget, the Input instance will
+        store a reference to it. This method then returns the value, doing appropriate type conversion.
+        """
 
     def make(self,
              widget_kwargs:Optional[dict]=None,
@@ -100,7 +144,7 @@ class Input(ABC):
         Make the appropriate widget for this input.
 
         Stores the made widget in the private :attr:`._widget` attr, which is then used
-        in subsequent :meth:`.value` and :meth:`.setValue` calls.
+        in subsequent :meth:`.Input.value` and :meth:`.Input.setValue` calls.
 
         Args:
             widget_kwargs (dict): Optional: kwargs given to the widget on instantiation
