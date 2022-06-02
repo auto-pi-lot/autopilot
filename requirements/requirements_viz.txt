@@ -1,2 +1,0 @@
-altair
-scikit-learn

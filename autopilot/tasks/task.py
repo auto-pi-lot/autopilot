@@ -1,16 +1,13 @@
 # Base class for tasks
 from collections import OrderedDict as odict
 import threading
-from datetime import datetime
-import os
 import logging
 import tables
 from itertools import count
-# from autopilot.core.networking import Net_Node
 import autopilot
 from autopilot.hardware import BCM_TO_BOARD
 from autopilot import prefs
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 
 if prefs.get( "AUDIOSERVER"):
     if prefs.get('AUDIOSERVER') == 'pyo':

@@ -6,7 +6,7 @@ import pytest
 from pytestqt import qt_compat
 from pytestqt.qt_compat import qt_api
 
-from autopilot.core.terminal import Terminal
+from autopilot.agents.terminal import Terminal
 from autopilot import prefs
 
 

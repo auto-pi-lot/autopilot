@@ -1,4 +1,3 @@
-import queue
 import threading
 import time
 import typing
@@ -13,7 +12,7 @@ from tornado.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 
 from autopilot import prefs
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 from autopilot.networking.message import Message
 
 
@@ -234,7 +233,10 @@ class Net_Node(object):
              key:str=None,
              value:typing.Any=None,
              msg:Optional['Message']=None,
-             repeat:bool=False, flags = None, force_to:bool = False):
+             repeat:bool=False, 
+             flags = None, 
+             force_to:bool = False,
+             blosc:bool = False):
         """
         Send a message via our :attr:`~.Net_Node.sock` , DEALER socket.
 
@@ -274,6 +276,7 @@ class Net_Node(object):
             flags (dict):
             force_to (bool): If we really really want to use the 'to' field to address messages
                 (eg. node being used for direct communication), overrides default behavior of sending to upstream.
+            blosc (bool): Tell the message to compress its serialized contents with blosc
         """
         if (key is None) and (msg is None):
             if self.logger:
@@ -296,7 +299,7 @@ class Net_Node(object):
             recipient = to
 
         if not msg:
-            msg = self.prepare_message(recipient, key, value, repeat, flags)
+            msg = self.prepare_message(recipient, key, value, repeat, flags, blosc)
 
         log_this = True
         if 'NOLOG' in msg.flags.keys():
@@ -416,7 +419,7 @@ class Net_Node(object):
     #
 
 
-    def prepare_message(self, to, key, value, repeat, flags=None):
+    def prepare_message(self, to, key, value, repeat, flags=None, blosc:bool=False):
         """
         Instantiate a :class:`.Message` class, give it an ID and
         the rest of its attributes.
@@ -429,6 +432,7 @@ class Net_Node(object):
                 uses to process this message.
             value: Any information this message should contain. Can be any type, but
                 must be JSON serializable.
+            blosc (bool): Whether or not the message should be compressed with blosc
         """
         msg = Message()
 
@@ -450,6 +454,7 @@ class Net_Node(object):
             msg.key = key
 
         msg.value = value
+        msg.blosc = blosc
 
         msg_num = next(self.msg_counter)
         msg.id = "{}_{}".format(self.id, msg_num)
@@ -641,4 +646,7 @@ class Net_Node(object):
 
     def release(self):
         self.closing.set()
-        self.loop.stop()
+        self.sock.close()
+        if self.router:
+            self.router.close()
+        self.loop.add_callback(lambda:IOLoop.current().stop())

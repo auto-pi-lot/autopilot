@@ -20,7 +20,7 @@ or locations of objects to area labels
 import types
 import typing
 from enum import Enum, auto
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 
 class TransformRhythm(Enum):
     """

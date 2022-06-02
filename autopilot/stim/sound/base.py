@@ -15,7 +15,7 @@ import numpy as np
 
 from autopilot import prefs
 from autopilot import dehydrate
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 from autopilot.utils.requires import Requirements, Python_Package
 from autopilot.stim.stim import Stim
 from autopilot.utils.decorators import Introspect
@@ -54,7 +54,6 @@ class Sound(Stim):
     def __init__(self,
         fs: int = None,
         duration: float = None,
-
         **kwargs
     ):
         if fs is None:
@@ -72,14 +71,14 @@ class Sound(Stim):
 
         literally::
 
-            np.ceil((self.duration/1000.)*self.fs).astype(np.int)
+            np.ceil((self.duration/1000.)*self.fs).astype(int)
 
         """
-        self.nsamples = np.ceil((self.duration / 1000.) * self.fs).astype(np.int)
+        self.nsamples = np.ceil((self.duration / 1000.) * self.fs).astype(int)
 
 
 ## Import the required modules
-if Backends['jack'].met:
+if Backends['jack'].met or 'pytest' in sys.modules:
     # This will warn if the jack library is not found
     from autopilot.stim.sound import jackclient
 
@@ -339,10 +338,10 @@ class Jack_Sound(Stim):
 
         literally::
 
-            np.ceil((self.duration/1000.)*self.fs).astype(np.int)
+            np.ceil((self.duration/1000.)*self.fs).astype(int)
 
         """
-        self.nsamples = np.ceil((self.duration / 1000.) * self.fs).astype(np.int)
+        self.nsamples = np.ceil((self.duration / 1000.) * self.fs).astype(int)
 
     def quantize_duration(self, ceiling=True):
         """
@@ -399,19 +398,19 @@ class Jack_Sound(Stim):
             # empty queue
             # FIXME: Testing whether this is where we get held up on the 'fail after sound play' bug
             # n_gets = 0
-            while not self.q.empty():
-                try:
-                    _ = self.q.get_nowait()
-                except Empty:
-                    # normal, get until it's empty
-                    break
+            # while not self.q.empty():
+            #     try:
+            #         _ = self.q.get_nowait()
+            #     except Empty:
+            #         # normal, get until it's empty
+            #         break
                 # n_gets += 1
                 # if n_gets > 100000:
                 #     break
-            for frame in self.chunks:
-                self.q.put_nowait(frame)
+            # for frame in self.chunks:
+            self.q.put_nowait([*self.chunks, None])
             # The jack server looks for a None object to clear the play flag
-            self.q.put_nowait(None)
+            # self.q.put_nowait(None)
             self.buffered = True
 
     def _init_continuous(self):
@@ -487,6 +486,8 @@ class Jack_Sound(Stim):
 
         if callable(self.trigger):
             threading.Thread(target=self.wait_trigger).start()
+
+        self.logger.debug('played!')
 
     def play_continuous(self, loop=True):
         """
@@ -620,6 +621,7 @@ def get_sound_class(server_type: typing.Optional[str] = None) -> typing.Union[ty
     # if we're testing, set server_type to jack
     if 'pytest' in sys.modules:
         server_type = 'jack'
+        return Jack_Sound
 
     # check if requirements are met, if so, return the object. Otherwise return dummy.
     if server_type == 'jack' and Backends['jack'].met:

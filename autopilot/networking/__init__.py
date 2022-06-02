@@ -29,7 +29,7 @@ objects efficiently forward messages without deserializing them at every hop.
 
 import base64
 
-import blosc
+import blosc2 as blosc
 
 from autopilot.networking.station import Station, Terminal_Station, Pilot_Station
 from autopilot.networking.node import Net_Node

@@ -150,7 +150,7 @@ def list_scripts():
 
     for script_name in sorted(SCRIPTS.keys()):
         pad = " " * (longest_name - len(script_name))
-        print(f'\033[1;37;42m{script_name}{pad}\u001b[0m : {SCRIPTS[script_name]["text"]}')
+        print(f'\033[0;32m{script_name}{pad}\u001b[0m : {SCRIPTS[script_name]["text"]}')
 
 if __name__ == "__main__":
     args = parser.parse_args()

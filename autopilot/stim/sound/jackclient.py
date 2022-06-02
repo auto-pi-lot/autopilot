@@ -8,7 +8,6 @@ Client that dumps samples directly to the jack client with the :mod:`jack` packa
 
 """
 import typing
-from itertools import cycle
 import multiprocessing as mp
 import queue as queue
 import numpy as np
@@ -16,14 +15,15 @@ from copy import copy
 from queue import Empty
 import time
 from threading import Thread
+from collections import deque
+import gc
 if typing.TYPE_CHECKING:
-    from autopilot.stim.sound.base import Jack_Sound
+    pass
 
 
 # importing configures environment variables necessary for importing jack-client module below
 import autopilot
-from autopilot import external
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 
 try:
     import jack
@@ -117,6 +117,8 @@ class JackClient(mp.Process):
         outchannels (list): Optionally manually pass outchannels rather than getting
             from prefs. A list of integers corresponding to output channels to initialize.
             if ``None`` (default), get ``'OUTCHANNELS'`` from prefs
+        play_q_size (int): Number of frames that can be buffered (with :meth:`~.sound.base.Jack_Sound.buffer` ) at a time
+        disable_gc (bool): If ``True``, turn off garbage collection in the jack client process (experimental)
 
     Attributes:
         q (:class:`~.multiprocessing.Queue`): Queue that stores buffered frames of audio
@@ -135,7 +137,9 @@ class JackClient(mp.Process):
     def __init__(self,
                  name='jack_client',
                  outchannels: typing.Optional[list] = None,
-                 debug_timing:bool=False):
+                 debug_timing:bool=False,
+                 play_q_size:int=2048,
+                 disable_gc=False):
         """
         Args:
             name:
@@ -153,6 +157,7 @@ class JackClient(mp.Process):
         #self.pipe = pipe
         self.q = mp.Queue()
         self.q_lock = mp.Lock()
+        self._play_q = deque(maxlen=play_q_size)
 
         self.play_evt = mp.Event()
         self.stop_evt = mp.Event()
@@ -183,6 +188,8 @@ class JackClient(mp.Process):
         # Something calls process() before boot_server(), so this has to
         # be initialized
         self.mono_output = True
+
+        self._disable_gc = disable_gc
 
         # store a reference to us and our values in the module
         globals()['SERVER'] = self
@@ -284,7 +291,7 @@ class JackClient(mp.Process):
         self.client.activate()
         self.logger.debug('client activated')
 
-        
+
         ## Hook up the outports (data sinks) to physical ports
         # Get the actual physical ports that can play sound
         target_ports = self.client.get_ports(
@@ -325,6 +332,10 @@ class JackClient(mp.Process):
         self.logger = init_logger(self)
         self.boot_server()
         self.logger.debug('server booted')
+
+        if self._disable_gc:
+            gc.disable()
+            self.logger.info('GC Disabled!')
 
         if self.debug_timing:
             self.querythread = Thread(target=self._query_timebase)
@@ -413,10 +424,10 @@ class JackClient(mp.Process):
 
             # Try to get data
             try:
-                data = self.q.get_nowait()
+                data = self._play_q.popleft()
                 if self.debug_timing:
                     self.logger.debug('Got new audio samples')
-            except queue.Empty:
+            except IndexError:
                 data = None
                 self.logger.warning('Queue Empty')
 
@@ -445,7 +456,10 @@ class JackClient(mp.Process):
                 # Thread(target=self._wait_for_end, args=(self.client.last_frame_time+self.blocksize,)).start()
                 if self.debug_timing:
                     self.logger.debug(f'Sound has ended, requesting end event at {self.wait_until}')
-                
+
+                if self._disable_gc:
+                    gc.collect()
+
             else:
                 ## There is data available
                 if data.shape[0] < self.blocksize:
@@ -465,6 +479,14 @@ class JackClient(mp.Process):
             if self.querythread is None:
                 self.querythread = Thread(target=self._wait_for_end)
                 self.querythread.start()
+
+        # try to get samples every loop, store and wait for the play event to be set
+        try:
+            self._play_q.extend(self.q.get_nowait())
+        except queue.Empty:
+            # fine, no samples have been given to us
+            pass
+
     
     def write_to_outports(self, data):
         """Write the sound in `data` to the outport(s).

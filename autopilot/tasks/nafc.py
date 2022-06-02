@@ -4,11 +4,14 @@ import itertools
 import tables
 import threading
 import typing
+from typing import Literal
 
 import autopilot
 from autopilot.tasks import Task
 from autopilot.stim import init_manager
+from autopilot.data.models.protocol import Trial_Data
 from collections import OrderedDict as odict
+from pydantic import Field
 
 # This declaration allows Subject to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
 # TODO: Move this to __init__
@@ -43,9 +46,6 @@ class Nafc(Task):
     """
     STAGE_NAMES = ["request", "discrim", "reinforcement"]
 
-    # Class attributes
-
-
     # List of needed params, returned data and data format.
     # Params are [name]={'tag': Human Readable Tag, 'type': 'int', 'float', 'bool', etc.}
     PARAMS = odict()
@@ -69,8 +69,6 @@ class Nafc(Task):
     PARAMS['bias_threshold'] = {'tag': 'Bias Correction Threshold (%)',
                                 'type':'int',
                                 'depends':{'bias_mode':2}}
-    #PARAMS['timeout']        = {'tag':'Delay Timeout (ms)',
-    #                            'type':'int'}
     PARAMS['stim']           = {'tag':'Sounds',
                                 'type':'sounds'}
 
@@ -88,16 +86,26 @@ class Nafc(Task):
 
     # PyTables Data descriptor
     # for numpy data types see http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html#arrays-dtypes-constructing
-    class TrialData(tables.IsDescription):
-        # This class allows the Subject object to make a data table with the correct data types. You must update it for any new data you'd like to store
-        trial_num = tables.Int32Col()
-        target = tables.StringCol(1)
-        response = tables.StringCol(1)
-        correct = tables.Int32Col()
-        correction = tables.Int32Col()
-        RQ_timestamp = tables.StringCol(26)
-        DC_timestamp = tables.StringCol(26)
-        bailed = tables.Int32Col()
+    class TrialData(Trial_Data):
+        """
+        Trialwise Data for a Two-Alternative Forced Choice Task
+        """
+        target: Literal['L', 'R'] = Field(...,
+            description="Which side is the correct side this trial",
+            datajoint={'datatype': 'enum', 'kwargs': {'args': ['L', 'R']}})
+        response: Literal['L', 'R'] = Field(...,
+            description="The side that was poked",
+            datajoint={'datatype': 'enum', 'kwargs': {'args': ['L', 'R']}})
+        correct: bool = Field(...,
+            description="Whether the subject's response matched the target")
+        correction: bool = Field(...,
+            description="Whether this trial was a correction trial or not")
+        RQ_timestamp: datetime.datetime = Field(...,
+            description="The time where the stimulus was presented and the trial was requested")
+        DC_timestamp: datetime.datetime = Field(...,
+            description="The time when the subject responded")
+        bailed: bool = Field(...,
+            description="Whether the subject bailed the trial from a timeout or any other reason they did not finish")
 
     HARDWARE = {
         'POKES':{
@@ -106,7 +114,6 @@ class Nafc(Task):
             'R': "Digital_In"
         },
         'LEDS':{
-            # TODO: use LEDs, RGB vs. white LED option in init
             'L': "LED_RGB",
             'C': "LED_RGB",
             'R': "LED_RGB"
@@ -227,16 +234,6 @@ class Nafc(Task):
             self.stage_block = stage_block
 
         self.logger.debug('finished initializing Nafc class')
-
-    #
-    # def center_out(self, pin, level, tick):
-    #     """
-    #
-    #     """
-    #     # Called when something leaves the center pin,
-    #     # We use this to handle the subject leaving the port early
-    #     if self.discrim_playing:
-    #         self.bail_trial()
 
 
     ##################################################################################
@@ -437,17 +434,6 @@ class Nafc(Task):
         #if not self.bailed and self.current_stage == 1:
         if self.stim_light:
             self.set_leds({'L':[0,255,0], 'R':[0,255,0]})
-
-    # def bail_trial(self):
-    #     # If a timer ends or the subject pulls out too soon, we punish and bail
-    #     self.bailed = 1
-    #     self.triggers = {}
-    #     self.punish()
-    #     self.stage_block.set()
-
-    # def clear_triggers(self):
-    #     for pin in self.hardware.values():
-    #         pin.clear_cb()
 
     def flash_leds(self):
         """

@@ -80,9 +80,9 @@ from ctypes import c_bool
 from enum import Enum, auto
 import warnings
 
-#from autopilot.core.loggers import init_logger
 from collections import OrderedDict as odict
 from autopilot.exceptions import DefaultPrefWarning
+from autopilot.root import Autopilot_Pref
 
 class Scopes(Enum):
     """
@@ -109,51 +109,106 @@ class Scopes(Enum):
 
 
 using_manager = False
-try:
-    _PREF_MANAGER = mp.Manager() # type: mp.managers.SyncManager
-    """
-    The :class:`multiprocessing.Manager` that stores prefs during system operation and makes them available
-    and consistent across processes.
-    """
-    using_manager = True
-
-    _PREFS = _PREF_MANAGER.dict()  # type: mp.managers.SyncManager.dict
-    """
-    stores a dictionary of preferences that mirrors the global variables.
-    """
-
-    _INITIALIZED = mp.Value(c_bool, False)  # type: mp.Value
-    """
-    Boolean flag to indicate whether prefs have been initialzied from ``prefs.json``
-    """
-
-    _LOCK = mp.Lock()  # type: mp.Lock
-    """
-    :class:`multiprocessing.Lock` to control access to ``prefs.json``
-    """
-
-except (EOFError, FileNotFoundError):
-    # can't use mp.Manager in ipython and other interactive contexts
-    # fallback to just regular old dict
-
+if getattr(mp.process.current_process(), '_inheriting', False) or os.getenv('AUTOPILOT_NO_PREFS_MANAGER') or __file__ == "<input>":
+    # Check if it's safe to use multiprocessing manager, using the check in multiprocessing/spawn.py:_check_not_importing_main
+    # see https://docs.python.org/2/library/multiprocessing.html#windows
     _PREF_MANAGER = None
     _PREFS = {}
     _INITIALIZED = False
     _LOCK = Lock()
+else:
+
+    try:
+        _PREF_MANAGER = mp.Manager() # type: typing.Optional[mp.managers.SyncManager]
+        """
+        The :class:`multiprocessing.Manager` that stores prefs during system operation and makes them available
+        and consistent across processes.
+        """
+        using_manager = True
+
+        _PREFS = _PREF_MANAGER.dict()  # type: mp.managers.SyncManager.dict
+        """
+        stores a dictionary of preferences that mirrors the global variables.
+        """
+
+        _INITIALIZED = mp.Value(c_bool, False)  # type: mp.Value
+        """
+        Boolean flag to indicate whether prefs have been initialzied from ``prefs.json``
+        """
+
+        _LOCK = mp.Lock()  # type: mp.Lock
+        """
+        :class:`multiprocessing.Lock` to control access to ``prefs.json``
+        """
+
+    except (EOFError, FileNotFoundError):
+        # can't use mp.Manager in ipython and other interactive contexts
+        # fallback to just regular old dict
+
+        _PREF_MANAGER = None
+        _PREFS = {}
+        _INITIALIZED = False
+        _LOCK = Lock()
 
 
 
 _LOGGER = None # type: typing.Union[logging.Logger, None]
 """
-Logger used by prefs initialized by :func:`.core.loggers.init_logger`
+Logger used by prefs initialized by :func:`.utils.loggers.init_logger`
 
 Initially None, created once prefs are populated because init_logger requires some prefs to be set (uh the logdir and level and stuff)
 """
 
-
 # not documenting, just so that the full function doesn't need to be put in for each directory
 # lol at this literal reanimated fossil halfway evolved between os.path and pathlib
 _basedir = Path(os.path.join(os.path.expanduser("~"), "autopilot"))
+
+class Common_Prefs(Autopilot_Pref):
+    """
+    Prefs common to all autopilot agents
+    """
+
+class Directory_Prefs(Autopilot_Pref):
+    """
+    Directories and paths that define the contents of the user directory.
+
+    In general, all paths should be beneath the `USER_DIR`
+    """
+
+    class Config:
+        env_prefix = "AUTOPILOT_DIRECTORY_"
+
+class Agent_Prefs(Autopilot_Pref):
+    """
+    Abstract prefs class for prefs that are specific to agents
+    """
+
+
+class Terminal_Prefs(Agent_Prefs):
+    """
+    Prefs for the :class:`~autopilot.agents.terminal.Terminal`
+    """
+
+    class Config:
+        env_prefix = "AUTOPILOT_TERMINAL_"
+
+class Pilot_Prefs(Agent_Prefs):
+    """
+    Prefs for the :class:`~autopilot.agents.pilot.Pilot`
+    """
+
+    class Config:
+        env_prefix = "AUTOPILOT_PILOT_"
+
+class Audio_Prefs(Autopilot_Pref):
+    """
+    Prefs to configure the audio server
+    """
+
+class Hardware_Pref(Autopilot_Pref):
+    """
+    Abstract class for hardware objects,
+    """
 
 
 _DEFAULTS = odict({
@@ -190,7 +245,7 @@ _DEFAULTS = odict({
     'LOGSIZE': {
         'type': 'int',
         "text": "Size of individual log file (in bytes)",
-        "default": 5 * (2 ** 20),  # 50MB
+        "default": 5 * (2 ** 20),  # 5MB
         "scope": Scopes.COMMON
     },
     'LOGNUM': {
@@ -277,6 +332,12 @@ _DEFAULTS = odict({
         'text': 'Location of calibration files for solenoids, etc.',
         'default': str(_basedir / 'calibration'),
         'scope': Scopes.DIRECTORY
+    },
+    'PIGPIO': {
+        'type': 'bool',
+        'text': 'Launch pigpio daemon on start?',
+        'default': True,
+        'scope': Scopes.PILOT
     },
     'PIGPIOMASK': {
         'type': 'str',
@@ -481,9 +542,10 @@ def get(key: typing.Union[str, None] = None):
             # try to get a default value
             try:
                 default_val = globals()['_DEFAULTS'][key]['default']
-                if key not in globals()['_WARNED']:
-                    globals()['_WARNED'].append(key)
-                    warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', DefaultPrefWarning)
+                if os.getenv('AUTOPILOT_WARN_DEFAULTS'):
+                    if key not in globals()['_WARNED']:
+                        globals()['_WARNED'].append(key)
+                        warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', DefaultPrefWarning)
                 return default_val
 
             # if you still can't find a value, None is an unambiguous signal for pref not set
@@ -556,7 +618,7 @@ def init(fn=None):
     Todo:
 
         This function may be deprecated in the future -- in its current form it serves to allow the sorta janky launch
-        methods in the headers/footers of autopilot/core/pilot.py and autopilot/core/terminal.py that will eventually
+        methods in the headers/footers of autopilot/agents/pilot.py and autopilot/agents/terminal.py that will eventually
         be transformed into a unified agent framework to make launching easier. Ideally one would be able to just
         import prefs without having to explicitly initialize it, but we need to formalize the full launch process
         before we make the full lurch to that model.
@@ -758,3 +820,6 @@ else:
     if not _INITIALIZED:
         init()
 
+_COMPATIBILITY_MAP = {
+
+}

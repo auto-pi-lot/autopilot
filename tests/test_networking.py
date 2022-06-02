@@ -232,6 +232,31 @@ def test_multihop(node_params, station_params):
         node_1.release()
         node_3.release()
 
+@pytest.mark.parametrize('do_blosc', [True, False])
+@pytest.mark.parametrize('dtype', ['bool', 'uint8', 'uint16', 'uint32', 'uint64', 'int8', 'int16', 'int32', 'int64', 'float32', 'float64'])
+def test_blosc(do_blosc, dtype):
+    """
+    Messages should be able to serialize numpy arrays both with and without blosc compression and recreate them respecting
+    their dtype and shape
+    """
+    arr = np.zeros((100, 250), dtype=dtype)
+
+    msg = Message(to='test', sender='test', key='test', id='test', arr=arr, blosc=do_blosc)
+
+    serialized = msg.serialize()
+
+    msg_deserialized = Message(msg=serialized, expand_arrays=True)
+
+    assert np.array_equal(msg_deserialized.arr, arr)
+    assert arr.dtype == msg_deserialized.arr.dtype
+    assert arr.shape == msg_deserialized.arr.shape
+    # check that we actually did blosc
+    if do_blosc:
+        assert len(serialized) < 2000
+    else:
+        assert len(serialized) > 2000
+
+
 
 
 

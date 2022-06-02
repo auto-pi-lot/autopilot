@@ -361,7 +361,7 @@ class Digital_Out(GPIO):
             self.pig.set_mode(self.pin_bcm, pigpio.OUTPUT)
             self.set(self.off)
 
-    def set(self, value: bool):
+    def set(self, value: bool, result:bool=True) -> bool:
         """
         Set pin logic level.
 
@@ -371,10 +371,19 @@ class Digital_Out(GPIO):
 
         Args:
             value (int, bool): (1, True) to set High, (0, False) to set Low.
+            result (bool): If ``True`` (default), wait for response from pigpiod
+                to give an error code. If ``False``, don't wait, but also don't
+                receive confirmation that the pin was written to
         """
         self.stop_script()
 
-        self.pig.write(self.pin_bcm, value)
+        try:
+            ret = self.pig.write(self.pin_bcm, value, result=result)
+        except TypeError:
+            ret = self.pig.write(self.pin_bcm, value)
+            self.logger.warning('Could not use the result argument, please update pigpio to at least 1.79 of sneakers-the-rat\'s fork')
+
+        return ret
 
     def turn(self, direction='on'):
         """

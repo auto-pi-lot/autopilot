@@ -14,7 +14,7 @@
 
     Sorry for the inconvenience, we
     are a very small team and can only do so much work between releases! We'd be happy to get
-    `documentation requests <https://github.com/wehr-lab/autopilot/issues/32>`_ or even a pull request or two to help
+    `documentation requests <https://github.com/auto-pi-lot/autopilot/issues/32>`_ or even a pull request or two to help
     us out until we can get to it :)
 
 Writing a Hardware Class

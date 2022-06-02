@@ -6,7 +6,6 @@ using the ``get`` methods in this module. This makes it possible for plugins to
 be integrated across the system.
 
 """
-import pdb
 from enum import Enum
 import multiprocessing as mp
 from typing import TYPE_CHECKING, Union, Optional, List, Type
@@ -16,7 +15,7 @@ import inspect
 from autopilot.utils.common import find_class, recurse_subclasses, list_classes
 from autopilot.utils.plugins import import_plugins, _IMPORTED
 from autopilot import prefs
-from autopilot.core.loggers import init_logger
+from autopilot.utils.loggers import init_logger
 if TYPE_CHECKING:
     from autopilot.hardware import Hardware
     from autopilot.tasks import Task
@@ -208,6 +207,18 @@ def get_hardware(class_name:Optional[str] = None, plugins:bool = True, ast:bool 
     return get(REGISTRIES.HARDWARE, class_name=class_name, plugins=plugins, ast=ast)
 
 
+_TASK_LIST = {
+    '2AFC':'Nafc',
+     '2AFC_Gap':'Nafc_Gap',
+     '2AFC_Gap_Laser':'Nafc_Gap_Laser',
+     'Free Water':'Free_Water',
+     'GoNoGo': 'GoNoGo',
+     'Parallax': 'Parallax',
+     'Test_DLC_Latency': 'DLC_Latency',
+     'Test_DLC_Hand':'DLC_Hand'
+}
+"""Compatibility for translating old versions"""
+
 def get_task(class_name:Optional[str] = None, plugins:bool = True, ast:bool = True) -> Union[Type["Task"], List[Type["Task"]]]:
     """
     Get a task class by name.
@@ -226,6 +237,9 @@ def get_task(class_name:Optional[str] = None, plugins:bool = True, ast:bool = Tr
     Returns:
         :class:`~autopilot.tasks.Task`
     """
+    if class_name in _TASK_LIST.keys():
+        class_name = _TASK_LIST[class_name]
+
     return get(REGISTRIES.TASK, class_name=class_name, plugins=plugins, ast=ast)
 
 

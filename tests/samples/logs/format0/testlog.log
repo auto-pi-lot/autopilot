@@ -1,0 +1,11 @@
+2021-11-02 14:16:07,647 - stim.sound.jackclient_02.JackClient.jack_client - DEBUG : query thread - frame_time: 55257392, last_frame_time: 55257344, usecs: 1190808756824, frames: 48
+2021-11-02 14:16:07,648 - stim.sound.jackclient_02.JackClient.jack_client - DEBUG : query thread - frame_time: 55257413, last_frame_time: 55257344, usecs: 1190808756824, frames: 69
+2021-11-02 14:16:07,649 - stim.sound.jackclient_02.JackClient.jack_client - DEBUG : query thread - frame_time: 55257443, last_frame_time: 55257344, usecs: 1190808756824, frames: 99
+2021-11-02 14:16:07,649 - stim.sound.jackclient_02.JackClient.jack_client - DEBUG : query thread - frame_time: 55257467, last_frame_time: 55257344, usecs: 1190808756824, frames: 123
+2021-11-02 14:16:07,650 - stim.sound.jackclient_02.JackClient.jack_client - DEBUG : query thread - frame_time: 55257488, last_frame_time: 55257344, usecs: 1190808756824, frames: 144
+2021-11-02 14:16:07,650 - stim.sound.jackclient_02.JackClient.jack_client - DEBUG : query thread - frame_time: 55257509, last_frame_time: 55257344, usecs: 1190808756824, frames: 165
+2021-11-02 14:16:07,651 - stim.sound.jackclient_02.JackClient.jack_client - DEBUG : query thread - frame_time: 55257531, last_frame_time: 55257344, usecs: 1190808756824, frames: 187
+2021-11-02 14:16:07,651 - stim.sound.jackclient_02.JackClient.jack_client - DEBUG : query thread - frame_time: 55257551, last_frame_time: 55257344, usecs: 1190808756824, frames: 207
+2021-11-02 14:16:07,651 - stim.sound.jackclient_02.JackClient.jack_client - DEBUG : query thread - frame_time: 55257572, last_frame_time: 55257344, usecs: 1190808756824, frames: 228
+2021-11-02 14:16:07,652 - stim.sound.jackclient_02.JackClient.jack_client - DEBUG : query thread - frame_time: 55257593, last_frame_time: 55257344, usecs: 1190808756824, frames: 248
+2021-11-02 14:16:07,652 - stim.sound.jackclient_02.JackClient.jack_client - DEBUG : inproc - frame_time: 55257605, last_frame_time: 55257600, usecs: 1190808762628, frames: 5

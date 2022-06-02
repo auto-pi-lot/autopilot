@@ -12,6 +12,8 @@ Utils
    decorators
    hydration
    invoker
+   loggers
+   log_parsers
    plugins
    registry
    requires

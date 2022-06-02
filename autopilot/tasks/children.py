@@ -17,15 +17,10 @@ from autopilot.hardware.gpio import Digital_Out
 from autopilot.hardware.usb import Wheel
 from autopilot.hardware import cameras
 from autopilot.networking import Net_Node
-from autopilot.core.loggers import init_logger
-from autopilot.transform import transforms
-from autopilot.hardware.i2c import I2C_9DOF
-from autopilot.hardware.cameras import PiCamera
-from autopilot.tasks import Task
+from autopilot.utils.loggers import init_logger
 from itertools import cycle
-from queue import Empty, LifoQueue
+from queue import Empty
 import threading
-import logging
 from time import sleep
 
 class Child(object):

@@ -1,11 +1,9 @@
 import altair as alt
 from sklearn.linear_model import LogisticRegression
-from autopilot import prefs
-from autopilot.core.subject import Subject
+from autopilot.data.subject import Subject
 import numpy as np
 from autopilot.utils.common import coerce_discrete
 import pandas as pd
-import pdb
 
 
 def calc_psychometric(data, var_x, var_y='response'):

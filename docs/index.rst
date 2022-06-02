@@ -39,7 +39,7 @@ For a detailed overview of Autopilot's motivation, design, and structure, see ou
     * See the :ref:`changelog <changelog_v040>` for more!
 
 
-This documentation is very young and is very much a work in progress! Please `submit an issue <https://github.com/wehr-lab/autopilot/issues/new>`_ with any incompletenesses, confusion, or errors!
+This documentation is very young and is very much a work in progress! Please `submit an issue <https://github.com/auto-pi-lot/autopilot/issues/new>`_ with any incompletenesses, confusion, or errors!
 
 
 .. toctree::
@@ -49,26 +49,30 @@ This documentation is very young and is very much a work in progress! Please `su
    Overview <guide/overview>
    Quickstart <guide/quickstart>
    Installation <guide/installation>
+   Configuration <guide/configuration>
    Training a Subject <guide/training>
    Writing a Task <guide/task>
-   Writing a Hardware Class <guide/hardware>
    Using Plugins <guide/plugins>
-   Examples <examples>
+   Examples <examples/index>
+   FAQ <guide/faq>
 
 .. toctree::
    :maxdepth: 1
    :caption: API Documentation:
+   :titlesonly:
 
-   Core Modules <core/index>
+   Agents <agents/index>
+   Data <data/index>
+   GUI <gui/index>
    Hardware <hardware/index>
    Networking <networking/index>
    Stimuli <stim/index>
    Tasks <tasks/index>
    Transformations <transform/index>
-   Visualization Tools <viz/index>
    Utilities <utils/index>
    Setup <setup/index>
    Prefs <prefs>
+   Root <root/index>
    External <external>
 
 
@@ -77,7 +81,7 @@ This documentation is very young and is very much a work in progress! Please `su
     :caption: Meta:
 
     Wiki <https://wiki.auto-pi-lot.com/>
-    Discussion <https://github.com/wehr-lab/autopilot/discussions>
+    Discussion <https://github.com/auto-pi-lot/autopilot/discussions>
     Changelog <changelog/index>
     To-Do <todo>
     References <references>

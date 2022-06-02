@@ -1,8 +1,9 @@
 import base64
 import datetime
 import json
+import numpy as np
 
-import blosc
+import blosc2 as blosc
 
 
 class Message(object):
@@ -17,10 +18,10 @@ class Message(object):
 
     `id`, `to`, `sender`, and `key` are required attributes,
     but any other key-value pair passed on init is added to the message's attributes
-    and included in the message.
+    and included in the message. All arguments not indicated in the signature are passed in
+    as kwargs and stored as attributes.
 
     Can be indexed and set like a dictionary (message['key'], etc.)
-
 
     Attributes:
         id (str): ID that uniquely identifies a message.
@@ -40,11 +41,15 @@ class Message(object):
             * ``NOLOG`` - don't log this message! for streaming, or other instances where the constant printing of the logger is performance prohibitive
     """
 
-    def __init__(self, msg=None, expand_arrays = False,  **kwargs):
-        # Messages don't need to have all attributes on creation,
-        # but do need them to serialize
+    def __init__(self, msg=None, expand_arrays = False, blosc:bool=True,  **kwargs):
         """
         Args:
+            msg (str): A serialized message made with :meth:`.serialize`. Optional -- can be passed rather than
+                the message attributes themselves if, for example, we're receiving and reconstituting this message.
+            expand_arrays (bool): If given a serialized message, if ``True``, expand and deserialize the arrays.
+                Otherwise leave serialized. For speed of message forwarding -- don't deserialize if we're just forwarding
+                this message.
+            blosc (bool): If ``True`` (default), When serializing arrays, also compress with blosc. Stored as a flag
             *args:
             **kwargs:
         """
@@ -56,20 +61,16 @@ class Message(object):
         # ie. with signal-type messages like "STOP"
         self.value = None
         self.timestamp = None
-        self.flags = {}
         self.changed = False
         self.serialized = None
 
         # optional attrs should be instance attributes so they are caught by _-dict__
         self.flags = {}
         self.timestamp = None
+        self.blosc = blosc
 
         self.ttl = kwargs.get('ttl', 2)
 
-        #set_trace(term_size=(120,40))
-        #if len(args)>1:
-        #    Exception("Messages can only be constructed with a single positional argument, which is assumed to be a serialized message")
-        #elif len(args)>0:
         if msg:
             self.serialized = msg
             if expand_arrays:
@@ -80,7 +81,6 @@ class Message(object):
 
         for k, v in kwargs.items():
             setattr(self, k, v)
-            #self[k] = v
 
         # if we're not a previous message being recreated, get a timestamp for our creation
         if 'timestamp' not in kwargs.keys():
@@ -117,44 +117,12 @@ class Message(object):
             key:
             value:
         """
-        # self.changed=True
+        self.changed=True
         #value = self._check_enc(value)
         self.__dict__[key] = value
 
-    # def __setattr__(self, key, value):
-    #     self.changed=True
-    #     #value = self._check_enc(value)
-    #     super(Message, self).__setattr__(self, key, value)
-    #     self.__dict__[key] = value
 
-    # def __getattr__(self, key):
-    #     #value = self._check_dec(self.__dict__[key])
-    #     return self.__dict__[key]
-    #
-    # def _check_enc(self, value):
-    #     if isinstance(value, np.ndarray):
-    #         value = json_tricks.dumps(value)
-    #     elif isinstance(value, dict):
-    #         for k, v in value.items():
-    #             value[k] = self._check_enc(v)
-    #     elif isinstance(value, list):
-    #         value = [self._check_enc(v) for v in value]
-    #     return value
-    #
-    # def _check_dec(self, value):
-    #
-    #     # if numpy array, reconstitute
-    #     if isinstance(value, basestring):
-    #         if value.startswith('{"__ndarray__'):
-    #             value = json_tricks.loads(value)
-    #     elif isinstance(value, dict):
-    #         for k, v in value.items():
-    #             value[k] = self._check_dec(v)
-    #     elif isinstance(value, list):
-    #         value = [self._check_dec(v) for v in value]
-    #     return value
-
-    def _serialize_numpy(self, array):
+    def _serialize_numpy(self, array:np.ndarray):
         """
         Serialize a numpy array for sending over the wire
 
@@ -164,14 +132,24 @@ class Message(object):
         Returns:
 
         """
-        compressed = base64.b64encode(blosc.pack_array(array)).decode('ascii')
-        return {'NUMPY_ARRAY': compressed}
+        if self.blosc:
+            compressed = base64.b64encode(blosc.pack_array(array)).decode('ascii')
+        else:
+            compressed = base64.b64encode(array.tobytes()).decode('ascii')
+        return {'NUMPY_ARRAY': compressed, 'DTYPE': str(array.dtype), 'SHAPE':array.shape}
 
 
     def _deserialize_numpy(self, obj_pairs):
         # print(len(obj_pairs), obj_pairs)
-        if (len(obj_pairs) == 1) and obj_pairs[0][0] == "NUMPY_ARRAY":
-            return blosc.unpack_array(base64.b64decode(obj_pairs[0][1]))
+        if (len(obj_pairs) == 3) and obj_pairs[0][0] == "NUMPY_ARRAY":
+            decode = base64.b64decode(obj_pairs[0][1])
+            try:
+                arr = blosc.unpack_array(decode)
+            except RuntimeError:
+                # cannot decompress, maybe because wasn't compressed
+                arr = np.frombuffer(decode, dtype=obj_pairs[1][1]).reshape(obj_pairs[2][1])
+
+            return arr
         else:
             return dict(obj_pairs)
 
@@ -247,13 +225,6 @@ class Message(object):
             Exception("""Message invalid at the time of serialization!\n {}""".format(str(self)))
             return False
 
-        # msg = {
-        #     'id': self.id,
-        #     'to': self.to,
-        #     'sender': self.sender,
-        #     'key': self.key,
-        #     'value': self.value
-        # }
         msg = self.__dict__
         # exclude 'serialized' so it's not in there twice
         try:

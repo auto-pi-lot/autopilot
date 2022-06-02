@@ -31,7 +31,8 @@ Using the Protocol Wizard
     This is related to the unification of the parameter structure in Autopilot 0.3 (see :ref:`todo`).
     Protocols can be edited after creation in the Protocol Wizard using the format examples in the manual protocol creation section below.
 
-The Protocol Wizard allows you to build protocols using all the tasks in :mod:`autopilot.tasks` (specifically that are registered in the :data:`~autopilot.tasks.TASK_LIST`).
+The Protocol Wizard allows you to build protocols using all the classes that inherit from :class:`.Task` in the Autopilot
+main repository as well as any within your plugins directory.
 It extracts the `PARAMS` dictionary from each task class, adds a few general parameters, and allows the user to fill them.
 
 For this example, we will create a protocol for a freely-moving two-alternative forced choice task [#f1]_ .
@@ -220,7 +221,7 @@ An example for our speech task can be found in :mod:`autopilot.tasks.protocol_sc
 Creating a Subject
 ==================
 
-A :class:`~autopilot.core.subject.Subject` stores the data, protocol, and history of a subject.
+A :class:`~autopilot.data.subject.Subject` stores the data, protocol, and history of a subject.
 Each subject is implicitly assigned to a Pilot by virtue of the structure of the ``pilot_db.json`` file, but they can be switched by editing that file.
 
 1. Create a subject by clicking the ``+`` button in the control panel of a particular Pilot
@@ -228,10 +229,6 @@ Each subject is implicitly assigned to a Pilot by virtue of the structure of the
 2. Fill out the basic biographical information
 
 .. figure:: ../_images/subject_2.png
-
-.. todo::
-
-    Currently the biographical fields are hardcoded in the Subject class. In the future we will allow users to create their own Subject schema where, for example, 'genotype' may not be as relevant.
 
 3. Assign the subject to a protocol and step. Notice how the task we created earlier is here!
 

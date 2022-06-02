@@ -18,29 +18,29 @@ v0.3.4 (December 13, 2020)
 
 Improvements
 ~~~~~~~~~~~~
-* Unify the creation of loggers!!!! See the docs ;) :mod:`autopilot.core.loggers` : https://github.com/wehr-lab/autopilot/pull/52/commits/d55638f985ab38044fc95ffeff5945021c2e198e https://github.com/wehr-lab/autopilot/issues/38
-* Unify prefs, including sensible defaults, refactoring of scripts into a reasonable format, multiprocess-safety, and just generally a big weight off my mind. Note that this is a **breaking change** to the way prefs are accessed. Previously one would do `prefs.PREF_NAME`, but that made it very difficult to provide default values or handle missing prefs. the new syntax is `prefs.get('PREF_NAME')` which returns defaults with a warning and `None` if the pref is not set: https://github.com/wehr-lab/autopilot/pull/52/commits/c40a212bcaf5f184f2a6a606027fe15b1b4df59c https://github.com/wehr-lab/autopilot/issues/38
+* Unify the creation of loggers!!!! See the docs ;) :mod:`autopilot.core.loggers` : https://github.com/auto-pi-lot/autopilot/pull/52/commits/d55638f985ab38044fc95ffeff5945021c2e198e https://github.com/auto-pi-lot/autopilot/issues/38
+* Unify prefs, including sensible defaults, refactoring of scripts into a reasonable format, multiprocess-safety, and just generally a big weight off my mind. Note that this is a **breaking change** to the way prefs are accessed. Previously one would do `prefs.PREF_NAME`, but that made it very difficult to provide default values or handle missing prefs. the new syntax is `prefs.get('PREF_NAME')` which returns defaults with a warning and `None` if the pref is not set: https://github.com/auto-pi-lot/autopilot/pull/52/commits/c40a212bcaf5f184f2a6a606027fe15b1b4df59c https://github.com/auto-pi-lot/autopilot/issues/38
 * completely clean up scripts, and together that opened the path to clean up setup as well. so all things configuration got a major promotion
-* We're on the board with CI and automated testing with a positively massive 3% code coverage!!! https://github.com/wehr-lab/autopilot/pull/52/commits/743bb8fe67a69fcc556fa76e81f72f97f510dff7
-* new scripts to eg. create autopilot alias: https://github.com/wehr-lab/autopilot/pull/52/commits/211919b05922e18a85d8ef6216973f4000fd32c5
+* We're on the board with CI and automated testing with a positively massive 3% code coverage!!! https://github.com/auto-pi-lot/autopilot/pull/52/commits/743bb8fe67a69fcc556fa76e81f72f97f510dff7
+* new scripts to eg. create autopilot alias: https://github.com/auto-pi-lot/autopilot/pull/52/commits/211919b05922e18a85d8ef6216973f4000fd32c5
 
 Bugfixes
 ~~~~~~~~~
-* cleanup scripts on object deletion: https://github.com/wehr-lab/autopilot/pull/52/commits/e8218304bd7ef2e13d2adfc236f3e781abea5f78 https://github.com/wehr-lab/autopilot/issues/41
-* don't drop 'floats' from gui when we say we can use them...: https://github.com/wehr-lab/autopilot/pull/52/commits/743bb8fe67a69fcc556fa76e81f72f97f510dff7
-* pigpio scripts dont like floats: https://github.com/wehr-lab/autopilot/pull/52/commits/9f939cd78a5296db3bf318115bee0213bcd1afc0
+* cleanup scripts on object deletion: https://github.com/auto-pi-lot/autopilot/pull/52/commits/e8218304bd7ef2e13d2adfc236f3e781abea5f78 https://github.com/auto-pi-lot/autopilot/issues/41
+* don't drop 'floats' from gui when we say we can use them...: https://github.com/auto-pi-lot/autopilot/pull/52/commits/743bb8fe67a69fcc556fa76e81f72f97f510dff7
+* pigpio scripts dont like floats: https://github.com/auto-pi-lot/autopilot/pull/52/commits/9f939cd78a5296db3bf318115bee0213bcd1afc0
 
 Docs
 ~~~~
-* Clarification of supported systems: https://github.com/wehr-lab/autopilot/pull/52/commits/ce0ddf78b7f59f5487fec2ca7e8fb3c0ad162051
-* Solved an ancient sphinx riddle of how to get data objects/constants to pretty-print: https://github.com/wehr-lab/autopilot/pull/52/commits/ec6d5a75dada05688b6bd3c1a53b3d9e5923870f
-* Clarify hardware prefs https://github.com/wehr-lab/autopilot/pull/52/commits/f3a7609995c84848004891a0f41c7847cb754aae
-* what numbering system do we use: https://github.com/wehr-lab/autopilot/pull/52/commits/64267249d7b1ec1040b522308cd60f928f2b2ee6
+* Clarification of supported systems: https://github.com/auto-pi-lot/autopilot/pull/52/commits/ce0ddf78b7f59f5487fec2ca7e8fb3c0ad162051
+* Solved an ancient sphinx riddle of how to get data objects/constants to pretty-print: https://github.com/auto-pi-lot/autopilot/pull/52/commits/ec6d5a75dada05688b6bd3c1a53b3d9e5923870f
+* Clarify hardware prefs https://github.com/auto-pi-lot/autopilot/pull/52/commits/f3a7609995c84848004891a0f41c7847cb754aae
+* what numbering system do we use: https://github.com/auto-pi-lot/autopilot/pull/52/commits/64267249d7b1ec1040b522308cd60f928f2b2ee6
 
 Logging
 ~~~~~~~
-* catch pigpio script init exception: https://github.com/wehr-lab/autopilot/pull/52/commits/3743f8abde7bbd3ed7766bdd75aee52afedf47e2
-* more of it idk https://github.com/wehr-lab/autopilot/pull/52/commits/b682d088dbad0f206c3630543e96a5a00ceabe25
+* catch pigpio script init exception: https://github.com/auto-pi-lot/autopilot/pull/52/commits/3743f8abde7bbd3ed7766bdd75aee52afedf47e2
+* more of it idk https://github.com/auto-pi-lot/autopilot/pull/52/commits/b682d088dbad0f206c3630543e96a5a00ceabe25
 
 
 v0.3.3 (October 25, 2020)
@@ -64,7 +64,7 @@ Improvements
 * Better internal handling of pigpiod -- you're now able to import and use hardware modules without needing to explicitly start pigpiod!!
 * Hopefully better killing of processes on exit, though still should work into unified process manager so don't need to reimplement everything (eg. as is done with launching pigpiod and jackd)
 * Environment scripts have been split out into ``setup/scripts.py`` and you can now run them with ``python -m autopilot.setup.run_script`` (use ``--help`` to see how!)
-* Informative error when setup is run with too narrow terminal: https://github.com/wehr-lab/autopilot/issues/23
+* Informative error when setup is run with too narrow terminal: https://github.com/auto-pi-lot/autopilot/issues/23
 * More loggers, but increased need to unify logger creation!!!
 
 
@@ -84,8 +84,8 @@ v0.3.2 (September 28, 2020)
 Bugfixes
 ~~~~~~~~
 
-* https://github.com/wehr-lab/autopilot/issues/19 - previously, I attempted to package binaries for the lightly modified pigpio and for jackd (the apt binary used to not work), but after realizing that was the worst possible way of going about it I changed install strategies, but didn't entirely remove the vestiges of the prior attempt. The installation expected certain directories to exist (in autopilot/external) that didn't, which crashed and choked install. Still need to formalize a configuration and plugin system, but getting there.
-* https://github.com/wehr-lab/autopilot/issues/20 - the jackd binary in the apt repos for the raspi used to not work, so i was in the habit of compiling jackd audio from source. I had build that into the install routine, but something about that now causes the JACK-Client python interface to throw segfaults. Somewhere along the line someone fixed the apt repo version of jackd so we use that now.
+* https://github.com/auto-pi-lot/autopilot/issues/19 - previously, I attempted to package binaries for the lightly modified pigpio and for jackd (the apt binary used to not work), but after realizing that was the worst possible way of going about it I changed install strategies, but didn't entirely remove the vestiges of the prior attempt. The installation expected certain directories to exist (in autopilot/external) that didn't, which crashed and choked install. Still need to formalize a configuration and plugin system, but getting there.
+* https://github.com/auto-pi-lot/autopilot/issues/20 - the jackd binary in the apt repos for the raspi used to not work, so i was in the habit of compiling jackd audio from source. I had build that into the install routine, but something about that now causes the JACK-Client python interface to throw segfaults. Somewhere along the line someone fixed the apt repo version of jackd so we use that now.
 * previously I had only tested in a virtual environment, but now the installation routine properly handles not being in a venv.
 
 Cleanup
@@ -116,10 +116,10 @@ Major Updates
   I will *not attempt to keep Autopilot compatible with Python 2*, but no decision has been made about compatibility
   with other versions of Python 3. Until then, expect that Autopilot will attempt to keep up with major version changes.
   The switch also let up update PySide (Qt library used for the GUI) to PySide2, which uses Qt5 and has a whole raft of other improvements.
-* **Continuous Data Handling** - The :class:`~.core.subject.Subject` class and :mod:`~.core.networking` modules have been improved
+* **Continuous Data Handling** - The :class:`~.data.subject.Subject` class and :mod:`~.core.networking` modules have been improved
   to handle continuous data (eg. streaming data, generally non-trialwise or non-event-sampled data). Continuous data
   can be set in a Task description either with a ``tables`` column descriptor as trial data is, but also can be set as
-  ``'infer'``, for which the :class:`~.core.subject.Subject` class will wait until it receives the first data and
+  ``'infer'``, for which the :class:`~.data.subject.Subject` class will wait until it receives the first data and
   automatically create a ``tables`` column depending on its type and shape. While previously we intended to nudge users
   to be explicit about declaring their data, this was necessary to allow for data that might be variable in type and shape
   to be included in a Task -- eg. it should be possible to record video data without needing to specify the resolution
@@ -273,9 +273,9 @@ Bugfixes
   quickly enough would resend it, resulting in two tasks being started -- but this would happen whenever two ``START`` messages were sent
   to a pilot. This was fixed with a simple check of :attr:`.Pilot.state` before a task is initialized. Similar bugs were fixed in
   :class:`~.plots.Plot` objects.
-* The :class:`~.core.subject.Subject` class would sometimes fail to get and increment the trial session. This has been fixed
+* The :class:`~.data.subject.Subject` class would sometimes fail to get and increment the trial session. This has been fixed
   by saving the session number as an attribute in the ``info`` node.
-* The :class:`~.core.subject.Subject` class would reset the session counter even when the same task was being reassigned (eg. if updated), now
+* The :class:`~.data.subject.Subject` class would reset the session counter even when the same task was being reassigned (eg. if updated), now
   it preserves session number if the protocol name is unchanged.
 * The :meth:`~.Terminal.update_protocols` method didn't report which subjects had their protocols updated, and so if there was some
   exception when setting new protocols it happened silently, making it so a user would never know their task was never updated.
@@ -337,7 +337,7 @@ Regressions
 
 
 .. _whitepaper: https://www.biorxiv.org/content/10.1101/807693v1
-.. _plaintext: https://github.com/wehr-lab/autopilot/blob/master/notes/todo
+.. _plaintext: https://github.com/auto-pi-lot/autopilot/blob/master/notes/todo
 .. _sphinx-autobuild: https://github.com/GaretJax/sphinx-autobuild
 .. _altair: https://altair-viz.github.io/
 .. _blosc: http://python-blosc.blosc.org/
@@ -345,4 +345,4 @@ Regressions
 .. _LSM9DS1: https://www.sparkfun.com/products/13944
 .. _MLX90640: https://www.melexis.com/en/product/MLX90640/Far-Infrared-Thermal-Sensor-Array
 .. _DeepLabCut-live: https://github.com/DeepLabCut/DeepLabCut-live/
-.. _dlclive_example: https://github.com/wehr-lab/autopilot/blob/2to3/examples/example_transformation_dlc.ipynb
+.. _dlclive_example: https://github.com/auto-pi-lot/autopilot/blob/2to3/examples/example_transformation_dlc.ipynb

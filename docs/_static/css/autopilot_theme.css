@@ -339,7 +339,7 @@ big, small {
 
 }
 
-.fa:before, .wy-menu-vertical li span.toctree-expand:before, .wy-menu-vertical li.on a span.toctree-expand:before, .wy-menu-vertical li.current>a span.toctree-expand:before, .rst-content .admonition-title:before, .rst-content h1 .headerlink:before, .rst-content h2 .headerlink:before, .rst-content h3 .headerlink:before, .rst-content h4 .headerlink:before, .rst-content h5 .headerlink:before, .rst-content h6 .headerlink:before, .rst-content dl dt .headerlink:before, .rst-content p.caption .headerlink:before, .rst-content table>caption .headerlink:before, .rst-content tt.download span:first-child:before, .rst-content code.download span:first-child:before, .icon:before, .wy-dropdown .caret:before, .wy-inline-validate.wy-inline-validate-success .wy-input-context:before, .wy-inline-validate.wy-inline-validate-danger .wy-input-context:before, .wy-inline-validate.wy-inline-validate-warning .wy-input-context:before, .wy-inline-validate.wy-inline-validate-info .wy-input-context:before, .wy-alert, .rst-content .note, .rst-content .attention, .rst-content .caution, .rst-content .danger, .rst-content .error, .rst-content .hint, .rst-content .important, .rst-content .tip, .rst-content .warning, .rst-content .seealso, .rst-content .admonition-todo, .rst-content .admonition, .btn, input[type="text"], input[type="password"], input[type="email"], input[type="url"], input[type="date"], input[type="month"], input[type="time"], input[type="datetime"], input[type="datetime-local"], input[type="week"], input[type="number"], input[type="search"], input[type="tel"], input[type="color"], select, textarea, .wy-menu-vertical li.on a, .wy-menu-vertical li.current>a, .wy-side-nav-search>a, .wy-side-nav-search .wy-dropdown>a, .wy-nav-top a {
+.fa:before, .wy-menu-vertical li button.toctree-expand:before, .wy-menu-vertical li.on a button.toctree-expand:before, .wy-menu-vertical li.current>a button.toctree-expand:before, .rst-content .admonition-title:before, .rst-content h1 .headerlink:before, .rst-content h2 .headerlink:before, .rst-content h3 .headerlink:before, .rst-content h4 .headerlink:before, .rst-content h5 .headerlink:before, .rst-content h6 .headerlink:before, .rst-content dl dt .headerlink:before, .rst-content p.caption .headerlink:before, .rst-content table>caption .headerlink:before, .rst-content tt.download span:first-child:before, .rst-content code.download span:first-child:before, .icon:before, .wy-dropdown .caret:before, .wy-inline-validate.wy-inline-validate-success .wy-input-context:before, .wy-inline-validate.wy-inline-validate-danger .wy-input-context:before, .wy-inline-validate.wy-inline-validate-warning .wy-input-context:before, .wy-inline-validate.wy-inline-validate-info .wy-input-context:before, .wy-alert, .rst-content .note, .rst-content .attention, .rst-content .caution, .rst-content .danger, .rst-content .error, .rst-content .hint, .rst-content .important, .rst-content .tip, .rst-content .warning, .rst-content .seealso, .rst-content .admonition-todo, .rst-content .admonition, .btn, input[type="text"], input[type="password"], input[type="email"], input[type="url"], input[type="date"], input[type="month"], input[type="time"], input[type="datetime"], input[type="datetime-local"], input[type="week"], input[type="number"], input[type="search"], input[type="tel"], input[type="color"], select, textarea, .wy-menu-vertical li.on a, .wy-menu-vertical li.current>a, .wy-side-nav-search>a, .wy-side-nav-search .wy-dropdown>a, .wy-nav-top a {
     -webkit-font-smoothing: antialiased
 }
 
@@ -362,13 +362,13 @@ big, small {
  */
 @font-face {
     font-family: 'FontAwesome';
-    src: url("../fonts/fontawesome-webfont.eot?v=4.7.0");
-    src: url("../fonts/fontawesome-webfont.eot?#iefix&v=4.7.0") format("embedded-opentype"), url("../fonts/fontawesome-webfont.woff2?v=4.7.0") format("woff2"), url("../fonts/fontawesome-webfont.woff?v=4.7.0") format("woff"), url("../fonts/fontawesome-webfont.ttf?v=4.7.0") format("truetype"), url("../fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular") format("svg");
+    src: url("./fonts/fontawesome-webfont.eot?v=4.7.0");
+    src: url("./fonts/fontawesome-webfont.eot?#iefix&v=4.7.0") format("embedded-opentype"), url("./fonts/fontawesome-webfont.woff2?v=4.7.0") format("woff2"), url("./fonts/fontawesome-webfont.woff?v=4.7.0") format("woff"), url("./fonts/fontawesome-webfont.ttf?v=4.7.0") format("truetype"), url("./fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular") format("svg");
     font-weight: normal;
     font-style: normal
 }
 
-.fa, .wy-menu-vertical li span.toctree-expand, .wy-menu-vertical li.on a span.toctree-expand, .wy-menu-vertical li.current>a span.toctree-expand, .rst-content .admonition-title, .rst-content h1 .headerlink, .rst-content h2 .headerlink, .rst-content h3 .headerlink, .rst-content h4 .headerlink, .rst-content h5 .headerlink, .rst-content h6 .headerlink, .rst-content dl dt .headerlink, .rst-content p.caption .headerlink, .rst-content table>caption .headerlink, .rst-content tt.download span:first-child, .rst-content code.download span:first-child, .icon {
+.fa, .wy-menu-vertical li button.toctree-expand, .wy-menu-vertical li.on a button.toctree-expand, .wy-menu-vertical li.current>a button.toctree-expand, .rst-content .admonition-title, .rst-content h1 .headerlink, .rst-content h2 .headerlink, .rst-content h3 .headerlink, .rst-content h4 .headerlink, .rst-content h5 .headerlink, .rst-content h6 .headerlink, .rst-content dl dt .headerlink, .rst-content p.caption .headerlink, .rst-content table>caption .headerlink, .rst-content tt.download span:first-child, .rst-content code.download span:first-child, .icon {
     display: inline-block;
     font: normal normal normal 14px/1 FontAwesome;
     font-size: inherit;
@@ -1739,7 +1739,7 @@ big, small {
     content: ""
 }
 
-.fa-minus-square-o:before, .wy-menu-vertical li.on a span.toctree-expand:before, .wy-menu-vertical li.current>a span.toctree-expand:before {
+.fa-minus-square-o:before, .wy-menu-vertical li.on a button.toctree-expand:before, .wy-menu-vertical li.current>a button.toctree-expand:before {
     content: ""
 }
 
@@ -2035,7 +2035,7 @@ big, small {
     content: ""
 }
 
-.fa-plus-square-o:before, .wy-menu-vertical li span.toctree-expand:before {
+.fa-plus-square-o:before, .wy-menu-vertical li button.toctree-expand:before {
     content: ""
 }
 
@@ -3287,14 +3287,14 @@ big, small {
     clip: auto
 }
 
-.fa, .wy-menu-vertical li span.toctree-expand, .wy-menu-vertical li.on a span.toctree-expand, .wy-menu-vertical li.current>a span.toctree-expand, .rst-content .admonition-title, .rst-content h1 .headerlink, .rst-content h2 .headerlink, .rst-content h3 .headerlink, .rst-content h4 .headerlink, .rst-content h5 .headerlink, .rst-content h6 .headerlink, .rst-content dl dt .headerlink, .rst-content p.caption .headerlink, .rst-content table>caption .headerlink, .rst-content tt.download span:first-child, .rst-content code.download span:first-child, .icon, .wy-dropdown .caret, .wy-inline-validate.wy-inline-validate-success .wy-input-context, .wy-inline-validate.wy-inline-validate-danger .wy-input-context, .wy-inline-validate.wy-inline-validate-warning .wy-input-context, .wy-inline-validate.wy-inline-validate-info .wy-input-context {
+.fa, .wy-menu-vertical li button.toctree-expand, .wy-menu-vertical li.on a button.toctree-expand, .wy-menu-vertical li.current>a button.toctree-expand, .rst-content .admonition-title, .rst-content h1 .headerlink, .rst-content h2 .headerlink, .rst-content h3 .headerlink, .rst-content h4 .headerlink, .rst-content h5 .headerlink, .rst-content h6 .headerlink, .rst-content dl dt .headerlink, .rst-content p.caption .headerlink, .rst-content table>caption .headerlink, .rst-content tt.download span:first-child, .rst-content code.download span:first-child, .icon, .wy-dropdown .caret, .wy-inline-validate.wy-inline-validate-success .wy-input-context, .wy-inline-validate.wy-inline-validate-danger .wy-input-context, .wy-inline-validate.wy-inline-validate-warning .wy-input-context, .wy-inline-validate.wy-inline-validate-info .wy-input-context {
     font-family: inherit
     /*font-family: 'Cutive Mono', monospace;*/
 }
 
 
 
-.fa:before, .wy-menu-vertical li span.toctree-expand:before, .wy-menu-vertical li.on a span.toctree-expand:before, .wy-menu-vertical li.current>a span.toctree-expand:before, .rst-content .admonition-title:before, .rst-content h1 .headerlink:before, .rst-content h2 .headerlink:before, .rst-content h3 .headerlink:before, .rst-content h4 .headerlink:before, .rst-content h5 .headerlink:before, .rst-content h6 .headerlink:before, .rst-content dl dt .headerlink:before, .rst-content p.caption .headerlink:before, .rst-content table>caption .headerlink:before, .rst-content tt.download span:first-child:before, .rst-content code.download span:first-child:before, .icon:before, .wy-dropdown .caret:before, .wy-inline-validate.wy-inline-validate-success .wy-input-context:before, .wy-inline-validate.wy-inline-validate-danger .wy-input-context:before, .wy-inline-validate.wy-inline-validate-warning .wy-input-context:before, .wy-inline-validate.wy-inline-validate-info .wy-input-context:before {
+.fa:before, .wy-menu-vertical li button.toctree-expand:before, .wy-menu-vertical li.on a button.toctree-expand:before, .wy-menu-vertical li.current>a button.toctree-expand:before, .rst-content .admonition-title:before, .rst-content h1 .headerlink:before, .rst-content h2 .headerlink:before, .rst-content h3 .headerlink:before, .rst-content h4 .headerlink:before, .rst-content h5 .headerlink:before, .rst-content h6 .headerlink:before, .rst-content dl dt .headerlink:before, .rst-content p.caption .headerlink:before, .rst-content table>caption .headerlink:before, .rst-content tt.download span:first-child:before, .rst-content code.download span:first-child:before, .icon:before, .wy-dropdown .caret:before, .wy-inline-validate.wy-inline-validate-success .wy-input-context:before, .wy-inline-validate.wy-inline-validate-danger .wy-input-context:before, .wy-inline-validate.wy-inline-validate-warning .wy-input-context:before, .wy-inline-validate.wy-inline-validate-info .wy-input-context:before {
     font-family: "FontAwesome";
     display: inline-block;
     font-style: normal;
@@ -3303,12 +3303,12 @@ big, small {
     text-decoration: inherit
 }
 
-a .fa, a .wy-menu-vertical li span.toctree-expand, .wy-menu-vertical li a span.toctree-expand, .wy-menu-vertical li.on a span.toctree-expand, .wy-menu-vertical li.current>a span.toctree-expand, a .rst-content .admonition-title, .rst-content a .admonition-title, a .rst-content h1 .headerlink, .rst-content h1 a .headerlink, a .rst-content h2 .headerlink, .rst-content h2 a .headerlink, a .rst-content h3 .headerlink, .rst-content h3 a .headerlink, a .rst-content h4 .headerlink, .rst-content h4 a .headerlink, a .rst-content h5 .headerlink, .rst-content h5 a .headerlink, a .rst-content h6 .headerlink, .rst-content h6 a .headerlink, a .rst-content dl dt .headerlink, .rst-content dl dt a .headerlink, a .rst-content p.caption .headerlink, .rst-content p.caption a .headerlink, a .rst-content table>caption .headerlink, .rst-content table>caption a .headerlink, a .rst-content tt.download span:first-child, .rst-content tt.download a span:first-child, a .rst-content code.download span:first-child, .rst-content code.download a span:first-child, a .icon {
+a .fa, a .wy-menu-vertical li button.toctree-expand, .wy-menu-vertical li a button.toctree-expand, .wy-menu-vertical li.on a button.toctree-expand, .wy-menu-vertical li.current>a button.toctree-expand, a .rst-content .admonition-title, .rst-content a .admonition-title, a .rst-content h1 .headerlink, .rst-content h1 a .headerlink, a .rst-content h2 .headerlink, .rst-content h2 a .headerlink, a .rst-content h3 .headerlink, .rst-content h3 a .headerlink, a .rst-content h4 .headerlink, .rst-content h4 a .headerlink, a .rst-content h5 .headerlink, .rst-content h5 a .headerlink, a .rst-content h6 .headerlink, .rst-content h6 a .headerlink, a .rst-content dl dt .headerlink, .rst-content dl dt a .headerlink, a .rst-content p.caption .headerlink, .rst-content p.caption a .headerlink, a .rst-content table>caption .headerlink, .rst-content table>caption a .headerlink, a .rst-content tt.download span:first-child, .rst-content tt.download a span:first-child, a .rst-content code.download span:first-child, .rst-content code.download a span:first-child, a .icon {
     display: inline-block;
     text-decoration: inherit
 }
 
-.btn .fa, .btn .wy-menu-vertical li span.toctree-expand, .wy-menu-vertical li .btn span.toctree-expand, .btn .wy-menu-vertical li.on a span.toctree-expand, .wy-menu-vertical li.on a .btn span.toctree-expand, .btn .wy-menu-vertical li.current>a span.toctree-expand, .wy-menu-vertical li.current>a .btn span.toctree-expand, .btn .rst-content .admonition-title, .rst-content .btn .admonition-title, .btn .rst-content h1 .headerlink, .rst-content h1 .btn .headerlink, .btn .rst-content h2 .headerlink, .rst-content h2 .btn .headerlink, .btn .rst-content h3 .headerlink, .rst-content h3 .btn .headerlink, .btn .rst-content h4 .headerlink, .rst-content h4 .btn .headerlink, .btn .rst-content h5 .headerlink, .rst-content h5 .btn .headerlink, .btn .rst-content h6 .headerlink, .rst-content h6 .btn .headerlink, .btn .rst-content dl dt .headerlink, .rst-content dl dt .btn .headerlink, .btn .rst-content p.caption .headerlink, .rst-content p.caption .btn .headerlink, .btn .rst-content table>caption .headerlink, .rst-content table>caption .btn .headerlink, .btn .rst-content tt.download span:first-child, .rst-content tt.download .btn span:first-child, .btn .rst-content code.download span:first-child, .rst-content code.download .btn span:first-child, .btn .icon, .nav .fa, .nav .wy-menu-vertical li span.toctree-expand, .wy-menu-vertical li .nav span.toctree-expand, .nav .wy-menu-vertical li.on a span.toctree-expand, .wy-menu-vertical li.on a .nav span.toctree-expand, .nav .wy-menu-vertical li.current>a span.toctree-expand, .wy-menu-vertical li.current>a .nav span.toctree-expand, .nav .rst-content .admonition-title, .rst-content .nav .admonition-title, .nav .rst-content h1 .headerlink, .rst-content h1 .nav .headerlink, .nav .rst-content h2 .headerlink, .rst-content h2 .nav .headerlink, .nav .rst-content h3 .headerlink, .rst-content h3 .nav .headerlink, .nav .rst-content h4 .headerlink, .rst-content h4 .nav .headerlink, .nav .rst-content h5 .headerlink, .rst-content h5 .nav .headerlink, .nav .rst-content h6 .headerlink, .rst-content h6 .nav .headerlink, .nav .rst-content dl dt .headerlink, .rst-content dl dt .nav .headerlink, .nav .rst-content p.caption .headerlink, .rst-content p.caption .nav .headerlink, .nav .rst-content table>caption .headerlink, .rst-content table>caption .nav .headerlink, .nav .rst-content tt.download span:first-child, .rst-content tt.download .nav span:first-child, .nav .rst-content code.download span:first-child, .rst-content code.download .nav span:first-child, .nav .icon {
+.btn .fa, .btn .wy-menu-vertical li button.toctree-expand, .wy-menu-vertical li .btn button.toctree-expand, .btn .wy-menu-vertical li.on a button.toctree-expand, .wy-menu-vertical li.on a .btn button.toctree-expand, .btn .wy-menu-vertical li.current>a button.toctree-expand, .wy-menu-vertical li.current>a .btn button.toctree-expand, .btn .rst-content .admonition-title, .rst-content .btn .admonition-title, .btn .rst-content h1 .headerlink, .rst-content h1 .btn .headerlink, .btn .rst-content h2 .headerlink, .rst-content h2 .btn .headerlink, .btn .rst-content h3 .headerlink, .rst-content h3 .btn .headerlink, .btn .rst-content h4 .headerlink, .rst-content h4 .btn .headerlink, .btn .rst-content h5 .headerlink, .rst-content h5 .btn .headerlink, .btn .rst-content h6 .headerlink, .rst-content h6 .btn .headerlink, .btn .rst-content dl dt .headerlink, .rst-content dl dt .btn .headerlink, .btn .rst-content p.caption .headerlink, .rst-content p.caption .btn .headerlink, .btn .rst-content table>caption .headerlink, .rst-content table>caption .btn .headerlink, .btn .rst-content tt.download span:first-child, .rst-content tt.download .btn span:first-child, .btn .rst-content code.download span:first-child, .rst-content code.download .btn span:first-child, .btn .icon, .nav .fa, .nav .wy-menu-vertical li button.toctree-expand, .wy-menu-vertical li .nav button.toctree-expand, .nav .wy-menu-vertical li.on a button.toctree-expand, .wy-menu-vertical li.on a .nav button.toctree-expand, .nav .wy-menu-vertical li.current>a button.toctree-expand, .wy-menu-vertical li.current>a .nav button.toctree-expand, .nav .rst-content .admonition-title, .rst-content .nav .admonition-title, .nav .rst-content h1 .headerlink, .rst-content h1 .nav .headerlink, .nav .rst-content h2 .headerlink, .rst-content h2 .nav .headerlink, .nav .rst-content h3 .headerlink, .rst-content h3 .nav .headerlink, .nav .rst-content h4 .headerlink, .rst-content h4 .nav .headerlink, .nav .rst-content h5 .headerlink, .rst-content h5 .nav .headerlink, .nav .rst-content h6 .headerlink, .rst-content h6 .nav .headerlink, .nav .rst-content dl dt .headerlink, .rst-content dl dt .nav .headerlink, .nav .rst-content p.caption .headerlink, .rst-content p.caption .nav .headerlink, .nav .rst-content table>caption .headerlink, .rst-content table>caption .nav .headerlink, .nav .rst-content tt.download span:first-child, .rst-content tt.download .nav span:first-child, .nav .rst-content code.download span:first-child, .rst-content code.download .nav span:first-child, .nav .icon {
     display: inline
 }
 
@@ -3331,7 +3331,7 @@ a .fa, a .wy-menu-vertical li span.toctree-expand, .wy-menu-vertical li a span.t
     opacity: 1
 }
 
-.btn-mini .fa:before, .btn-mini .wy-menu-vertical li span.toctree-expand:before, .wy-menu-vertical li .btn-mini span.toctree-expand:before, .btn-mini .rst-content .admonition-title:before, .rst-content .btn-mini .admonition-title:before, .btn-mini .rst-content h1 .headerlink:before, .rst-content h1 .btn-mini .headerlink:before, .btn-mini .rst-content h2 .headerlink:before, .rst-content h2 .btn-mini .headerlink:before, .btn-mini .rst-content h3 .headerlink:before, .rst-content h3 .btn-mini .headerlink:before, .btn-mini .rst-content h4 .headerlink:before, .rst-content h4 .btn-mini .headerlink:before, .btn-mini .rst-content h5 .headerlink:before, .rst-content h5 .btn-mini .headerlink:before, .btn-mini .rst-content h6 .headerlink:before, .rst-content h6 .btn-mini .headerlink:before, .btn-mini .rst-content dl dt .headerlink:before, .rst-content dl dt .btn-mini .headerlink:before, .btn-mini .rst-content p.caption .headerlink:before, .rst-content p.caption .btn-mini .headerlink:before, .btn-mini .rst-content table>caption .headerlink:before, .rst-content table>caption .btn-mini .headerlink:before, .btn-mini .rst-content tt.download span:first-child:before, .rst-content tt.download .btn-mini span:first-child:before, .btn-mini .rst-content code.download span:first-child:before, .rst-content code.download .btn-mini span:first-child:before, .btn-mini .icon:before {
+.btn-mini .fa:before, .btn-mini .wy-menu-vertical li button.toctree-expand:before, .wy-menu-vertical li .btn-mini button.toctree-expand:before, .btn-mini .rst-content .admonition-title:before, .rst-content .btn-mini .admonition-title:before, .btn-mini .rst-content h1 .headerlink:before, .rst-content h1 .btn-mini .headerlink:before, .btn-mini .rst-content h2 .headerlink:before, .rst-content h2 .btn-mini .headerlink:before, .btn-mini .rst-content h3 .headerlink:before, .rst-content h3 .btn-mini .headerlink:before, .btn-mini .rst-content h4 .headerlink:before, .rst-content h4 .btn-mini .headerlink:before, .btn-mini .rst-content h5 .headerlink:before, .rst-content h5 .btn-mini .headerlink:before, .btn-mini .rst-content h6 .headerlink:before, .rst-content h6 .btn-mini .headerlink:before, .btn-mini .rst-content dl dt .headerlink:before, .rst-content dl dt .btn-mini .headerlink:before, .btn-mini .rst-content p.caption .headerlink:before, .rst-content p.caption .btn-mini .headerlink:before, .btn-mini .rst-content table>caption .headerlink:before, .rst-content table>caption .btn-mini .headerlink:before, .btn-mini .rst-content tt.download span:first-child:before, .rst-content tt.download .btn-mini span:first-child:before, .btn-mini .rst-content code.download span:first-child:before, .rst-content code.download .btn-mini span:first-child:before, .btn-mini .icon:before {
     font-size: 14px;
     vertical-align: -15%
 }
@@ -4875,13 +4875,16 @@ html {
     padding-right: 0
 }
 
-.wy-menu-vertical li span.toctree-expand {
+.wy-menu-vertical li button.toctree-expand {
     display: block;
     float: left;
     margin-left: -1.2em;
     font-size: .8em;
     line-height: 1.6em;
-    color: #d9d9d9
+    color: #d9d9d9;
+    border: none;
+    background:none;
+    padding:0;
 }
 
 .wy-menu-vertical li.on a, .wy-menu-vertical li.current>a {
@@ -4898,11 +4901,11 @@ html {
     background: #fcfcfc
 }
 
-.wy-menu-vertical li.on a:hover span.toctree-expand, .wy-menu-vertical li.current>a:hover span.toctree-expand {
+.wy-menu-vertical li.on a:hover button.toctree-expand, .wy-menu-vertical li.current>a:hover button.toctree-expand {
     color: gray
 }
 
-.wy-menu-vertical li.on a span.toctree-expand, .wy-menu-vertical li.current>a span.toctree-expand {
+.wy-menu-vertical li.on a button.toctree-expand, .wy-menu-vertical li.current>a button.toctree-expand {
     display: block;
     font-size: .8em;
     line-height: 1.6em;
@@ -4937,11 +4940,11 @@ html {
     padding: .4045em 4.045em
 }
 
-.wy-menu-vertical li.toctree-l2 a:hover span.toctree-expand {
+.wy-menu-vertical li.toctree-l2 a:hover button.toctree-expand {
     color: gray
 }
 
-.wy-menu-vertical li.toctree-l2 span.toctree-expand {
+.wy-menu-vertical li.toctree-l2 button.toctree-expand {
     color: #a3a3a3
 }
 
@@ -4960,11 +4963,11 @@ html {
     padding: .4045em 5.663em
 }
 
-.wy-menu-vertical li.toctree-l3 a:hover span.toctree-expand {
+.wy-menu-vertical li.toctree-l3 a:hover button.toctree-expand {
     color: gray
 }
 
-.wy-menu-vertical li.toctree-l3 span.toctree-expand {
+.wy-menu-vertical li.toctree-l3 button.toctree-expand {
     color: #969696
 }
 
@@ -5004,7 +5007,7 @@ html {
     cursor: pointer
 }
 
-.wy-menu-vertical a:hover span.toctree-expand {
+.wy-menu-vertical a:hover button.toctree-expand {
     color: #d9d9d9
 }
 
@@ -5014,7 +5017,7 @@ html {
     color: #fff
 }
 
-.wy-menu-vertical a:active span.toctree-expand {
+.wy-menu-vertical a:active button.toctree-expand {
     color: #fff
 }
 
@@ -5419,7 +5422,7 @@ footer span.commit code, footer span.commit .rst-content tt, .rst-content footer
     clear: both
 }
 
-.rst-versions .rst-current-version .fa, .rst-versions .rst-current-version .wy-menu-vertical li span.toctree-expand, .wy-menu-vertical li .rst-versions .rst-current-version span.toctree-expand, .rst-versions .rst-current-version .rst-content .admonition-title, .rst-content .rst-versions .rst-current-version .admonition-title, .rst-versions .rst-current-version .rst-content h1 .headerlink, .rst-content h1 .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content h2 .headerlink, .rst-content h2 .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content h3 .headerlink, .rst-content h3 .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content h4 .headerlink, .rst-content h4 .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content h5 .headerlink, .rst-content h5 .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content h6 .headerlink, .rst-content h6 .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content dl dt .headerlink, .rst-content dl dt .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content p.caption .headerlink, .rst-content p.caption .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content table>caption .headerlink, .rst-content table>caption .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content tt.download span:first-child, .rst-content tt.download .rst-versions .rst-current-version span:first-child, .rst-versions .rst-current-version .rst-content code.download span:first-child, .rst-content code.download .rst-versions .rst-current-version span:first-child, .rst-versions .rst-current-version .icon {
+.rst-versions .rst-current-version .fa, .rst-versions .rst-current-version .wy-menu-vertical li button.toctree-expand, .wy-menu-vertical li .rst-versions .rst-current-version button.toctree-expand, .rst-versions .rst-current-version .rst-content .admonition-title, .rst-content .rst-versions .rst-current-version .admonition-title, .rst-versions .rst-current-version .rst-content h1 .headerlink, .rst-content h1 .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content h2 .headerlink, .rst-content h2 .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content h3 .headerlink, .rst-content h3 .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content h4 .headerlink, .rst-content h4 .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content h5 .headerlink, .rst-content h5 .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content h6 .headerlink, .rst-content h6 .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content dl dt .headerlink, .rst-content dl dt .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content p.caption .headerlink, .rst-content p.caption .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content table>caption .headerlink, .rst-content table>caption .rst-versions .rst-current-version .headerlink, .rst-versions .rst-current-version .rst-content tt.download span:first-child, .rst-content tt.download .rst-versions .rst-current-version span:first-child, .rst-versions .rst-current-version .rst-content code.download span:first-child, .rst-content code.download .rst-versions .rst-current-version span:first-child, .rst-versions .rst-current-version .icon {
     color: #fcfcfc
 }
 
@@ -6015,32 +6018,29 @@ span[id*='MathJax-Span'] {
 
 @font-face {
     font-family: "Lato";
-    src: url("../fonts/Lato/lato-regular.eot");
-    src: url("../fonts/Lato/lato-regular.eot?#iefix") format("embedded-opentype"), url("../fonts/Lato/lato-regular.woff2") format("woff2"), url("../fonts/Lato/lato-regular.woff") format("woff"), url("../fonts/Lato/lato-regular.ttf") format("truetype");
+    src: url("./fonts/lato-normal.woff2") format("woff2"), url("./fonts/lato-normal.woff") format("woff");
     font-weight: 400;
     font-style: normal
 }
 
 @font-face {
     font-family: "Lato";
-    src: url("../fonts/Lato/lato-bold.eot");
-    src: url("../fonts/Lato/lato-bold.eot?#iefix") format("embedded-opentype"), url("../fonts/Lato/lato-bold.woff2") format("woff2"), url("../fonts/Lato/lato-bold.woff") format("woff"), url("../fonts/Lato/lato-bold.ttf") format("truetype");
+    src: url("./fonts/lato-bold.woff2") format("woff2"), url("./fonts/lato-bold.woff") format("woff");
     font-weight: 700;
     font-style: normal
 }
 
 @font-face {
     font-family: "Lato";
-    src: url("../fonts/Lato/lato-bolditalic.eot");
-    src: url("../fonts/Lato/lato-bolditalic.eot?#iefix") format("embedded-opentype"), url("../fonts/Lato/lato-bolditalic.woff2") format("woff2"), url("../fonts/Lato/lato-bolditalic.woff") format("woff"), url("../fonts/Lato/lato-bolditalic.ttf") format("truetype");
+    src: url("./fonts/lato-bold-italic.woff2") format("woff2"), url("./fonts/lato-bold-italic.woff") format("woff");
     font-weight: 700;
     font-style: italic
 }
 
 @font-face {
     font-family: "Lato";
-    src: url("../fonts/Lato/lato-italic.eot");
-    src: url("../fonts/Lato/lato-italic.eot?#iefix") format("embedded-opentype"), url("../fonts/Lato/lato-italic.woff2") format("woff2"), url("../fonts/Lato/lato-italic.woff") format("woff"), url("../fonts/Lato/lato-italic.ttf") format("truetype");
+    src: url("./fonts/lato-normal-italic.eot");
+    src: url("./fonts/lato-normal-italic.eot?#iefix") format("embedded-opentype"), url("./fonts/lato-normal-italic.woff2") format("woff2"), url("./fonts/lato-normal-italic.woff") format("woff");
     font-weight: 400;
     font-style: italic
 }
@@ -6049,16 +6049,14 @@ span[id*='MathJax-Span'] {
     font-family: "Roboto Slab";
     font-style: normal;
     font-weight: 400;
-    src: url("../fonts/RobotoSlab/roboto-slab.eot");
-    src: url("../fonts/RobotoSlab/roboto-slab-v7-regular.eot?#iefix") format("embedded-opentype"), url("../fonts/RobotoSlab/roboto-slab-v7-regular.woff2") format("woff2"), url("../fonts/RobotoSlab/roboto-slab-v7-regular.woff") format("woff"), url("../fonts/RobotoSlab/roboto-slab-v7-regular.ttf") format("truetype")
+    src: url("./fonts/Roboto-Slab-Regular.woff2") format("woff2"), url("./fonts/Roboto-Slab-Regular.woff") format("woff")
 }
 
 @font-face {
     font-family: "Roboto Slab";
     font-style: normal;
     font-weight: 700;
-    src: url("../fonts/RobotoSlab/roboto-slab-v7-bold.eot");
-    src: url("../fonts/RobotoSlab/roboto-slab-v7-bold.eot?#iefix") format("embedded-opentype"), url("../fonts/RobotoSlab/roboto-slab-v7-bold.woff2") format("woff2"), url("../fonts/RobotoSlab/roboto-slab-v7-bold.woff") format("woff"), url("../fonts/RobotoSlab/roboto-slab-v7-bold.ttf") format("truetype")
+    src: url("./fonts/Roboto-Slab-Bold.woff2") format("woff2"), url("./fonts/Roboto-Slab-Bold.woff") format("woff")
 }
 
 

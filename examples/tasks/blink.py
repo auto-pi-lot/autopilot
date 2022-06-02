@@ -1,7 +1,7 @@
 """
 A very simple task: Blink an LED
 
-Written by @mikewehr in the ``mike`` branch: https://github.com/wehr-lab/autopilot/blob/mike/autopilot/tasks/blink.py
+Written by @mikewehr in the ``mike`` branch: https://github.com/auto-pi-lot/autopilot/blob/mike/autopilot/tasks/blink.py
 
 Demonstrates the basic structure of a task with one stage,
 described in the comments throughout the task.
@@ -61,7 +61,7 @@ class Blink(Task):
     class TrialData(tables.IsDescription):
         """
         This class declares the data that will be returned for each "trial" -- or complete set of executed task
-        stages. It is used by the :class:`~autopilot.core.subject.Subject` object to make a data table with the
+        stages. It is used by the :class:`~autopilot.data.subject.Subject` object to make a data table with the
         correct data types. Declare each piece of data using a pytables Column descriptor
         (see https://www.pytables.org/usersguide/libref/declarative_classes.html#col-sub-classes for available
         data types, and the pytables guide: https://www.pytables.org/usersguide/tutorials.html for more information)
@@ -153,7 +153,7 @@ class Blink(Task):
         We set the stage block and never clear it so that the :class:`.Pilot` doesn't wait for a trigger 
         to call the next stage -- it just does it as soon as the previous one completes. 
         
-        See :meth:`~autopilot.core.pilot.Pilot.run_task` for more detail on this loop.
+        See :meth:`~autopilot.agents.pilot.Pilot.run_task` for more detail on this loop.
         """
 
 
