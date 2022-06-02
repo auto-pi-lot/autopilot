@@ -87,7 +87,6 @@ extensions = [
     'autodocsumm',   # https://github.com/Chilipp/autodocsumm
     #'sphinxcontrib.fulltoc',
     #'localext.fulltoc'
-    'sphinx_sass',
     'local_directives',
     'sphinxcontrib.bibtex',
     'sphinxcontrib.autodoc_pydantic',
@@ -205,10 +204,10 @@ html_static_path = ['_static']
 html_extra_path = ['_images']
 
 # configure sass compilation
-sass_configs = [
-    {'entry':'styles/main.scss',
-     'output': '_static/css/autopilot_sass.css'}
-]
+# sass_configs = [
+#     {'entry':'styles/main.scss',
+#      'output': '_static/css/autopilot_sass.css'}
+# ]
 
 # relative to html_static_path
 html_css_files = [

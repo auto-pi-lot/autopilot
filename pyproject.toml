@@ -51,7 +51,7 @@ parse = "^1.19.0"
 rich = "^11.2.0"
 validators = "^0.18.2"
 JACK-Client  = {version = "^0.5.3", optional = true}
-pigpio       = {git = "https://github.com/sneakers-the-rat/pigpio", branch="master", optional=true}
+pigpio-autopilot = {version = "^1.79", optional=true}
 pyqtgraph    = {version = "^0.12.3", optional = true}
 PySide2      = {version = "^5.15.2", optional = true}
 Sphinx       = {version = "^4.3.1", optional = true}
@@ -63,7 +63,6 @@ altair       = {version = "^4.1.0", optional = true}
 bokeh        = {version = "^2.4.2", optional = true}
 colorcet     = {version = "^3.0.0", optional = true}
 sphinx-rtd-theme = {version = "^1.0.0", optional = true}
-sphinx-sass  = {git = "https://github.com/sneakers-the-rat/sphinx-sass", branch="master", optional = true}
 autodoc_pydantic = {version="^1.7.0", optional=true}
 myst_parser = {version="^0.17.2", optional = true}
 pytest       = {version = "^7.0.0", optional = true}
