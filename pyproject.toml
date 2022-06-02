@@ -84,7 +84,7 @@ pilot = ["pigpio", "JACK-Client"]
 terminal = ["pyqtgraph", "PySide2"]
 docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex",
         "scikit-learn", "altair", "bokeh", "colorcet", "sphinx-rtd-theme", "sphinx-sass", "pytest", "rich",
-        "PySide2", "pyqtgraph", "autodoc_pydantic", "myst_parser"]
+        "PySide2", "pyqtgraph", "autodoc_pydantic", "myst_parser", "datajoint-babel", "pynwb"]
 tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio", "PySide2", "pyqtgraph", "rich"]
 plotting = ["altair", "bokeh", "colorcet"]
 extra_interfaces = ["datajoint-babel", "pynwb"]
