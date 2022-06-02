@@ -27,16 +27,19 @@ Our long-range vision is to build a tool that lowers barriers to tool use and co
 knowledge, so our broad and scattered work can be cumulatively combined without needing a centralized consortium or
 adoption of a singular standard.
 
-For a detailed overview of Autopilot's motivation, design, and structure, see our `whitepaper <https://www.biorxiv.org/content/10.1101/807693v1>`_.
+For a detailed overview of Autopilot's motivation, design, and structure, see our `whitepaper <https://www.biorxiv.org/content/10.1101/807693v2>`_.
 
-.. admonition:: What's New :ref:`v0.4.4 - Sound and Timing (2022-02-02) <changelog_v040>`
+.. admonition:: What's New :ref:`v0.5.0a0 - The Data Modeling Edition (2022-06-01) <changelog_v050a>`
 
-    * Big improvements to the sound server! Decoupling sounds from the server, better stability, etc.
-    * Trigger timing jitter from jack_client is now much closer to microseconds than the milliseconds it was formerly!
-    * New :mod:`~autopilot.utils.hydration` module for re-creating objects across processes and agents!
-    * New :mod:`~autopilot.utils.decorators` and :mod:`~autopilot.utils.types` and :mod:`~autopilot.utils.requires` modules
-      prefacing the architectural changes in v0.5.0
-    * See the :ref:`changelog <changelog_v040>` for more!
+    A prerelease as Jonny is finishing their dissertation and doesn't want to break anyone's experiments!
+
+    * Adding the whole :mod:`autopilot.data` module, which starts the process of making everything work with formal data models.
+    * Rewriting the :class:`~autopilot.data.subject.Subject` class!
+    * A :class:`.ModelWidget` to fill and edit data models that will eventually replace much of the aging GUI
+    * Less jitter in :class:`JackClient` by removing calls to ``queue.get``
+    * Repackaging autopilot with poetry!
+    * :mod:`.log_parsers` and programmatic reading of logs
+    * See the :ref:`changelog <changelog_v050a>` for more!
 
 
 This documentation is very young and is very much a work in progress! Please `submit an issue <https://github.com/auto-pi-lot/autopilot/issues/new>`_ with any incompletenesses, confusion, or errors!
