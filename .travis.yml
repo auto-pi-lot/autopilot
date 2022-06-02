@@ -38,7 +38,7 @@ env:
   - DISPLAY=":99.0" QT_DEBUG_PLUGINS=1  # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html?highlight=travis#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
 
 install:
-  - pip install --upgrade setuptools
+  - pip install --upgrade setuptools importlib_metadata
   - pip install .[tests]
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset"
   - sleep 3
@@ -58,9 +58,6 @@ after_script:
   - coverage combine --append
   - coveralls
 
-before_deploy:
-  - pip install scikit-build
-
 deploy:
   provider: pypi
   username: __token__
@@ -68,7 +65,7 @@ deploy:
     secure: mIaKgOMl4tjUvLlpSGwbuUj2A7QK0nMnQzlYygdVN5vCuvXnggScytqwXNqjSqjB3cn0R4EKllCfnREsIqBgYrEsRCRIexwLuz58KDo6qjSad/ycpCjmtz/6nvuJp3I2iJGudzCZ/W1MCpz0ExAvvHXm7k0U4J831bK+mFYqe8RHJxcAuYMJndEUaD5s/Ly+ozqJYx3H9+f/fggpVAlGu/oy5p77so9vQA0xvayodQKzL1XGvNHBXMEKtBtEN33pTKDbOY3bQ7GR0WLE7pd+bg1rZ/r5EsvlHAlHR/rSCWDNq4K0Qk3ZyUeHLX9UjKIImXbhMMyNSyz98DkgUd/TkfGG2K2jyKd7WR1KqOrNjy+clqTdyj1fcHtm8au6YsvYLvR9qmO1prwrGq1vMH0/qvOrcM3+OU3hGdUwtjth3F+TTsc57O22qHjpeq/xlWtFC8vAF92ZHzPWW6xBApYB3+MJZHh27LJL/rdbAv/WoYPZbQWiqxNm869GCaSzjBGZ/Zx5BPpGbJUb8N+pBHgow3gww2TMS1C7W3gDVPm42DL8ehhOEJZBT9FIfzAooeyxzyvUb6gSdtshGUuJPe8HdZhNn5n4rFuSoZ7edCbEEM7bQ/gqOJK9Ccr+4yi/9MHBXB7LsjB32tzlxbsEePG18ac85wJp1Z64QYMpzV5DAi0=
   on:
     tags: true
-    branch: master
+    branch: main
     condition: "$TRAVIS_PYTHON_VERSION = 3.9"
   distributions: "sdist"
 
