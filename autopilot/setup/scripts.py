@@ -49,7 +49,7 @@ SCRIPTS = odict({
         'text': 'install system packages necessary for autopilot Pilots? (required if they arent already)',
         'commands': [
             "sudo apt-get update",
-            "sudo apt-get install -y build-essential cmake git python3-dev libatlas-base-dev libsamplerate0-dev libsndfile1-dev libreadline-dev libasound-dev i2c-tools libportmidi-dev liblo-dev libhdf5-dev libzmq-dev libffi-dev",
+            "sudo apt-get install -y build-essential cmake git python3-dev libatlas-base-dev libsamplerate0-dev libsndfile1-dev libreadline-dev libasound-dev i2c-tools libportmidi-dev liblo-dev libhdf5-dev libzmq3-dev libffi-dev",
         ]
     },
     'env_terminal': {

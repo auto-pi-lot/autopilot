@@ -61,7 +61,7 @@ in the guided installation of Autopilot. (``python -m autopilot.setup.run_script
         libportmidi-dev \
         liblo-dev \
         libhdf5-dev \
-        libzmq-dev \
+        libzmq3-dev \
         libffi-dev
 
 
