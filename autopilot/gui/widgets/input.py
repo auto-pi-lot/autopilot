@@ -31,6 +31,8 @@ from PySide2 import QtWidgets, QtGui
 from PySide2.QtCore import QDateTime, Qt
 from pydantic import Field, PrivateAttr
 
+from autopilot.utils.loggers import init_logger
+
 
 class Input(ABC):
     """
@@ -76,6 +78,7 @@ class Input(ABC):
         self.args = args
         self.kwargs = kwargs
         self.range = range
+        self.logger = init_logger(self)
 
     @overload
     def from_type(cls, type_:Type[bool]) -> Type['BoolInput']: ...
@@ -202,8 +205,11 @@ class IntInput(Input):
     def setValue(self, value:int):
         self._widget.setText(str(value))
 
-    def value(self) -> int:
-        return int(self._widget.text())
+    def value(self) -> Optional[int]:
+        if self._widget.text() == '':
+            return None
+        else:
+            return int(self._widget.text())
 
 
 class FloatInput(Input):
@@ -216,8 +222,11 @@ class FloatInput(Input):
     def setValue(self, value: float):
         self._widget.setText(str(value))
 
-    def value(self) -> float:
-        return float(self._widget.text())
+    def value(self) -> Optional[float]:
+        if self._widget.text() == '':
+            return None
+        else:
+            return float(self._widget.text())
 
 
 class StrInput(Input):
@@ -256,7 +265,15 @@ class ListInput(Input):
         self._widget.setText(str(value))
 
     def value(self) -> list:
-        return literal_eval(self._widget.text())
+        if self._widget.text() == '':
+            return []
+        else:
+            try:
+                val = literal_eval(self._widget.text())
+                return val
+            except ValueError as e:
+                self.logger.exception(f"Expected input to be list-like, eg '[1,2,3]', but instead got input: \n{self._widget.text()}")
+                raise e
 
 
 class DictInput(Input):
@@ -268,7 +285,15 @@ class DictInput(Input):
         self._widget.setText(str(value))
 
     def value(self) -> dict:
-        return literal_eval(self._widget.text())
+        if self._widget.text() == '':
+            return {}
+        else:
+            try:
+                val = literal_eval(self._widget.text())
+                return val
+            except ValueError as e:
+                self.logger.exception(f"Expected input to be dict-like, eg \"{{'key': 'val', 'key2': 'val2'}}\", but instead got input: \n{self._widget.text()}")
+                raise e
 
 
 class LiteralInput(Input):

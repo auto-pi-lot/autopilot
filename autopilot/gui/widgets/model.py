@@ -62,6 +62,8 @@ class ModelWidget(QtWidgets.QWidget):
         else:
             raise ValueError(f"Need either an instantiated model or a model class, got {model}")
 
+        self.logger = init_logger(self)
+
         self.optional = optional
 
         # make an outer layout to contain inner containers for individual model instances
@@ -87,8 +89,6 @@ class ModelWidget(QtWidgets.QWidget):
         if self._model is not None:
             self.setValue(self._model)
 
-
-
     def setValue(self, model: Union[BaseModel, dict]):
         """
         Set all values of the form given an instantiated model.
@@ -102,6 +102,11 @@ class ModelWidget(QtWidgets.QWidget):
 
         for key, value in dict_.items():
             self.inputs[key].setValue(value)
+
+        # if our value is set with non-empty values, checked should be true
+        if self.optional:
+            self.checked = any([val not in (None, '', {}, []) for val in dict_.values()])
+
 
     def value(self) -> ['BaseModel', None]:
         """
@@ -128,17 +133,43 @@ class ModelWidget(QtWidgets.QWidget):
             None: if model is optional and unchecked.
         """
         kwargs = {}
-        if self.optional and self.container.isChecked():
+        if not self.checked:
             return None
 
         for key, input in self.inputs.items():
-            if isinstance(input, (ModelWidget, ListModelWidget)):
-                kwargs[key] = input.dict()
-            else:
-                kwargs[key] = input.value()
+            try:
+                if isinstance(input, (ModelWidget, ListModelWidget)):
+                    kwargs[key] = input.dict()
+                else:
+                    kwargs[key] = input.value()
+            except Exception as e:
+                self.logger.exception(f"Could not parse field '{key}' with input type {type(input)}")
+                raise e
 
         return kwargs
 
+    @property
+    def checked(self) -> bool:
+        """
+        If ``self.optional``, whether or not this widget is checked/enabled.
+
+        If not ``self.optional``, returns ``True`` (since it is required, it is always enabled)
+
+        Returns:
+            bool
+        """
+        if not self.optional or not self.container.isCheckable():
+            return True
+
+        return self.container.isChecked()
+
+    @checked.setter
+    def checked(self, checked: bool):
+        if not self.optional or not self.container.isCheckable():
+            # give a warning, but otherwise don't do anything.
+            self.logger.warning(f"Attempted to set checked on a model that is not optional. Doing nothing (since checked is logically required to be true for required models)")
+        else:
+            self.container.setChecked(checked)
 
     def _make_container(self, model) -> (QtWidgets.QGroupBox, QtWidgets.QVBoxLayout):
         container = QtWidgets.QGroupBox(model.__name__)
