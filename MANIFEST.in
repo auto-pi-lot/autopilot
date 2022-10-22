@@ -1,3 +1,4 @@
-graft requirements
+graft requirements*
 graft autopilot/setup
+include requirements.txt
 include autopilot/setup/welcome_msg.txt
