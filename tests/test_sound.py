@@ -67,6 +67,8 @@ import autopilot.prefs
 import autopilot.external
 import autopilot.stim.sound
 from autopilot.stim.sound import jackclient, sounds
+from autopilot.transform.timeseries import Filter_IIR
+from scipy.signal import welch
 
 
 ## Ensure we get the same random sound every time
@@ -78,6 +80,7 @@ sample_rate = 192000
 block_size = 1024
 jackclient.FS = sample_rate
 jackclient.BLOCKSIZE = block_size
+
 
 # These are only used in Jack_Sound.__del__
 # Setting them here to avoid warnings during garbage collection
@@ -372,6 +375,31 @@ def test_init_multichannel_noise(duration_ms, amplitude, channel,
     # The concatenated chunks should be equal to the table
     assert concatted.shape == (len(noise.table) + n_padded_zeros, 2)
     assert (concatted[:len(noise.table)] == noise.table).all()
+
+def test_highpass_noise():
+    """
+    Test that a highpass filter can be created from a float as well as explicitly given
+    """
+    filter_freq = sample_rate/4
+
+    noise = sounds.Noise(
+        duration=1000, amplitude=0.5, highpass=filter_freq)
+    assert isinstance(noise.highpass, Filter_IIR)
+    assert noise.highpass.btype == 'highpass'
+
+    filter = Filter_IIR(ftype='butter', N=2, Wn=filter_freq,
+                                btype="highpass", fs=sample_rate)
+    noise2 = sounds.Noise(duration=1000, amplitude=0.5, highpass=filter)
+    assert noise2.highpass is filter
+
+    # make sure that the filter works...
+    # let's just check that the lowest 10 are much smaller than the highest 10
+    freqs = welch(noise.table, fs=sample_rate)
+    ratio = np.mean(freqs[1][0:10])/np.mean(freqs[1][-10:])
+    assert ratio < 0.001
+
+
+
 
 def test_unpadded_gap():
     """
