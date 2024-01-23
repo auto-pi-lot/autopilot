@@ -4,9 +4,10 @@
 Changelog
 *********
 
-For full details, see commit logs and issues at http://github.com/auto-pi-lot/autpilot
+For full details, see commit logs and issues at http://github.com/auto-pi-lot/autopilot
 
 Version 0.5
+-----------
 
 .. toctree::
    :maxdepth: 1

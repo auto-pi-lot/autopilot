@@ -66,19 +66,17 @@ keep that as friendly and readable as we can.
 * :mod:`.setup` - Setting up and configuring Autopilot and the system it runs on
 * :mod:`.stim` - Stimulus generation & presentation, of which sound is currently the most heavily developed
 * :mod:`.tasks` - Tasks implement experimental logic, coordinating hardware and data to perform an experiment!
-* :mod:`.transform` - Composable data transformations, for analyzing or converting data on the fly for use within a task,
-  as well as implementations of common algorithms and procedures used in experiments.
-* :mod:`.utils` - Utility functions, most of which are either basic functions used everywhere, or modules that are placeholders
-  until they can split off into their own more formal organization
+* :mod:`.transform` - Composable data transformations, for analyzing or converting data on the fly for use within a task, as well as implementations of common algorithms and procedures used in experiments.
+* :mod:`.utils` - Utility functions, most of which are either basic functions used everywhere, or modules that are placeholders until they can split off into their own more formal organization
 
-    * :mod:`.utils.common` - Common operations used across multiple modules
-    * :mod:`.utils.decorators` - Decorators and mixins that augment the functionality of other Autopilot Objects
-    * :mod:`.utils.hydration` - Utilities for making serializable versions of autopilot objects that can be recreated in other processes/agents
-    * :mod:`.utils.log_parsers` - Tools to analyze logs, load them into memory to be able to extract information for better debugging
-    * :mod:`.utils.loggers` - The main logging facility used by nearly all autopilot objects to coordinate stdout and logs written to disk
-    * :mod:`.utils.plugins` - Functions for loading plugins
-    * :mod:`.utils.registry` - the :func:`autopilot.get` functions that return autopilot objects from both the main library and plugins
-    * :mod:`.utils.wiki` - Tools to integrate the `Autopilot Wiki <https://wiki.auto-pi-lot.com>`_ with the software
+  * :mod:`.utils.common` - Common operations used across multiple modules
+  * :mod:`.utils.decorators` - Decorators and mixins that augment the functionality of other Autopilot Objects
+  * :mod:`.utils.hydration` - Utilities for making serializable versions of autopilot objects that can be recreated in other processes/agents
+  * :mod:`.utils.log_parsers` - Tools to analyze logs, load them into memory to be able to extract information for better debugging
+  * :mod:`.utils.loggers` - The main logging facility used by nearly all autopilot objects to coordinate stdout and logs written to disk
+  * :mod:`.utils.plugins` - Functions for loading plugins
+  * :mod:`.utils.registry` - the :func:`autopilot.get` functions that return autopilot objects from both the main library and plugins
+  * :mod:`.utils.wiki` - Tools to integrate the `Autopilot Wiki <https://wiki.auto-pi-lot.com>`_ with the software
 
 .. raw:: html
    :file: ../includes/module_map.html

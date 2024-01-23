@@ -2,10 +2,15 @@
   max-width: 750px; }
 
 ul.simple {
-  list-style: disc; }
+  list-style: disc;
+  margin-bottom: 1em;
+  margin-top: 1em;}
   ul.simple li {
     list-style: disc;
     margin-left: 24px; }
+    ul.simple li p {
+      margin-bottom: 0.5em;
+    }
 
 .icon-hover {
   box-shadow: 5px 10px #000000;
