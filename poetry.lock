@@ -1113,37 +1113,6 @@ files = [
 ]
 
 [[package]]
-name = "libsass"
-version = "0.18.0"
-description = "Sass for Python: A straightforward binding of libsass for Python."
-optional = true
-python-versions = "*"
-files = [
-    {file = "libsass-0.18.0-cp27-cp27m-macosx_10_14_intel.whl", hash = "sha256:e0cf54dddf2cc6e373005bed6e46ccdce1f3a77bd169ab505c3a8ad9023eee5f"},
-    {file = "libsass-0.18.0-cp27-cp27m-win32.whl", hash = "sha256:5511b3c62e8d97daf929c63bd516b794f0a06acd09dd261445d864e48290551b"},
-    {file = "libsass-0.18.0-cp27-cp27m-win_amd64.whl", hash = "sha256:a6c5535a21a07d769151453270bc6a8373b821d1d2fd9810d84fccfe315ab188"},
-    {file = "libsass-0.18.0-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:8fc0360ee99224f7a3cb09987e641171d34180759f467ba3d15934102ade396f"},
-    {file = "libsass-0.18.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:bb30fc7125350c64925a98cb90da7979f76bb0ea1a0157e8aeb268f8da38e296"},
-    {file = "libsass-0.18.0-cp35-cp35m-win32.whl", hash = "sha256:b375bfbf3c86ec0f4a27f266b44b2753a4b8cab7e73649eed7afcad84bc56257"},
-    {file = "libsass-0.18.0-cp35-cp35m-win_amd64.whl", hash = "sha256:366f4fd5a5eab4a519beb583e9fa78718cf2c0f40e92ed835d7ed23b82e5d954"},
-    {file = "libsass-0.18.0-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:2ee186aa682a035a53c557b7e61ce562a1114f1a1a992d0ba962cbc3e82c490c"},
-    {file = "libsass-0.18.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:7462da168c8fb997b31cb4dc3ee5adb9af2d106f7b92c2d57a1c68a56ae5a3a0"},
-    {file = "libsass-0.18.0-cp36-cp36m-win32.whl", hash = "sha256:e8941881063691d50f9cc8b8d6d8fd7bec86a8c461b2a4fc87188a5fc44d6ba4"},
-    {file = "libsass-0.18.0-cp36-cp36m-win_amd64.whl", hash = "sha256:84a16ec5cf7842ff5bc2caed2c032ed624d587699797bc2a4d4a8e41f579b6e7"},
-    {file = "libsass-0.18.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:b548af46c1a606aed93da2566901146005d6065f73fefc63d256ba62ba1f803d"},
-    {file = "libsass-0.18.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:d1f301637ad5768aecc81d17dcf40a68f2e11b7ca8b427dbb9f8972c150d303e"},
-    {file = "libsass-0.18.0-cp37-cp37m-win32.whl", hash = "sha256:f4b29b0c70d753c754a58aaad7c31ad3309ca4a26f9aa64e695157251f6832ad"},
-    {file = "libsass-0.18.0-cp37-cp37m-win_amd64.whl", hash = "sha256:2ae3b061a7d250fb47e5fdad1a8191600ca15dc604e76b109b6d3bf8e08fd2ed"},
-    {file = "libsass-0.18.0.tar.gz", hash = "sha256:c2f386677514f9fc758631328bd318dd3e9d839ad7b6e248ec4535a191bfd271"},
-]
-
-[package.dependencies]
-six = "*"
-
-[package.extras]
-upload-appveyor-builds = ["twine (==1.11.0)"]
-
-[[package]]
 name = "livereload"
 version = "2.6.3"
 description = "Python LiveReload is an awesome tool for web developers"
@@ -1658,19 +1627,15 @@ files = [
 ]
 
 [[package]]
-name = "pigpio"
+name = "pigpio-autopilot"
 version = "1.79"
-description = "Raspberry Pi GPIO module"
+description = "Raspberry Pi GPIO module - fork for use with autopilot"
 optional = true
 python-versions = "*"
-files = []
-develop = false
-
-[package.source]
-type = "git"
-url = "https://github.com/sneakers-the-rat/pigpio"
-reference = "master"
-resolved_reference = "3c237159e5995ec58cd673579bdd66a8d819b269"
+files = [
+    {file = "pigpio-autopilot-1.79.tar.gz", hash = "sha256:880beb0036cbd670187569e8ad52124ffefc5c311bc49c46755858d05f074687"},
+    {file = "pigpio_autopilot-1.79-py3-none-any.whl", hash = "sha256:a36ebecf05388653dc2cd2eb7c86ed9490c7a5acb1cb6758f9ca9e7af2d84abf"},
+]
 
 [[package]]
 name = "pillow"
@@ -2789,28 +2754,6 @@ sphinxcontrib-jquery = ">=4,<5"
 dev = ["bump2version", "sphinxcontrib-httpdomain", "transifex-client", "wheel"]
 
 [[package]]
-name = "sphinx-sass"
-version = "0.0.0"
-description = "Compile SASS and SCSS to CSS for Sphinx HTML documentation"
-optional = true
-python-versions = ">=3.6"
-files = []
-develop = false
-
-[package.dependencies]
-libsass = "0.18.0"
-Sphinx = "*"
-
-[package.extras]
-dev = ["astroid (==2.2.0)", "autopep8 (==1.4)", "cssutils (==1.0.2)", "libsass (==0.18.0)", "nox (==2018.9.14)", "pylint (==2.3.0)", "pytest (==3.8.0)", "pytest-cov (==2.6.0)", "sphinx-autobuild (==0.7.1)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/sneakers-the-rat/sphinx-sass"
-reference = "master"
-resolved_reference = "930fc4b84e40920ea47b44eec8c2070cf241a9a3"
-
-[[package]]
 name = "sphinxcontrib-applehelp"
 version = "1.0.8"
 description = "sphinxcontrib-applehelp is a Sphinx extension which outputs Apple help books"
@@ -3207,14 +3150,14 @@ docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.link
 testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy (>=0.9.1)", "pytest-ruff"]
 
 [extras]
-docs = ["Sphinx", "altair", "autodoc_pydantic", "autodocsumm", "bokeh", "colorcet", "matplotlib", "myst_parser", "pyqtgraph", "pytest", "rich", "scikit-learn", "sphinx-rtd-theme", "sphinx-sass", "sphinxcontrib-bibtex"]
+docs = ["PySide6", "Sphinx", "altair", "autodoc_pydantic", "autodocsumm", "bokeh", "colorcet", "matplotlib", "myst_parser", "pynwb", "pyqtgraph", "pytest", "rich", "scikit-learn", "sphinx-rtd-theme", "sphinxcontrib-bibtex"]
 extra-interfaces = ["pynwb"]
-pilot = ["JACK-Client", "pigpio"]
+pilot = ["JACK-Client"]
 plotting = ["altair", "bokeh", "colorcet"]
 terminal = ["PySide6", "pyqtgraph"]
-tests = ["PySide6", "coveralls", "pigpio", "pylint", "pyqtgraph", "pytest", "pytest-cov", "pytest-qt", "rich"]
+tests = ["PySide6", "coveralls", "pylint", "pyqtgraph", "pytest", "pytest-cov", "pytest-qt", "rich"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "4b916100d2c361393ac9620b70465e8fe3f8869bf1675d2cf0368034c20d19cc"
+content-hash = "397aecda8327ea6aa9d03e2dc2129f821d1cd9523b24016312a6a0c829c86a04"
