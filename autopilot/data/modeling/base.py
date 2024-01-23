@@ -4,8 +4,8 @@ Base classes for data models -- the ``Data`` class itself.
 import typing
 from datetime import datetime
 from typing import Optional, List
-import pandas as pd
 
+import pandas as pd
 import tables
 
 from autopilot.root import Autopilot_Type

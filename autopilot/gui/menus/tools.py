@@ -5,7 +5,7 @@ import os
 from collections import OrderedDict as odict
 
 import numpy as np
-from PySide2 import QtWidgets, QtGui
+from PySide6 import QtWidgets, QtGui
 
 from autopilot import prefs
 from autopilot.utils.loggers import init_logger

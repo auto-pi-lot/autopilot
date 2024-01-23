@@ -1,6 +1,6 @@
 HAVE_PYSIDE = False
 try:
-    from PySide2 import QtCore
+    from PySide6 import QtCore
     HAVE_PYSIDE = True
 except ImportError:
     pass
@@ -45,7 +45,7 @@ if HAVE_PYSIDE:
 
 def get_invoker():
     if not globals()['HAVE_PYSIDE']:
-        raise Exception("PySide2 could not be imported, no GUI event invoker can be gotten")
+        raise Exception("PySide6 could not be imported, no GUI event invoker can be gotten")
     if globals()['_INVOKER'] is None:
         globals()['_INVOKER'] = Invoker()
     return globals()['_INVOKER']

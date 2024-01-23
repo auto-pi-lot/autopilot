@@ -151,9 +151,12 @@ def test_multihop(node_params, station_params):
         print(self)
         with n_calls.get_lock():
             n_calls.value += 1
+
     def hello(args):
         print('hello', args)
         pass
+
+
 
     node_1_params = node_params(
         id='node_1',

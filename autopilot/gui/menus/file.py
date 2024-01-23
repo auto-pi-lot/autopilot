@@ -4,7 +4,7 @@ from collections import OrderedDict as odict
 
 import autopilot
 from autopilot.gui.widgets.protocol import Sound_Widget, Graduation_Widget
-from PySide2 import QtWidgets, QtGui
+from PySide6 import QtWidgets, QtGui
 
 class Protocol_Wizard(QtWidgets.QDialog):
     """

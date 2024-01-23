@@ -4,7 +4,7 @@ from time import time, sleep
 
 import numpy as np
 import pyqtgraph as pg
-from PySide2 import QtWidgets, QtCore
+from PySide6 import QtWidgets, QtCore
 
 from autopilot import prefs
 
@@ -27,7 +27,7 @@ class Video(QtWidgets.QWidget):
             qs (dict): Dictionary of :class:`~queue.Queue`s in which frames will be dumped
             quitting (:class:`threading.Event`): Signal to quit drawing
             update_thread (:class:`threading.Thread`): Thread with target=:meth:`~.Video._update_frame`
-            layout (:class:`PySide2.QtWidgets.QGridLayout`): Widget layout
+            layout (:class:`PySide6.QtWidgets.QGridLayout`): Widget layout
             vid_widgets (dict): dict containing widgets for each of the individual video streams.
         """
         super(Video, self).__init__()
@@ -160,7 +160,7 @@ class ImageItem_TimedUpdate(pg.ImageItem):
     fps is set according to ``prefs.get('DRAWFPS')``, if not available, draw at 10fps
 
     Attributes:
-        timer (:class:`~PySide2.QtCore.QTimer`): Timer held in ``globals()`` that synchronizes frame updates across
+        timer (:class:`~PySide6.QtCore.QTimer`): Timer held in ``globals()`` that synchronizes frame updates across
             image items
 
 

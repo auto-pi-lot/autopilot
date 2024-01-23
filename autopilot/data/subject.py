@@ -770,7 +770,7 @@ class Subject(object):
                     f"Couldnt trim data given to graduation objects to current set of sessions, using full data history. got exception\n {e}")
 
 
-            if not slice_start and slice_start is not 0:
+            if not slice_start and slice_start != 0:
                 self.logger.info(f"Could not trim trial data, full trial table given to graduation objects")
                 slice_start = 0
             elif not isinstance(slice_start, int):

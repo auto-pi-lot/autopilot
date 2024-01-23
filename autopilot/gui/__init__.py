@@ -1,7 +1,7 @@
 """
 These classes implement the GUI used by the Terminal.
 
-The GUI is built using `PySide2 <https://doc.qt.io/qtforpython/>`_, a Python wrapper around Qt5.
+The GUI is built using `PySide6 <https://doc.qt.io/qtforpython/>`_, a Python wrapper around Qt5.
 
 These classes are all currently used only by the :class:`~.autopilot.agents.terminal.Terminal`.
 
@@ -17,7 +17,7 @@ the method must be decorated with `@gui_event` which will call perform the updat
 
 """
 
-from PySide2 import QtWidgets, QtCore
+from PySide6 import QtWidgets, QtCore
 
 _MAPS = {
     'dialog': {

@@ -32,14 +32,14 @@ def spawn_terminal(qtbot, blank_pilot_db):
     pilot_db_fn = blank_pilot_db
     prefs.set('PILOT_DB', pilot_db_fn)
 
-    app = qt_api.QApplication.instance()
-    app.setStyle('GTK+')
+    #app = qt_api.QtWidgets.QApplication.instance()
+    #qapp.setStyle('GTK+')
     terminal = Terminal()
     qtbot.addWidget(terminal)
-    return app, terminal
+    return  terminal
 
 def test_terminal_launch(qtbot, spawn_terminal):
-    app, terminal = spawn_terminal
+    terminal = spawn_terminal
 
     sleep(5)
 

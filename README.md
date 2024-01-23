@@ -13,7 +13,17 @@ Status:
 [![Coverage Status](https://coveralls.io/repos/github/auto-pi-lot/autopilot/badge.svg?branch=main)](https://coveralls.io/github/auto-pi-lot/autopilot?branch=main)
 ![Jonny Status](https://img.shields.io/badge/jonny-dissertating-critical)
 
+# Maintenance Mode
 
+*2024-01-22* 
+
+Autopilot is in *maintenance-only mode* - development has been paused as we take the long way around towards
+building a new kind of p2p networking module to support a reworked autopilot 2.0. We will write a more
+detailed blogpost about lessons learned from autopilot soon. 
+
+Autopilot is not dead, it is merely resting <3
+
+-jonny
 
 # Autopilot
 

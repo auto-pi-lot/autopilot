@@ -7,7 +7,7 @@ import time
 import numpy as np
 import pandas as pd
 import pyqtgraph as pg
-from PySide2 import QtWidgets, QtGui
+from PySide6 import QtWidgets, QtGui
 
 from autopilot import prefs
 from autopilot.gui.gui import gui_event

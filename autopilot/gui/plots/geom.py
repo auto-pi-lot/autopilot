@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pyqtgraph as pg
-from PySide2 import QtWidgets
+from PySide6 import QtWidgets
 
 
 class Point(pg.PlotDataItem):

@@ -9,7 +9,7 @@ from pydantic.fields import ModelField
 from pydantic.error_wrappers import ValidationError
 from pydantic.main import ModelMetaclass
 
-from PySide2 import QtWidgets
+from PySide6 import QtWidgets
 
 from autopilot.gui.widgets.input import Input
 from autopilot.root import Autopilot_Type
@@ -297,9 +297,9 @@ class ListModelWidget(QtWidgets.QWidget):
             **kwargs:
 
         Attributes:
-            model_layout (:class:`~PySide2.QtWidgets.QVBoxLayout`): Layout containing model widgets
-            add_button (:class:`~PySide2.QtWidgets.QPushButton`): Button pressed to add new models
-            remove_button (:class:`~PySide2.QtWidgets.QPushButton`): Button pressed to remove the bottom-most model
+            model_layout (:class:`~PySide6.QtWidgets.QVBoxLayout`): Layout containing model widgets
+            add_button (:class:`~PySide6.QtWidgets.QPushButton`): Button pressed to add new models
+            remove_button (:class:`~PySide6.QtWidgets.QPushButton`): Button pressed to remove the bottom-most model
         """
 
         super(ListModelWidget, self).__init__(**kwargs)

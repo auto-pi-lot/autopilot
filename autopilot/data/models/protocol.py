@@ -3,7 +3,7 @@ Representations of experimental protocols: multiple :class:`.Task` s grouped tog
 """
 
 import typing
-from typing import Optional, Type
+from typing import Optional, Type, List
 
 import tables
 from pydantic import Field, create_model
@@ -35,10 +35,10 @@ class Trial_Data(Table):
 
     See :attr:`.Nafc.TrialData` for an example
     """
-    group: Optional[str] = Field(None, description="Path of the parent step group")
-    session: int = Field(..., description="Current training session, increments every time the task is started")
-    session_uuid: Optional[str] = Field(None, description="Each session gets a unique uuid, regardless of the session integer, to enable independent addressing of sessions when session numbers might overlap (eg. reassignment)")
-    trial_num: int = Field(..., description="Trial data is grouped within, well, trials, which increase (rather than resetting) across sessions within a task",
+    group: Optional[List[str]] = Field(None, description="Path of the parent step group")
+    session: Optional[List[int]] = Field(..., description="Current training session, increments every time the task is started")
+    session_uuid: Optional[List[str]] = Field(None, description="Each session gets a unique uuid, regardless of the session integer, to enable independent addressing of sessions when session numbers might overlap (eg. reassignment)")
+    trial_num: Optional[List[int]] = Field(..., description="Trial data is grouped within, well, trials, which increase (rather than resetting) across sessions within a task",
                            datajoint={"key":True})
 
 
@@ -86,7 +86,7 @@ class Step_Group(H5F_Group):
             if hasattr(task_class, 'TrialData'):
                 trial_data = task_class.TrialData
                 if issubclass(trial_data, tables.IsDescription):
-                    self._logger.warning("Using pytables descriptions as TrialData is deprecated! Update to the pydantic TrialData model! Converting to TrialData class")
+                    # self._logger.warning("Using pytables descriptions as TrialData is deprecated! Update to the pydantic TrialData model! Converting to TrialData class")
                     trial_data = Trial_Data.from_pytables_description(trial_data)
 
             else:
@@ -127,9 +127,9 @@ class Step_Group(H5F_Group):
                     for sound in sounds:
                         for k, v in sound.items():
                             if k in STRING_PARAMS:
-                                sound_params[k] = (str, ...)
+                                sound_params[k] = (Optional[List[str]], ...)
                             else:
-                                sound_params[k] = (float, ...)
+                                sound_params[k] = (Optional[List[float]], ...)
 
         elif 'sounds' in stim.keys():
             # for now we just assume they're floats
@@ -139,9 +139,9 @@ class Step_Group(H5F_Group):
                 for sound in sounds:
                     for k, v in sound.items():
                         if k in STRING_PARAMS:
-                            sound_params[k] = (str, ...)
+                            sound_params[k] = (Optional[List[str]], ...)
                         else:
-                            sound_params[k] = (float, ...)
+                            sound_params[k] = (Optional[List[float]], ...)
 
         else:
             raise ValueError(f'Dont know how to handle stim like {stim}')

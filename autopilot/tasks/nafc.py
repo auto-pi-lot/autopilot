@@ -4,7 +4,7 @@ import itertools
 import tables
 import threading
 import typing
-from typing import Literal
+from typing import Literal, Optional, List
 
 import autopilot
 from autopilot.tasks import Task
@@ -90,21 +90,21 @@ class Nafc(Task):
         """
         Trialwise Data for a Two-Alternative Forced Choice Task
         """
-        target: Literal['L', 'R'] = Field(...,
+        target: Optional[List[Literal['L', 'R']]] = Field(None,
             description="Which side is the correct side this trial",
             datajoint={'datatype': 'enum', 'kwargs': {'args': ['L', 'R']}})
-        response: Literal['L', 'R'] = Field(...,
+        response: Optional[List[Literal['L', 'R']]] = Field(None,
             description="The side that was poked",
             datajoint={'datatype': 'enum', 'kwargs': {'args': ['L', 'R']}})
-        correct: bool = Field(...,
+        correct: Optional[List[bool]] = Field(None,
             description="Whether the subject's response matched the target")
-        correction: bool = Field(...,
+        correction: Optional[List[bool]] = Field(None,
             description="Whether this trial was a correction trial or not")
-        RQ_timestamp: datetime.datetime = Field(...,
+        RQ_timestamp: Optional[List[datetime.datetime]] = Field(None,
             description="The time where the stimulus was presented and the trial was requested")
-        DC_timestamp: datetime.datetime = Field(...,
+        DC_timestamp: Optional[List[datetime.datetime]] = Field(None,
             description="The time when the subject responded")
-        bailed: bool = Field(...,
+        bailed: Optional[List[bool]] = Field(None,
             description="Whether the subject bailed the trial from a timeout or any other reason they did not finish")
 
     HARDWARE = {

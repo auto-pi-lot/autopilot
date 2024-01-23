@@ -3,7 +3,7 @@ import threading
 import time
 import typing
 
-from PySide2 import QtWidgets, QtGui
+from PySide6 import QtWidgets, QtGui
 
 from autopilot import prefs
 from autopilot.gui.dialog import pop_dialog

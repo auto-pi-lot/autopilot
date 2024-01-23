@@ -14,7 +14,7 @@ import threading
 from collections import OrderedDict as odict
 import numpy as np
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from autopilot import prefs
 from autopilot.gui import styles
@@ -97,7 +97,7 @@ class Terminal(QtWidgets.QMainWindow):
 
     .. note::
 
-        The Terminal class is currently a subclass of :class:`PySide2.QtWidgets.QMainWindow` -- it will be refactored to
+        The Terminal class is currently a subclass of :class:`PySide6.QtWidgets.QMainWindow` -- it will be refactored to
         inherit from :class:`~autopilot.agents.base.Agent` as the agent system is formalized.
 
     Attributes:
@@ -263,10 +263,10 @@ class Terminal(QtWidgets.QMainWindow):
         self.file_menu.setObjectName("file")
 
         # Add "New Pilot" and "New Protocol" actions to File menu
-        new_pilot_act = QtWidgets.QAction("New &Pilot", self, triggered=self.new_pilot)
-        new_prot_act  = QtWidgets.QAction("New Pro&tocol", self, triggered=self.new_protocol)
-        new_subject = QtWidgets.QAction("New &Subject", self, triggered=self.new_subject)
-        #batch_create_subjects = QtWidgets.QAction("Batch &Create subjects", self, triggered=self.batch_subjects)
+        new_pilot_act = QtGui.QAction("New &Pilot", self, triggered=self.new_pilot)
+        new_prot_act  = QtGui.QAction("New Pro&tocol", self, triggered=self.new_protocol)
+        new_subject = QtGui.QAction("New &Subject", self, triggered=self.new_subject)
+        #batch_create_subjects = QtGui.QAction("Batch &Create subjects", self, triggered=self.batch_subjects)
         # TODO: Update pis
         self.file_menu.addAction(new_pilot_act)
         self.file_menu.addAction(new_prot_act)
@@ -277,10 +277,10 @@ class Terminal(QtWidgets.QMainWindow):
         self.tool_menu = self.menuBar().addMenu("&Tools")
 
         # Add actions to Tools menu
-        subject_weights_act = QtWidgets.QAction("View Subject &Weights", self, triggered=self.subject_weights)
-        update_protocol_act = QtWidgets.QAction("Update Protocols", self, triggered=self.update_protocols)
-        reassign_act = QtWidgets.QAction("Batch Reassign Protocols", self, triggered=self.reassign_protocols)
-        calibrate_act = QtWidgets.QAction("Calibrate &Water Ports", self, triggered=self.calibrate_ports)
+        subject_weights_act = QtGui.QAction("View Subject &Weights", self, triggered=self.subject_weights)
+        update_protocol_act = QtGui.QAction("Update Protocols", self, triggered=self.update_protocols)
+        reassign_act = QtGui.QAction("Batch Reassign Protocols", self, triggered=self.reassign_protocols)
+        calibrate_act = QtGui.QAction("Calibrate &Water Ports", self, triggered=self.calibrate_ports)
         self.tool_menu.addAction(subject_weights_act)
         self.tool_menu.addAction(update_protocol_act)
         self.tool_menu.addAction(reassign_act)
@@ -289,22 +289,22 @@ class Terminal(QtWidgets.QMainWindow):
         # Swarm menu
         # (tools 4 administering and interacting with agents in swarm)
         self.swarm_menu = self.menuBar().addMenu("S&warm")
-        stream_video = QtWidgets.QAction("Stream Video", self, triggered=self.stream_video)
+        stream_video = QtGui.QAction("Stream Video", self, triggered=self.stream_video)
         self.swarm_menu.addAction(stream_video)
 
         # Plots menu
         self.plots_menu = self.menuBar().addMenu("&Plots")
-        psychometric = QtWidgets.QAction("Psychometric Curve", self, triggered=self.plot_psychometric)
+        psychometric = QtGui.QAction("Psychometric Curve", self, triggered=self.plot_psychometric)
         self.plots_menu.addAction(psychometric)
 
         # Create a Tests menu and add a Test Bandwidth action
         self.tests_menu = self.menuBar().addMenu("Test&s")
-        bandwidth_test_act = QtWidgets.QAction("Test Bandwidth", self, triggered=self.test_bandwidth)
+        bandwidth_test_act = QtGui.QAction("Test Bandwidth", self, triggered=self.test_bandwidth)
         self.tests_menu.addAction(bandwidth_test_act)
 
         # Create a Plugins menu to manage plugins and provide a hook to give them additional terminal actions
         self.plugins_menu = self.menuBar().addMenu("Plugins")
-        plugin = QtWidgets.QAction("Manage Plugins", self, triggered=self.manage_plugins)
+        plugin = QtGui.QAction("Manage Plugins", self, triggered=self.manage_plugins)
         self.plugins_menu.addAction(plugin)
 
 
@@ -381,10 +381,6 @@ class Terminal(QtWidgets.QMainWindow):
         ## Finalize some aesthetics
         # set stylesheet for main window
         self.setStyleSheet(styles.TERMINAL)
-
-        # set fonts to antialias
-        self.setFont(self.font().setStyleStrategy(QtGui.QFont.PreferAntialias))
-
 
         ## Show, and log that initialization is complete
         self.show()
@@ -952,4 +948,4 @@ if __name__ == "__main__":
     #app.setGraphicsSystem("opengl")
     app.setStyle('GTK+') # Keeps some GTK errors at bay
     ex = Terminal()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

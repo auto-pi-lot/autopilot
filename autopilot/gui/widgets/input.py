@@ -27,8 +27,8 @@ from ast import literal_eval
 from datetime import datetime
 from typing import ClassVar, Type, Optional, List, Tuple, Union, overload, Literal
 
-from PySide2 import QtWidgets, QtGui
-from PySide2.QtCore import QDateTime, Qt
+from PySide6 import QtWidgets, QtGui
+from PySide6.QtCore import QDateTime, Qt
 from pydantic import Field, PrivateAttr
 
 from autopilot.utils.loggers import init_logger
@@ -154,7 +154,7 @@ class Input(ABC):
             validator_kwargs (dict): Optional: kwargs given to the validator on instantiation
 
         Returns:
-            :class:`PySide2.QtWidgets.QWidget`: Subclass of QWidget according to Input type
+            :class:`PySide6.QtWidgets.QWidget`: Subclass of QWidget according to Input type
         """
         if widget_kwargs is not None:
             kwargs = widget_kwargs
@@ -324,7 +324,7 @@ class LiteralInput(Input):
             validator_kwargs (dict): Optional: kwargs given to the validator on instantiation
 
         Returns:
-            :class:`PySide2.QtWidgets.QComboBox`
+            :class:`PySide6.QtWidgets.QComboBox`
         """
         widget = super(LiteralInput, self).make(widget_kwargs=widget_kwargs, validator_kwargs=validator_kwargs) # type: QtWidgets.QComboBox
         widget.addItems(self.choices)

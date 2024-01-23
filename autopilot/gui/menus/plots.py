@@ -1,7 +1,7 @@
 import copy
 
 import numpy as np
-from PySide2 import QtWidgets, QtGui
+from PySide6 import QtWidgets, QtGui
 
 from autopilot.data import Subject
 

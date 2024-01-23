@@ -3,7 +3,7 @@ import os
 import autopilot
 from autopilot import prefs
 from autopilot.gui.widgets.list import Drag_List
-from PySide2 import QtWidgets
+from PySide6 import QtWidgets
 
 class Graduation_Widget(QtWidgets.QWidget):
     """

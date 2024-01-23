@@ -1,7 +1,7 @@
 from functools import wraps
 
 from autopilot.utils.invoker import get_invoker, InvokeEvent
-from PySide2 import QtCore
+from PySide6 import QtCore
 
 def gui_event(fn):
     """

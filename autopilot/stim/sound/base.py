@@ -615,7 +615,8 @@ def get_sound_class(server_type: typing.Optional[str] = None) -> typing.Union[ty
 
     # From now on, server_type should be 'jack', 'pyo', 'docs', or None
     if server_type not in Backends.keys():
-        warn(f'Requested server type {server_type}, but it doesnt exist. Using dummy')
+        if server_type is not False:
+            warn(f'Requested server type {server_type}, but it doesnt exist. Using dummy')
         server_type = 'dummy'
 
     # if we're testing, set server_type to jack

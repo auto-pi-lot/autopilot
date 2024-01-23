@@ -1,7 +1,7 @@
 from time import time
 
 import numpy as np
-from PySide2 import QtWidgets, QtCore
+from PySide6 import QtWidgets, QtCore
 
 
 class Timer(QtWidgets.QLabel):

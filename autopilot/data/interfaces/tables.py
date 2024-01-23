@@ -121,7 +121,7 @@ class H5F_Table(H5F_Node):
                 self._logger.warning(f"Found existing table with columns {node.description._v_names}, but requested a table with {list(self.description.columns.keys())}, remaking.")
                 self._remake_table(h5f)
             else:
-                self._logger.warning('Found existing table that matches the requested description, not remaking.')
+                self._logger.info('Found existing table that matches the requested description, not remaking.')
 
         except tables.exceptions.NoSuchNodeError:
             tab = h5f.create_table(self.parent, self.name, self.description,

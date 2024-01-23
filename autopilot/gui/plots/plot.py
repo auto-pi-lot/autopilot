@@ -3,7 +3,7 @@ from itertools import count
 
 import numpy as np
 import pyqtgraph as pg
-from PySide2 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 import autopilot
 from autopilot import prefs
