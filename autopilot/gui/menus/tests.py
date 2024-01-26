@@ -144,7 +144,6 @@ class Bandwidth_Test(QtWidgets.QDialog):
         self.delay_plot = pg.PlotWidget(title='Mean Delay')
         self.speed_plot = pg.PlotWidget(title='Requested vs. Actual speed')
 
-
         # the actual graphical objects that draw stuff for us
         self.drop_line = self.drop_plot.plot(symbol='t', symbolBrush=(100, 100, 255, 50))
         self.delay_line = self.delay_plot.plot(symbol='t', symbolBrush=(100, 100, 255, 50))
@@ -153,14 +152,10 @@ class Bandwidth_Test(QtWidgets.QDialog):
         self.delay_line.setPen((255,0,0))
         self.speed_line.setPen((255,0,0))
 
-
-
         self.plot_layout = QtWidgets.QVBoxLayout()
         self.plot_layout.addWidget(self.drop_plot)
         self.plot_layout.addWidget(self.delay_plot)
         self.plot_layout.addWidget(self.speed_plot)
-
-
 
         # add panes
         self.layout.addLayout(self.settings, 1)

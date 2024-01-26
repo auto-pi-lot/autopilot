@@ -1,5 +1,6 @@
 """Methods for running the Terminal GUI"""
 import typing
+from typing import Optional, Iterator, Union
 import argparse
 import json
 import sys
@@ -13,6 +14,7 @@ import logging
 import threading
 from collections import OrderedDict as odict
 import numpy as np
+from pydantic import Field, IPvAnyAddress, validator
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
@@ -52,6 +54,7 @@ from autopilot.gui.menus.tests import Bandwidth_Test
 from autopilot.gui.menus.file import Protocol_Wizard
 from autopilot.gui.widgets.terminal import Control_Panel
 from autopilot.utils.loggers import init_logger
+from autopilot.root import Autopilot_Type
 
 # Try to import viz, but continue if that doesn't work
 IMPORTED_VIZ = False
@@ -63,6 +66,85 @@ except ImportError as e:
     VIZ_ERROR = str(e)
 
 _TERMINAL = None
+
+# --------------------------------------------------
+# Models
+# --------------------------------------------------
+
+
+class PilotDBEntry(Autopilot_Type):
+    subjects: list[str] = Field(default_factory=list)
+    ip: str = None
+    prefs: dict = Field(default_factory=dict)
+    state: Optional[str] = None
+
+    @validator('ip')
+    def is_ip_address(cls, v: Optional[str]):
+        if v is None:
+            return v
+        IPvAnyAddress.validate(v)
+        return str(v)
+
+    class Config:
+        fields = {'state': {'exclude': True}}
+        extra = 'ignore'
+
+
+
+class PilotDB(Autopilot_Type):
+    """
+    Configuration for pilots for a :class:`.Terminal` , storing their prefs, subjects, and
+    other information the Terminal needs to control the pilots.
+
+    Stored as a .json file at ``PILOT_DB`` value set in :mod:`autopilot.prefs`
+
+    Uses pydantic 1 ``__root__`` model and some dunder methods to imitate a dict like::
+
+        pilots = PilotDB({'pilot_name': {...}})
+        pilots.dict()
+    """
+    __root__: dict[str, PilotDBEntry] = Field(default_factory=dict)
+
+    def __init__(self, value: dict[str, PilotDBEntry]):
+        super(PilotDB, self).__init__(__root__=value)
+
+    def __iter__(self) -> Iterator[tuple[str, PilotDBEntry]]:
+        return iter(self.__root__.items())
+
+    def __getitem__(self, item) -> PilotDBEntry:
+        return self.__root__[item]
+
+    def __setitem__(self, key: str, val: Union[dict, PilotDBEntry]):
+        if not isinstance(val, PilotDBEntry):
+            val = PilotDBEntry(**val)
+
+        self.__root__[key] = val
+
+    def __str__(self) -> str:
+        return str(self.__root__)
+
+    def __len__(self) -> int:
+        return len(self.__root__)
+
+    def dict(self, **kwargs) -> dict:
+        return super(PilotDB, self).dict(**kwargs)['__root__']
+
+    def keys(self) -> list[str]:
+        return list(self.__root__.keys())
+
+    def items(self) -> list[tuple[str, PilotDBEntry]]:
+        return list(self.__root__.items())
+
+    @classmethod
+    def from_json(cls, path: Path) -> 'PilotDB':
+        with open(path, 'r') as dbfile:
+            db_dict = json.load(dbfile)
+        return PilotDB(db_dict)
+
+
+# --------------------------------------------------
+# Terminal agent
+# --------------------------------------------------
 
 class Terminal(QtWidgets.QMainWindow):
     """
@@ -146,7 +228,7 @@ class Terminal(QtWidgets.QMainWindow):
         self.logo = None
 
         # property private attributes
-        self._pilots = None
+        self._pilots = None  # type: Optional[PilotDB]
 
         # logging
         self.logger = init_logger(self)
@@ -263,9 +345,12 @@ class Terminal(QtWidgets.QMainWindow):
         self.file_menu.setObjectName("file")
 
         # Add "New Pilot" and "New Protocol" actions to File menu
-        new_pilot_act = QtGui.QAction("New &Pilot", self, triggered=self.new_pilot)
-        new_prot_act  = QtGui.QAction("New Pro&tocol", self, triggered=self.new_protocol)
-        new_subject = QtGui.QAction("New &Subject", self, triggered=self.new_subject)
+        new_pilot_act = QtGui.QAction("New &Pilot", self)
+        new_prot_act  = QtGui.QAction("New Pro&tocol", self)
+        new_subject = QtGui.QAction("New &Subject", self)
+        new_pilot_act.triggered.connect(self.new_pilot)
+        new_prot_act.triggered.connect(self.new_protocol)
+        new_subject.triggered.connect(self.new_subject)
         #batch_create_subjects = QtGui.QAction("Batch &Create subjects", self, triggered=self.batch_subjects)
         # TODO: Update pis
         self.file_menu.addAction(new_pilot_act)
@@ -391,7 +476,6 @@ class Terminal(QtWidgets.QMainWindow):
         Clear Layout and call :meth:`~.Terminal.initUI` again
         """
 
-        # type: () -> None
         self.layout = QtWidgets.QGridLayout()
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0,0,0,0)
@@ -403,7 +487,7 @@ class Terminal(QtWidgets.QMainWindow):
     # Properties
 
     @property
-    def pilots(self) -> odict:
+    def pilots(self) -> PilotDB:
         """
         A dictionary mapping pilot ID to its attributes, including a list of its subjects assigned to it, its IP, etc.
 
@@ -427,8 +511,7 @@ class Terminal(QtWidgets.QMainWindow):
             else:
                 try:
                     # Load pilots db as ordered dictionary
-                    with open(pilot_db_fn, 'r') as pilot_file:
-                        self._pilots = json.load(pilot_file, object_pairs_hook=odict)
+                    self._pilots = PilotDB.from_json(pilot_db_fn)
                     self.logger.info(f'successfully loaded pilot_db.json file from {pilot_db_fn}')
                     self.logger.debug(pformat(self._pilots))
                 except Exception as e:
@@ -482,7 +565,7 @@ class Terminal(QtWidgets.QMainWindow):
         """
         subjects = []
         for pilot, vals in self.pilots.items():
-            subjects.extend(vals['subjects'])
+            subjects.extend(vals.subjects)
 
         # use sets to get a unique list
         subjects = list(set(subjects))
@@ -634,7 +717,7 @@ class Terminal(QtWidgets.QMainWindow):
             self.logger.info('Got state info from an unknown pilot, adding...')
             self.new_pilot(name=value['pilot'])
 
-        self.pilots[value['pilot']]['state'] = value['state']
+        self.pilots[value['pilot']].state = value['state']
         self.control_panel.panels[value['pilot']].button.set_state(value['state'])
 
     def l_handshake(self, value):
@@ -648,9 +731,9 @@ class Terminal(QtWidgets.QMainWindow):
             value (dict): dict containing `ip` and `state`
         """
         if value['pilot'] in self.pilots.keys():
-            self.pilots[value['pilot']]['ip'] = value.get('ip', '')
-            self.pilots[value['pilot']]['state'] = value.get('state', '')
-            self.pilots[value['pilot']]['prefs'] = value.get('prefs', {})
+            self.pilots[value['pilot']].ip = value.get('ip', '')
+            self.pilots[value['pilot']].state = value.get('state', '')
+            self.pilots[value['pilot']].prefs = value.get('prefs', {})
 
         else:
             self.new_pilot(name=value['pilot'],
@@ -669,7 +752,7 @@ class Terminal(QtWidgets.QMainWindow):
 
     def new_pilot(self,
                   name:typing.Optional[str]=None,
-                  ip:str='',
+                  ip:Optional[str]=None,
                   pilot_prefs:typing.Optional[dict]=None):
         """
         Make a new entry in :attr:`.Terminal.pilots` and make appropriate
@@ -827,7 +910,7 @@ class Terminal(QtWidgets.QMainWindow):
         After calibration routine, send results to pilot for storage.
         """
 
-        calibrate_window = Calibrate_Water(self.pilots)
+        calibrate_window = Calibrate_Water(self.pilots.keys())
         calibrate_window.exec_()
 
         if calibrate_window.result() == 1:
@@ -944,8 +1027,8 @@ class Terminal(QtWidgets.QMainWindow):
 # Create the QApplication and run it
 # Prefs were already loaded at the very top
 if __name__ == "__main__":
+    # threading.stack_size(134217728)
     app = QtWidgets.QApplication(sys.argv)
-    #app.setGraphicsSystem("opengl")
     app.setStyle('GTK+') # Keeps some GTK errors at bay
     ex = Terminal()
     sys.exit(app.exec())

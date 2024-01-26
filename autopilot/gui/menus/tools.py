@@ -17,7 +17,7 @@ class Calibrate_Water(QtWidgets.QDialog):
     """
     A window to calibrate the volume of water dispensed per ms.
     """
-    def __init__(self, pilots):
+    def __init__(self, pilots: list[str]):
         """
         Args:
             pilots (:py:attr:`.Terminal.pilots`): A dictionary of pilots
@@ -40,11 +40,9 @@ class Calibrate_Water(QtWidgets.QDialog):
 
         self.container.setLayout(self.container_layout)
 
-
-        screen_geom = QtWidgets.QDesktopWidget().availableGeometry()
+        screen_geom = QtGui.QScreen().availableGeometry()
         # get max pixel value for each subwidget
         widget_height = np.floor(screen_geom.height()-50/float(len(self.pilots)))
-
 
         for p in self.pilots:
             self.pilot_widgets[p] = Pilot_Ports(p)
@@ -64,8 +62,6 @@ class Calibrate_Water(QtWidgets.QDialog):
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         self.layout.addWidget(buttonBox)
-
-
 
         self.setLayout(self.layout)
 

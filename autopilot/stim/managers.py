@@ -430,7 +430,7 @@ class Proportional(Stim_Manager):
             group_freqs.append(frequency)
 
         self.group_names = tuple(group_names)
-        group_freqs = np.array(group_freqs).astype(np.float)
+        group_freqs = np.array(group_freqs).astype(float)
         group_freqs = group_freqs/np.sum(group_freqs)
 
         self.group_freqs = tuple(group_freqs)

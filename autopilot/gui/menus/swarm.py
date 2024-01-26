@@ -10,6 +10,8 @@ from autopilot.gui.dialog import pop_dialog
 from autopilot.utils.loggers import init_logger
 from autopilot.gui.plots.video import Video
 from autopilot.networking import Net_Node
+if typing.TYPE_CHECKING:
+    from autopilot.agents.terminal import PilotDB
 
 
 class Stream_Video(QtWidgets.QDialog):
@@ -18,7 +20,7 @@ class Stream_Video(QtWidgets.QDialog):
 
     """
 
-    def __init__(self, pilots:dict, *args, **kwargs):
+    def __init__(self, pilots:'PilotDB', *args, **kwargs):
         """
         Args:
             pilots (dict): The :attr:`.Terminal.pilot_db` with the ``prefs`` of each pilot
@@ -41,7 +43,7 @@ class Stream_Video(QtWidgets.QDialog):
         # --------------------------------------------------
         self.cameras = {}
         for pilot, pilot_params in self.pilots.items():
-            pilot_prefs = pilot_params.get('prefs', None)
+            pilot_prefs = pilot_params.prefs
             if pilot_prefs is None:
                 self.logger.exception(f'pilot {pilot} had no prefs in its pilots_db entry')
                 continue

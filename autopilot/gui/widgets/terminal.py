@@ -9,6 +9,8 @@ from autopilot.gui.gui import gui_event
 from autopilot.gui.widgets.subject import New_Subject_Wizard
 from autopilot.utils.loggers import init_logger
 from autopilot.data.subject import Subject
+if typing.TYPE_CHECKING:
+    from autopilot.agents.terminal import PilotDB
 
 
 class Control_Panel(QtWidgets.QWidget):
@@ -44,7 +46,7 @@ class Control_Panel(QtWidgets.QWidget):
     # Hosts two nested tab widgets to select pilot and subject,
     # set params, run subjects, etc.
 
-    def __init__(self, subjects, start_fn, ping_fn, pilots):
+    def __init__(self, subjects, start_fn, ping_fn, pilots: 'PilotDB'):
         """
 
         """
@@ -90,7 +92,7 @@ class Control_Panel(QtWidgets.QWidget):
         self.layout.setColumnStretch(1, 2)
 
         for pilot_id, pilot_params in self.pilots.items():
-            self.add_pilot(pilot_id, pilot_params.get('subjects', []))
+            self.add_pilot(pilot_id, pilot_params.subjects)
 
     @gui_event
     def add_pilot(self, pilot_id:str, subjects:typing.Optional[list]=None):
@@ -120,7 +122,8 @@ class Control_Panel(QtWidgets.QWidget):
         self.layout.addWidget(pilot_panel, row_idx, 1, 1, 1)
         self.layout.addWidget(subject_list, row_idx, 2, 1, 1)
 
-    def create_subject(self, pilot):
+    @gui_event
+    def create_subject(self, pilot, *args, **kwargs):
         """
         Becomes :py:attr:`.Pilot_Panel.create_fn`.
         Opens a :py:class:`.New_Subject_Wizard` to create a new subject file and assign protocol.
@@ -155,7 +158,7 @@ class Control_Panel(QtWidgets.QWidget):
                 self.logger.exception(f'exception when assigning protocol, continuing subject creation. \n{e}')
 
             # Add subject to pilots dict, update it and our tabs
-            self.pilots[pilot]['subjects'].append(biography.id)
+            self.pilots[pilot].subjects.append(biography.id)
             self.subject_lists[pilot].addItem(biography.id)
             self.update_db()
 
@@ -185,15 +188,10 @@ class Control_Panel(QtWidgets.QWidget):
             for i in range(mlist.count()):
                 subjects.append(mlist.item(i).text())
 
-            pilots[pilot]['subjects'] = subjects
-
-        # strip any state that's been stored
-        for p, val in pilots.items():
-            if 'state' in val.keys():
-                del val['state']
+            pilots[pilot].subjects = subjects
 
         with open(prefs.get('PILOT_DB'), 'w') as pilot_file:
-            json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
+            json.dump(self.pilots.dict(), pilot_file, indent=4, separators=(',', ': '))
 
 
 class Subject_List(QtWidgets.QListWidget):
@@ -342,7 +340,8 @@ class Pilot_Panel(QtWidgets.QWidget):
             # the drop fn updates the db
             self.subject_list.drop_fn()
 
-    def create_subject(self):
+    @gui_event
+    def create_subject(self, *args, **kwargs):
         """
         Just calls :py:meth:`Control_Panel.create_subject` with our `pilot` as the argument
         """

@@ -22,7 +22,7 @@ class Drag_List(QtWidgets.QListWidget):
         super(Drag_List, self).__init__()
         self.setAcceptDrops(True)
 
-    def dragEnterEvent(self, e):
+    def dragEnterEvent(self, e: QtCore.QEvent):
         """
         When files are dragged over us, if they have paths in them,
         accept the event.

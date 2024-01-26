@@ -42,7 +42,7 @@ class Point(pg.PlotDataItem):
         data[data=="R"] = 1
         data[data=="C"] = 0.5
         data[data=="L"] = 0
-        data = data.astype(np.float)
+        data = data.astype(float)
 
         self.scatter.setData(x=data[...,0], y=data[...,1], size=self.size,
                              brush=self.brush, symbol='o', pen=self.pen)
@@ -64,7 +64,7 @@ class Line(pg.PlotDataItem):
         data[data=="R"] = 1
         data[data=="L"] = 0
         data[data=="C"] = 0.5
-        data = data.astype(np.float)
+        data = data.astype(float)
 
         self.curve.setData(data[...,0], data[...,1])
 
@@ -93,7 +93,7 @@ class Segment(pg.PlotDataItem):
         data[data=="R"] = 1
         data[data=="L"] = 0
         data[data=="C"] = 0.5
-        data = data.astype(np.float)
+        data = data.astype(float)
 
         xs = np.repeat(data[...,0],2)
         ys = np.repeat(data[...,1],2)
@@ -133,7 +133,7 @@ class Roll_Mean(pg.PlotDataItem):
         """
         # data should come in as an n x 2 array,
         # 0th column - trial number (x), 1st - (y) value
-        data = data.astype(np.float)
+        data = data.astype(float)
 
         self.series = pd.Series(data[...,1])
         ys = self.series.rolling(self.winsize, min_periods=0).mean().to_numpy()
@@ -172,7 +172,7 @@ class Shaded(pg.PlotDataItem):
         """
         # data should come in as an n x 2 array,
         # 0th column - trial number (x), 1st - (y) value
-        data = data.astype(np.float)
+        data = data.astype(float)
 
         self.max_num = float(np.abs(np.max(data[:,1])))
 

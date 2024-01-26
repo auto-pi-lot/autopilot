@@ -1,11 +1,13 @@
 import json
 import os
 
-from PySide6 import QtWidgets
+from PySide6 import QtWidgets, QtCore
+from PySide6.QtCore import Slot
 from autopilot import prefs
 from autopilot.data.models.biography import Biography
 from autopilot.gui.widgets.model import ModelWidget
 from autopilot.utils.loggers import init_logger
+from autopilot.gui.gui import gui_event
 
 
 class New_Subject_Wizard(QtWidgets.QDialog):
@@ -38,7 +40,7 @@ class New_Subject_Wizard(QtWidgets.QDialog):
         tabWidget.addTab(self.bio_tab, "Biography")
 
         if self.protocol_dir:
-            self.task_tab = self.Task_Tab()
+            self.task_tab = self.Task_Tab(parent=self)
             tabWidget.addTab(self.task_tab, "Protocol")
 
         buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
@@ -76,8 +78,8 @@ class New_Subject_Wizard(QtWidgets.QDialog):
             protocol (str): the name of the assigned protocol, filename without .json extension
             step (int): current step to assign.
         """
-        def __init__(self):
-            QtWidgets.QWidget.__init__(self)
+        def __init__(self, parent=None):
+            QtWidgets.QWidget.__init__(self, parent=parent)
 
             self.protocol_dir = prefs.get('PROTOCOLDIR')
 
@@ -105,14 +107,14 @@ class New_Subject_Wizard(QtWidgets.QDialog):
             # Dict to return values
             self.values = {}
 
-        def update_step_box(self):
+        @gui_event
+        def update_step_box(self, *args, **kwargs):
             """
             Clears any steps that might be in the step selection box,
             loads the protocol file and repopulates it.
             """
             # Clear box
-            while self.step_selection.count():
-                self.step_selection.removeItem(0)
+            self.step_selection.clear()
 
             # Load the protocol and parse its steps
             protocol_str = self.protocol_listbox.currentItem().text()
@@ -129,13 +131,17 @@ class New_Subject_Wizard(QtWidgets.QDialog):
             self.step_selection.insertItems(0, step_list)
             self.step_selection.setCurrentIndex(0)
 
-        def protocol_changed(self):
+        @gui_event
+        def protocol_changed(self, *args, **kwargs):
             """
             When the protocol is changed, save the value and call :py:meth:`.update_step_box`.
             """
-            self.values['protocol'] = self.protocol_listbox.currentItem().text()
-            self.update_step_box()
 
+            self.values['protocol'] = self.protocol_listbox.currentItem().text()
+            self.update_step_box(*args, **kwargs)
+            
+
+        @Slot()
         def step_changed(self):
             """
             When the step is changed, save it.

@@ -1,5 +1,6 @@
 from functools import wraps
 from itertools import count
+from typing import Optional
 
 import numpy as np
 import pyqtgraph as pg
@@ -56,7 +57,7 @@ class Plot_Widget(QtWidgets.QWidget):
 
 
         # We should get passed a list of pilots to keep ourselves in order after initing
-        self.pilots = None
+        self.pilots = None  # type: Optional[list[str]]
 
         # Dict to store handles to plot windows by pilot
         self.plots = {}
@@ -346,11 +347,11 @@ class Plot(QtWidgets.QWidget):
             if plot == 'rollmean' and 'roll_window' in self.plot_params.keys():
                 self.plots[data] = Roll_Mean(winsize=self.plot_params['roll_window'])
                 self.plot.addItem(self.plots[data])
-                self.data[data] = np.zeros((0,2), dtype=np.float)
+                self.data[data] = np.zeros((0,2), dtype=float)
             else:
                 self.plots[data] = PLOT_LIST[plot](continuous=self.continuous)
                 self.plot.addItem(self.plots[data])
-                self.data[data] = np.zeros((0,2), dtype=np.float)
+                self.data[data] = np.zeros((0,2), dtype=float)
 
         if 'video' in self.plot_params.keys():
             self.videos = self.plot_params['video']

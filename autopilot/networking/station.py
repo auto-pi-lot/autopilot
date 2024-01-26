@@ -16,6 +16,8 @@ from zmq.eventloop.zmqstream import ZMQStream
 from autopilot import prefs
 from autopilot.utils.loggers import init_logger
 from autopilot.networking.message import Message
+if typing.TYPE_CHECKING:
+    from autopilot.agents.terminal import PilotDB
 
 
 class Station(multiprocessing.Process):
@@ -760,7 +762,7 @@ class Terminal_Station(Station):
     # dict of threading events that determine how frequently we send plot updates
     sent_plot = {}
 
-    def __init__(self, pilots):
+    def __init__(self, pilots: 'PilotDB'):
         """
         Args:
             pilots (dict): The :attr:`.Terminal.pilots` dictionary.
