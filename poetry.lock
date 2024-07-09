@@ -2034,6 +2034,23 @@ pytest = ">=4.6"
 testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
 
 [[package]]
+name = "pytest-mock"
+version = "3.14.0"
+description = "Thin-wrapper around the mock package for easier use with pytest"
+optional = true
+python-versions = ">=3.8"
+files = [
+    {file = "pytest-mock-3.14.0.tar.gz", hash = "sha256:2719255a1efeceadbc056d6bf3df3d1c5015530fb40cf347c0f9afac88410bd0"},
+    {file = "pytest_mock-3.14.0-py3-none-any.whl", hash = "sha256:0b72c38033392a5f4621342fe11e9219ac11ec9d375f8e2a0c164539e0d70f6f"},
+]
+
+[package.dependencies]
+pytest = ">=6.2.5"
+
+[package.extras]
+dev = ["pre-commit", "pytest-asyncio", "tox"]
+
+[[package]]
 name = "pytest-qt"
 version = "4.4.0"
 description = "pytest support for PyQt and PySide applications"
@@ -3091,9 +3108,9 @@ extra-interfaces = ["pynwb"]
 pilot = ["JACK-Client"]
 plotting = ["altair", "bokeh", "colorcet"]
 terminal = ["PySide6", "pyqtgraph"]
-tests = ["PySide6", "coveralls", "pylint", "pyqtgraph", "pytest", "pytest-cov", "pytest-qt", "rich"]
+tests = ["PySide6", "coveralls", "pylint", "pyqtgraph", "pytest", "pytest-cov", "pytest-mock", "pytest-qt", "rich"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "020668e952f7d30915cc427aaabe054363c2c5f8bb578ad1f37baa80f6227227"
+content-hash = "47b33c2a867fd4225ad84cd1397119c76a2b22d87be7abb4c3c382d741fe1bfb"

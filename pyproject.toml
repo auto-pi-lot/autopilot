@@ -69,6 +69,7 @@ pylint       = {version = "^2.12.2", optional = true}
 coveralls    = {version = "^3.3.1", optional = true}
 pytest-qt    = {version = ">=4.3.0", optional = true}
 pynwb = {version="^2.0.0,!=2.5.1", optional= true}
+pytest-mock = {version = "^3.14.0", optional = true}
 
 [tool.poetry.dev-dependencies]
 sphinx-autobuild = "^2021.3.14"
@@ -79,7 +80,10 @@ terminal = ["pyqtgraph", "PySide6"]
 docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex",
         "scikit-learn", "altair", "bokeh", "colorcet", "sphinx-rtd-theme", "sphinx-sass", "pytest", "rich",
         "PySide6", "pyqtgraph", "autodoc_pydantic", "myst_parser", "pynwb"]
-tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio", "PySide6", "pyqtgraph", "rich"]
+tests = [
+    "pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pytest-mock",
+    "pigpio", "PySide6", "pyqtgraph", "rich"
+]
 plotting = ["altair", "bokeh", "colorcet"]
 extra_interfaces = ["datajoint-babel", "pynwb"]
 
