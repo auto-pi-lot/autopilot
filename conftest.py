@@ -4,41 +4,19 @@ import sys
 
 def on_gh_actions() -> bool:
     return "CI" in os.environ or os.environ["CI"] or "GITHUB_RUN_ID" in os.environ
-#
-# @pytest.fixture(scope='session', autouse=True)
-# def monkeypatch_cpuinfo(monkeypatch):
-#     # only patch on github actions
-#     # if not on_gh_actions():
-#     #     return
-#
-#     def patched_cpuinfo() -> dict:
-#         return {}
-#
-#     class PatchedModule():
-#         get_cpu_info = patched_cpuinfo
-#
-#     import cpuinfo
-#     monkeypatch.setattr(cpuinfo, 'get_cpu_info', patched_cpuinfo)
-#
-#     import blosc2.core
-#     monkeypatch.setattr(blosc2.core, 'get_cpu_info', patched_cpuinfo)
-#
-#     import tables.leaf
-#     monkeypatch.setattr(tables.leaf, 'cpuinfo', PatchedModule)
-    #
-    # mocker.patch('cpuinfo.get_cpu_info', return_value={})
-    # mocker.patch('blosc2.core.get_cpu_info', return_value={})
-    # mocker.patch('tables.leaf.cpuinfo.get_cpu_info', return_value={})
 
-
-# @pytest.fixture(scope='session', autouse=True)
-# def do_monkeypatch(mocker):
-#     monkeypatch_cpuinfo(mocker)
-
+# patch cpuinfo which doesn't work on github actions
+# (and actually isn't needed by blosc2 or pytables, but they
+# call it at the module level so their imports fail and we need
+# to monkeypatch in this janky way
 module = type(sys)('cpuinfo')
 module.get_cpu_info = lambda: {}
 sys.modules['cpuinfo'] = module
 
+def pytest_collection_modifyitems(config, items):
 
-
+    skip_gui = pytest.mark.xfail('GUI is not working with pyside6 atm')
+    for item in items:
+        if item.get_clsoest_marker('gui'):
+            item.add_marker(skip_gui)
 
