@@ -2,5 +2,5 @@ Transforms
 ===========
 
 
-.. automodule:: tests.test_transform_geometry
+.. automodule:: tests.test_transforms_geometry
     :members:

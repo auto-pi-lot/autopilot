@@ -9,6 +9,7 @@ from pytestqt.qt_compat import qt_api
 from autopilot.agents.terminal import Terminal
 from autopilot import prefs
 
+pytestmark = pytest.mark.gui
 
 @pytest.fixture
 def blank_pilot_db():

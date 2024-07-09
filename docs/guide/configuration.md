@@ -110,7 +110,7 @@ After configuration, all the files you'll interact with will be in the user dire
 
 An example user directory might look like this:
 
-```
+```text
 ./autopilot
 ├── calibration
 ├── data

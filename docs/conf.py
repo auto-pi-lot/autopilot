@@ -110,6 +110,7 @@ autoclass_content = "both"
 autodoc_member_order = "bysource"
 #autodoc_default_flags = ['members']
 #autodoc_mock_imports = ['tables', 'PySide', 'pyo', 'jack', 'pyqtgraph']
+autodoc_mock_imports = ['pytestqt']
 autodata_content = "both"
 
 autodoc_default_options = {
@@ -142,6 +143,7 @@ graphviz_output_format = 'svg'
 # pydantic_autodoc
 # --------------------------------------------------
 autodoc_pydantic_field_doc_policy = "both"
+autodoc_pydantic_model_show_json_error_strategy = 'coerce'
 
 
 
@@ -163,7 +165,7 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

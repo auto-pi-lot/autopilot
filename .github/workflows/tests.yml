@@ -1,0 +1,64 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  test:
+    env:
+      # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html?highlight=travis#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
+      DISPLAY: ":99.0"
+      QT_DEBUG_PLUGINS: 1
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      # see:
+      # - https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html#github-actions
+      # - https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
+      - name: Install system dependencies
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: x11-utils libxkbcommon-x11-0 xvfb herbstluftwm qt5-default qttools5-dev-tools libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0
+          version: "0.5.1"
+
+      - name: Install package dependencies
+        run: pip install -e ".[tests]"
+
+      - name: Run Tests
+        run: |
+          herbstluftwm &
+          sleep 1
+          mkdir -p $HOME/autopilot
+          mkdir -p $HOME/autopilot/logs
+          pytest --cov=autopilot --cov-config=.coveragerc --cov-report term-missing tests
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          flag-name: run-${{ join(matrix.*, '-') }}
+          parallel: true
+
+  coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true

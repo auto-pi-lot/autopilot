@@ -94,8 +94,8 @@ SCRIPTS = odict({
         'text': 'Setup Hifiberry DAC/AMP?',
         'commands': [
             {'command': 'sudo adduser pi i2c', 'optional': True},
-            'sudo sed -i \'s/^dtparam=audio=on/#dtparam=audio=on/g\' /boot/config.txt',
-            'sudo sed -i \'$s/$/\\ndtoverlay=hifiberry-dacplus\\ndtoverlay=i2s-mmap\\ndtoverlay=i2c-mmap\\ndtparam=i2c1=on\\ndtparam=i2c_arm=on/\' /boot/config.txt',
+            'sudo sed -i \'s/^dtparam=audio=on/#dtparam=audio=on/g\' /boot/firmware/config.txt',
+            'sudo sed -i \'$s/$/\\ndtoverlay=hifiberry-dacplus\\ndtoverlay=i2s-mmap\\ndtoverlay=i2c-mmap\\ndtparam=i2c1=on\\ndtparam=i2c_arm=on/\' /boot/firmware/config.txt',
             'echo -e \'pcm.!default {\\n type hw card 0\\n}\\nctl.!default {\\n type hw card 0\\n}\' | sudo tee /etc/asound.conf'
         ]
     },
@@ -107,7 +107,7 @@ SCRIPTS = odict({
         'type': 'bool',
         'text': 'Disable Bluetooth? (recommended unless you\'re using it <3',
         'commands': [
-            'sudo sed - i \'$s/$/\ndtoverlay=pi3-disable-bt/\' /boot/config.txt',
+            'sudo sed - i \'$s/$/\ndtoverlay=pi3-disable-bt/\' /boot/firmware/config.txt',
             'sudo systemctl disable hciuart.service',
             'sudo systemctl disable bluealsa.service',
             'sudo systemctl disable bluetooth.service'
@@ -223,8 +223,8 @@ SCRIPTS = odict({
         'type': 'bool',
         'text': 'Enable i2c and set baudrate to 100kHz',
         'commands': [
-            'sudo sed -i \'s/^#dtparam=i2c_arm=on/dtparam=i2c_arm=on/g\' /boot/config.txt',
-            'sudo sed -i \'$s/$/\ni2c_arm_baudrate=100000/\' /boot/config.txt',
+            'sudo sed -i \'s/^#dtparam=i2c_arm=on/dtparam=i2c_arm=on/g\' /boot/firmware/config.txt',
+            'sudo sed -i \'$s/$/\ni2c_arm_baudrate=100000/\' /boot/firmware/config.txt',
             'sudo sed -i \'$s/$/\ni2c-dev/\' /etc/modules',
             'sudo dtparam i2c_arm=on',
             'sudo modprobe i2c-dev'

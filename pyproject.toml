@@ -35,11 +35,11 @@ pyzmq = ">=25.0.0"
 npyscreen = "^4.10.5"
 tornado = "^6.1.0"
 inputs = "^0.5"
-requests = "^2.26.0"
-scikit-video = "^1.1.11"
-tqdm = "^4.62.3"
+requests = ">=2.26.0"
+scikit-video = ">=1.1.11"
+tqdm = ">=4.62.3"
 numpy = "^1.20.0"
-scipy = "^1.7.0"
+scipy = ">=1.7.0"
 pandas = ">=1.4.0"
 tables = ">=3.9.0"
 cffi = "^1.15.0"
@@ -52,7 +52,7 @@ JACK-Client  = {version = "^0.5.3", optional = true}
 pigpio-autopilot = {version = "^1.79", optional=true}
 pyqtgraph    = {version = "^0.13.3", optional = true}
 PySide6      = {version = ">=6.6.1", optional = true}
-Sphinx       = {version = "^4.3.1", optional = true}
+Sphinx       = {version = "^6.0.0", optional = true}
 autodocsumm  = {version = "^0.2.7", optional = true}
 matplotlib   = {version = "^3.5.1", optional = true}
 sphinxcontrib-bibtex = {version = "^2.4.1", optional = true}
@@ -62,13 +62,14 @@ bokeh        = {version = "^2.4.2", optional = true}
 colorcet     = {version = "^3.0.0", optional = true}
 sphinx-rtd-theme = {version = "^1.0.0", optional = true}
 autodoc_pydantic = {version="^1.7.0", optional=true}
-myst_parser = {version="^0.17.2", optional = true}
+myst_parser = {version="^3.0.0", optional = true}
 pytest       = {version = "^7.0.0", optional = true}
 pytest-cov   = {version = "^3.0.0", optional = true}
 pylint       = {version = "^2.12.2", optional = true}
 coveralls    = {version = "^3.3.1", optional = true}
 pytest-qt    = {version = ">=4.3.0", optional = true}
 pynwb = {version="^2.0.0,!=2.5.1", optional= true}
+pytest-mock = {version = "^3.14.0", optional = true}
 
 [tool.poetry.dev-dependencies]
 sphinx-autobuild = "^2021.3.14"
@@ -79,7 +80,10 @@ terminal = ["pyqtgraph", "PySide6"]
 docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex",
         "scikit-learn", "altair", "bokeh", "colorcet", "sphinx-rtd-theme", "sphinx-sass", "pytest", "rich",
         "PySide6", "pyqtgraph", "autodoc_pydantic", "myst_parser", "pynwb"]
-tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pigpio", "PySide6", "pyqtgraph", "rich"]
+tests = [
+    "pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "pytest-mock",
+    "pigpio", "PySide6", "pyqtgraph", "rich"
+]
 plotting = ["altair", "bokeh", "colorcet"]
 extra_interfaces = ["datajoint-babel", "pynwb"]
 

@@ -43,7 +43,9 @@ Using plugins is simple! Anything inside of the directory indicated by ``prefs.g
 provide objects that inherit from Autopilot classes supported by an entry in :data:`.registry.REGISTRIES` .
 
 For example, we want to write a task that uses some special hardware that we need. We could start by making a directory
-within ``'PLUGINDIR'`` like this::
+within ``'PLUGINDIR'`` like this:
+
+.. code-block:: text
 
     plugins
     ├── my-autopilot-plugin

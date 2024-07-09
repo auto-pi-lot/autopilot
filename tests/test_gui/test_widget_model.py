@@ -18,6 +18,8 @@ from autopilot.gui.widgets.input import Input, \
     BoolInput, IntInput, FloatInput, StrInput, \
     DatetimeInput, ListInput, DictInput, LiteralInput
 
+pytestmark = pytest.mark.gui
+
 class InnerModel(BaseModel):
     inner_list: List[int]
     inner_int: int

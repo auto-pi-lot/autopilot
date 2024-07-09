@@ -1,7 +1,9 @@
 """
 Prototype interface to datajoint models using ``datajoint-babel``
+
+This module was not completed and is left as a reference :)
+
 """
-raise NotImplementedError('The datajoint interface is not complete, it is left here for reference')
 
 # import typing
 # from typing import Optional

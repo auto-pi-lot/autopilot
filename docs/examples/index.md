@@ -8,7 +8,7 @@ Also see the ``examples`` folder in the repository for jupyter notebooks we have
 ```{toctree}
 :maxdepth: 1
 :caption: Tasks
------------------
+
 blink
 gonogo
 ```
