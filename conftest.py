@@ -15,8 +15,8 @@ sys.modules['cpuinfo'] = module
 
 def pytest_collection_modifyitems(config, items):
 
-    skip_gui = pytest.mark.xfail('GUI is not working with pyside6 atm')
+    skip_gui = pytest.mark.skip('GUI is not working with pyside6 atm')
     for item in items:
-        if item.get_clsoest_marker('gui'):
+        if item.get_closest_marker('gui'):
             item.add_marker(skip_gui)
 

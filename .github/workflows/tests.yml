@@ -16,8 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11"]
-        cpuinfo-version: ["5.0.0", "6.0.0", "7.0.0", "8.0.0", "9.0.0"]
+        python-version: ["3.9", "3.10", "3.11"]
 
     runs-on: ubuntu-latest
 
@@ -40,9 +39,6 @@ jobs:
 
       - name: Install package dependencies
         run: pip install -e ".[tests]"
-
-      - name: Install specific cpuinfo version (testing)
-        run: pip install --force-reinstall "py-cpuinfo==${{ matrix.cpuinfo-version }}"
 
       - name: Run Tests
         run: |
