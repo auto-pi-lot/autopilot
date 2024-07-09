@@ -1,7 +1,7 @@
 """
 Utility functions for dealing with the wiki (https://wiki.auto-pi-lot.com).
 
-See the docstrings of the :func:`.ask` function, as well as the :ref:`guide_wiki_plugins` section
+See the docstrings of the :func:`.ask` function, as well as the :ref:`guide_plugins_wiki` section
 in the user guide for use.
 """
 from typing import Union, Optional, List

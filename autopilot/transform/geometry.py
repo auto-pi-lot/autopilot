@@ -737,8 +737,8 @@ class Linefit_Prasad(Transform):
         # all credit to http://ieeexplore.ieee.org/document/6166585/
         # adapted from MATLAB scripts here: https://docs.google.com/open?id=0B10RxHxW3I92dG9SU0pNMV84alk
 
-        x = x.astype(np.float)
-        y = y.astype(np.float)
+        x = x.astype(float)
+        y = y.astype(float)
 
         results = {}
 
