@@ -4,10 +4,10 @@ sudo apt-get update
 sudo apt-get install -y libi2c-dev swig
 
 # enable i2c module
-sudo sed -i 's/^#dtparam=i2c_arm=on/dtparam=i2c_arm=on/g' /boot/config.txt
+sudo sed -i 's/^#dtparam=i2c_arm=on/dtparam=i2c_arm=on/g' /boot/firmware/config.txt
 
 # increase baudrate
-sudo sed -i '$s/$/\ndtparam=i2c_arm_baudrate=1000000/' /boot/config.txt
+sudo sed -i '$s/$/\ndtparam=i2c_arm_baudrate=1000000/' /boot/firmware/config.txt
 
 #cd ~/git
 # clone submodules if we haven't already
