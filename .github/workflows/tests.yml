@@ -48,8 +48,5 @@ jobs:
           mkdir -p $HOME/autopilot/logs
           pytest --cov=autopilot --cov-config=.coveragerc --cov-report term-missing tests
 
-      - name: Report coverage
-        if: ${{ matrix.python-version }} == "3.11"
-        run: "coveralls --service=github"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
