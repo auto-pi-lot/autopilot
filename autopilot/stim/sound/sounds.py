@@ -41,9 +41,11 @@ The behavior of this module depends on `prefs.get('AUDIOSERVER')`.
 import os
 import sys
 import typing
+from typing import Union, Optional
 from time import sleep
 from scipy.io import wavfile
 from scipy.signal import resample
+import scipy.signal
 import numpy as np
 import threading
 from itertools import cycle
@@ -52,6 +54,7 @@ from queue import Empty, Full
 from autopilot import prefs
 from autopilot.stim.sound.base import get_sound_class, Sound
 import autopilot
+from autopilot.transform.timeseries import Filter_IIR
 
 BASE_CLASS = get_sound_class()
 
@@ -97,19 +100,123 @@ class Tone(BASE_CLASS):
 
         self.initialized = True
 
+class Tritone(BASE_CLASS):
+    """An unpleasant-sounding tritone"""
+    PARAMS = ['frequency', 'duration', 'amplitude', 'channel']
+    type = 'Tritone'
+    
+    def __init__(self, frequency, duration, amplitude=0.01, channel=None, **kwargs):
+        """Initialize a new tritone with specified parameters.
+        
+        The sound itself is stored as the attribute `self.table`. This can
+        be 1-dimensional or 2-dimensional, depending on `channel`. If it is
+        2-dimensional, then each channel is a column.
+        
+        Args:
+            frequency (float): frequency of the base tone
+            duration (float): duration of the sound
+            amplitude (float): amplitude of the sound as a proportion of 1.
+            channel (int or None): which channel should be used
+                If 0, play noise from the first channel
+                If 1, play noise from the second channel
+                If None, send the same information to all channels ("mono")
+            **kwargs: extraneous parameters that might come along with instantiating us
+        """
+        # This calls the base class, which sets server-specific parameters
+        # like sampling rate
+        super(Tritone, self).__init__(**kwargs)
+        
+        # Set the parameters specific to Tritone
+        self.frequency = float(frequency)
+        self.duration = float(duration)
+        self.amplitude = float(amplitude)
+        try:
+            self.channel = int(channel)
+        except TypeError:
+            self.channel = channel
+        
+        # Currently only mono or stereo sound is supported
+        if self.channel not in [None, 0, 1]:
+            raise ValueError(
+                "audio channel must be 0, 1, or None, not {}".format(
+                self.channel))
+
+        # Initialize the sound itself
+        self.init_sound()
+
+    def init_sound(self):
+        """Defines `self.table`, the waveform that is played. 
+        
+        The way this is generated depends on `self.server_type`, because
+        parameters like the sampling rate cannot be known otherwise.
+        
+        The sound is generated and then it is "chunked" (zero-padded and
+        divided into chunks). Finally `self.initialized` is set True.
+        """
+        # Depends on the server_type
+        if self.server_type == 'pyo':
+            raise NotImplementedError("pyo not supported for Tritone")
+        
+        elif self.server_type == 'jack':
+            # This calculates the number of samples, using the specified 
+            # duration and the sampling rate from the server, and stores it
+            # as `self.nsamples`.
+            self.get_nsamples()
+
+            # generate samples
+            # Generate time
+            t = np.arange(self.nsamples)
+
+            # Generate base tone
+            data = np.sin(
+                2 * np.pi * self.frequency * t / self.fs)
+
+            # Add on the upper tone, which is sqrt(2) higher
+            data += np.sin(
+                2 * np.pi * self.frequency * np.sqrt(2) * t / self.fs)
+
+            # The shape of the table depends on `self.channel`
+            if self.channel is None:
+                # The table will be 1-dimensional for mono sound
+                self.table = data
+
+            else:
+                # The table will be 2-dimensional for stereo sound
+                # Each channel is a column
+                # Only the specified channel contains data and the other is zero
+
+                # Put in correct column
+                self.table = np.zeros((self.nsamples, 2))
+                assert self.channel in [0, 1]
+                self.table[:, self.channel] = data
+            
+            # Scale by the amplitude
+            self.table = self.table * self.amplitude
+            
+            # Convert to float32
+            self.table = self.table.astype(np.float32)
+            
+            # Chunk the sound 
+            self.chunk()
+
+        # Flag as initialized
+        self.initialized = True
+    
 class Noise(BASE_CLASS):
     """Generates a white noise burst with specified parameters
     
     The `type` attribute is always "Noise".
     """
-    # These are the parameters of the sound, I think this is used to generate
-    # sounds automatically for a protocol
-    PARAMS = ['duration','amplitude', 'channel']
+    # These are the parameters of the sound
+    # These can be set in the GUI when generating a Nafc step in a Protocol
+    PARAMS = ['duration', 'amplitude', 'highpass', 'channel']
     
     # The type of the sound
     type='Noise'
     
-    def __init__(self, duration, amplitude=0.01, channel=None, **kwargs):
+    def __init__(self, duration, amplitude=0.01, channel=None, 
+        highpass: Optional[Union[float, Filter_IIR]]=None,
+        **kwargs):
         """Initialize a new white noise burst with specified parameters.
         
         The sound itself is stored as the attribute `self.table`. This can
@@ -123,15 +230,36 @@ class Noise(BASE_CLASS):
                 If 0, play noise from the first channel
                 If 1, play noise from the second channel
                 If None, send the same information to all channels ("mono")
+            highpass (float, :class:`~.transform.timeseries.Filter_IIR`, or None): 
+                This optionally applies a filter to the Noise.
+                If None, no filter is applied.
+                If :class:`~.transform.timeseries.Filter_IIR`, then that
+                    filter is applied.
+                If float, then a :class:`~.transform.timeseries.Filter_IIR`
+                    is created for you. By default it will be a 2nd-order
+                    Butterworth high-pass with the specified float as `Wn`.
+                    This value should be provided in Hz, not as a fraction
+                    of the Nyquist frequency, because we also provide
+                    the sampling rate to Filter_IIR (and from there to
+                    scipy.signal.iirfilter).
             **kwargs: extraneous parameters that might come along with instantiating us
         """
         # This calls the base class, which sets server-specific parameters
-        # like samplign rate
+        # like sampling rate
         super(Noise, self).__init__(**kwargs)
         
         # Set the parameters specific to Noise
         self.duration = float(duration)
         self.amplitude = float(amplitude)
+        self._highpass = None
+        if isinstance(highpass, (float, int)):
+            self._highpass = float(highpass)
+        elif isinstance(highpass, Filter_IIR):
+            if highpass.btype != 'highpass':
+                self.logger.warning(f'Got a {highpass.btype} filter instead of a highpass, this should still work, but indicates this parameter should probably be renamed...')
+
+            self._highpass = highpass
+
         try:
             self.channel = int(channel)
         except TypeError:
@@ -165,17 +293,23 @@ class Noise(BASE_CLASS):
             # duration and the sampling rate from the server, and stores it
             # as `self.nsamples`.
             self.get_nsamples()
-            
+
             # Generate the table by sampling from a uniform distribution
+            data = np.random.uniform(-1, 1, self.nsamples)
+
+            if self.highpass is not None:
+                data = self.highpass.filter(data)
+
             # The shape of the table depends on `self.channel`
             if self.channel is None:
                 # The table will be 1-dimensional for mono sound
-                self.table = np.random.uniform(-1, 1, self.nsamples)
+                self.table = data
+
             else:
                 # The table will be 2-dimensional for stereo sound
                 # Each channel is a column
                 # Only the specified channel contains data and the other is zero
-                data = np.random.uniform(-1, 1, self.nsamples)
+                
                 self.table = np.zeros((self.nsamples, 2))
                 assert self.channel in [0, 1]
                 self.table[:, self.channel] = data
@@ -192,6 +326,25 @@ class Noise(BASE_CLASS):
 
         # Flag as initialized
         self.initialized = True
+
+    @property
+    def highpass(self) -> Union[Filter_IIR, None]:
+        """
+        A highpass filter (see the ``highpass`` argument) applied to generated samples
+
+        Returns:
+            :class:`~.transform.timeseries.Filter_IIR` or None, if none supplied
+
+        """
+
+        if isinstance(self._highpass, float):
+            # If we were given a float, make the filter and stash it
+            filter = Filter_IIR(ftype='butter', N=2, Wn=self._highpass,
+                                btype="highpass", fs=self.fs)
+            self._highpass = filter
+
+        return self._highpass
+
 
     def iter_continuous(self) -> typing.Generator:
         """
@@ -210,12 +363,14 @@ class Noise(BASE_CLASS):
 
         rng = np.random.default_rng()
 
-
         while True:
             if self.channel is None:
                 table[:] = rng.uniform(-self.amplitude, self.amplitude, self.blocksize)
             else:
                 table[:,self.channel] = rng.uniform(-self.amplitude, self.amplitude, self.blocksize)
+
+            if self.highpass is not None:
+                table = self.highpass.filter(table)
 
             yield table
 
