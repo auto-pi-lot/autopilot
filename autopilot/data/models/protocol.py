@@ -94,7 +94,7 @@ class Step_Group(H5F_Group):
         else:
             trial_data = Trial_Data
 
-        # complete table decription with any stim parameters
+        # complete table description with any stim parameters
         if step_dict and 'stim' in step_dict.keys():
             trial_data = self._make_stim_descriptors(step_dict['stim'], trial_data)
 

@@ -167,7 +167,7 @@ class GPIO(Hardware):
         super(GPIO, self).__init__(**kwargs)
 
         if not ENABLED:
-            raise RuntimeError("Couldnt import pigpio, so GPIO objects can't be used")
+            raise RuntimeError("Couldn't import pigpio, so GPIO objects can't be used")
 
         # initialize attributes
         self._polarity = None

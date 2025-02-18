@@ -983,7 +983,7 @@ class Subject(object):
 
             else:
                 # we have more than one row with this trial_num.
-                # shouldn't happen, but we dont' want to throw any data away
+                # shouldn't happen, but we don't want to throw any data away
                 self.logger.warning(f'Found multiple rows with same trial_num: {trial_num}')
                 # continue just for data conservancy's sake
                 self._increment_trial(trial_row)

@@ -196,7 +196,7 @@ New Features
 
 * **TRANSFORMS** have been introduced!!! :class:`~autopilot.transform.transforms.Transform` objects have a :meth:`~.Transform.process` method
   that, well, transforms data in some way. Multiple transforms can be added together to make a transformation chain. This module is still
-  very young and doesn't have a developed API, but will be built to to automatic type compatibility checking, coersion, parallelization, and rhythm (FIFO/FILO) control.
+  very young and doesn't have a developed API, but will be built to to automatic type compatibility checking, coercion, parallelization, and rhythm (FIFO/FILO) control.
   Transforms are implemented with different modalities (image, selection, logical) that imply different types of input and output data structures,
   but the hierarchical structure of the modules is still quite flat.
 

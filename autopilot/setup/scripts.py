@@ -123,7 +123,7 @@ SCRIPTS = odict({
     },
     'jackd_source': {
         'type': 'bool',
-        'text': 'Install jack audio from source, try this if youre having compatibility or runtime issues with jack (required if AUDIOSERVER == jack)',
+        'text': "Install jack audio from source, try this if you're having compatibility or runtime issues with jack (required if AUDIOSERVER == jack)",
         'commands': [
             "git clone https://github.com/jackaudio/jack2 --depth 1",
             "cd jack2",
