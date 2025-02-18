@@ -325,7 +325,7 @@ class Sound_Widget(QtWidgets.QWidget):
 
         Attributes:
             type_selection (:class:`QtWidgets.QComboBox`): Select from a list of available sounds
-            param_dict (dict): Parameters that are retreived by the calling :class:`.Sound_Widget`.
+            param_dict (dict): Parameters that are retrieved by the calling :class:`.Sound_Widget`.
 
         """
         def __init__(self):

@@ -446,7 +446,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
                       payload_size,
                       value['message_size']))
         except AssertionError:
-            self.logger.exception(f"Payload was not a numpy array or didnt have the expected size\ngot a {type(value['payload'])}")
+            self.logger.exception(f"Payload was not a numpy array or didn't have the expected size\ngot a {type(value['payload'])}")
 
         #payload_size = np.frombuffer(base64.b64decode(value['payload']),dtype=np.bool).nbytes
 

@@ -122,5 +122,5 @@ BASE_TYPES = (
     bool, int, float, str, bytes, datetime
 )
 """
-Base Python types that should be suppported by every interface
+Base Python types that should be supported by every interface
 """

@@ -1,5 +1,5 @@
 """
-Tools to visulize data after collection.
+Tools to visualize data after collection.
 
 Warning:
     this module is unfinished, so it is undocumented.

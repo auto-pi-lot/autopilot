@@ -225,7 +225,7 @@ class Jack_Sound(Stim):
             self.continuous_q = jackclient.CONTINUOUS_QUEUE
             self.continuous_loop = jackclient.CONTINUOUS_LOOP
 
-        # Initalize these flags
+        # Initialize these flags
         self.initialized = False
         self.buffered = False
         self.buffered_continuous = False
@@ -303,7 +303,7 @@ class Jack_Sound(Stim):
             sound_list = [sound[i:i + self.blocksize, :] for i in range(0, sound.shape[0], self.blocksize)]
 
         else:
-            raise NotImplementedError(f"sounds with more than 2 dimensions arent supported, got ndim {sound.ndim}")
+            raise NotImplementedError(f"sounds with more than 2 dimensions aren't supported, got ndim {sound.ndim}")
 
         self.chunks = sound_list
 
@@ -428,7 +428,7 @@ class Jack_Sound(Stim):
         if not self.chunks:
             self.chunk()
 
-        # continous sounds should not have any padding - see docstring
+        # continuous sounds should not have any padding - see docstring
         if self.padded:
             raise Exception(
                 "Continuous sounds cannot have padded chunks - sounds need to have n_samples % blocksize == 0")
@@ -616,7 +616,7 @@ def get_sound_class(server_type: typing.Optional[str] = None) -> typing.Union[ty
     # From now on, server_type should be 'jack', 'pyo', 'docs', or None
     if server_type not in Backends.keys():
         if server_type is not False:
-            warn(f'Requested server type {server_type}, but it doesnt exist. Using dummy')
+            warn(f'Requested server type {server_type}, but it does not exist. Using dummy')
         server_type = 'dummy'
 
     # if we're testing, set server_type to jack
@@ -632,7 +632,7 @@ def get_sound_class(server_type: typing.Optional[str] = None) -> typing.Union[ty
     elif server_type == 'dummy':
         return Sound
     else:
-        warn(f'requested server_type {server_type} but its requirements arent met. Using dummy')
+        warn(f"requested server_type {server_type} but its requirements aren't met. Using dummy")
         return Sound
 
 

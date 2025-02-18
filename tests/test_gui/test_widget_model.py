@@ -155,7 +155,7 @@ def test_dict_input():
     """
     .. todo::
 
-        Test empty returne as empty dict
+        Test empty return as empty dict
         Test raise informative error when malformed
 
     """

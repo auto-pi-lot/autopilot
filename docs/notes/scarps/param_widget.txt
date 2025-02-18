@@ -20,7 +20,7 @@
 #             used to update the protocol stored in the :class:`~.subject.Subject` object.
 #     """
 #     # Superclass to embed wherever needed
-#     # Subclasses will implement use as standalong dialog and as step selector
+#     # Subclasses will implement use as standalone dialog and as step selector
 #     # Reads and edits tasks parameters from a subject's protocol
 #     def __init__(self, params=None, stash_changes=False):
 #         """
@@ -192,7 +192,7 @@
 #         """
 #         Stores parameters that define sounds.
 #
-#         Sound parameters work a bit differently, speficically we have to retrieve
+#         Sound parameters work a bit differently, specifically we have to retrieve
 #         :py:attr:`.Sound_Widget.sound_dict`.
 #         """
 #         # Have to handle sounds slightly differently

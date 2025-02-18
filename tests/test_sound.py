@@ -34,7 +34,7 @@ Here is the sequence of events that leads to FS and BLOCKSIZE.
 **  Next, autopilot.agents.pilot.Pilot.init_audio instantiates an
     autopilot.stim.sound.jackclient.JackClient()
 **  autopilot.stim.sound.jackclient.JackClient.__init__ 
-    initalizes a jack.Client
+    initializes a jack.Client
 **  autopilot.stim.sound.jackclient.JackClient.fs 
     is set to jack.Client.samplerate. Note that this is either the
     requested sample rate, or some default value from jack (not Autopilot)
@@ -375,7 +375,7 @@ def test_init_multichannel_noise(duration_ms, amplitude, channel,
 
 def test_unpadded_gap():
     """
-    A gap in a continous sound should not be padded (had its last chunk filled with zeros).
+    A gap in a continuous sound should not be padded (had its last chunk filled with zeros).
     """
 
     # make a sound that is 1.5x the duration of a chunk
