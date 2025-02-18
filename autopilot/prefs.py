@@ -545,7 +545,7 @@ def get(key: typing.Union[str, None] = None):
                 if os.getenv('AUTOPILOT_WARN_DEFAULTS'):
                     if key not in globals()['_WARNED']:
                         globals()['_WARNED'].append(key)
-                        warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldn't happen and everything should be specified in prefs', DefaultPrefWarning)
+                        warnings.warn(f"Returning default prefs value {key} : {default_val} (ideally this shouldn't happen and everything should be specified in prefs)", DefaultPrefWarning)
                 return default_val
 
             # if you still can't find a value, None is an unambiguous signal for pref not set
@@ -655,7 +655,7 @@ def init(fn=None):
             prefs['HASH'] = ''
             warnings.warn(f'git hash for repo could not be found! will not be able to keep good provenance! got exception: \n{e}')
     else:
-        warnings.warn('REPODIR is not set in prefs.json, can't get git hash!!!')
+        warnings.warn("REPODIR is not set in prefs.json, can't get git hash!!!")
 
     # FIXME: This 100% should not happen here and should happen in the relevant hardware classes.
     # Load any calibration data

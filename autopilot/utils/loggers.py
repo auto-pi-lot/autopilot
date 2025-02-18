@@ -203,7 +203,7 @@ def _file_handler(base_filename: Path) -> RotatingFileHandler:
             )
         except Exception as f:
             raise PermissionError(
-                f'Couldnt open logfile {base_filename}, and couldn't chmod our way out of it.\n' + '-' * 20 + f'\ngot errors:\n{e}\n\n{f}\n' + '-' * 20)
+                f"Couldn't open logfile {base_filename}, and couldn't chmod our way out of it.\n" + '-' * 20 + f'\ngot errors:\n{e}\n\n{f}\n' + '-' * 20)
 
     return fh
 

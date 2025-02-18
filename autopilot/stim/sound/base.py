@@ -632,7 +632,7 @@ def get_sound_class(server_type: typing.Optional[str] = None) -> typing.Union[ty
     elif server_type == 'dummy':
         return Sound
     else:
-        warn(f'requested server_type {server_type} but its requirements aren't met. Using dummy')
+        warn(f"requested server_type {server_type} but its requirements aren't met. Using dummy")
         return Sound
 
 

@@ -672,7 +672,7 @@ class Subject(object):
                 current trial, and session number included.
         """
         if self.protocol is None:
-            e = RuntimeError('No task assigned to subject, can't prepare_run. use Subject.assign_protocol or protocol reassignment wizard in the terminal GUI')
+            e = RuntimeError("No task assigned to subject, can't prepare_run. use Subject.assign_protocol or protocol reassignment wizard in the terminal GUI")
             self.logger.exception(f"{e}")
             raise e
 

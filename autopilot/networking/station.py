@@ -636,7 +636,7 @@ class Station(multiprocessing.Process):
             # FIXME UGLY HACK
             self.push(msg=msg)
         else:
-            self.logger.exception(f'Message not to us, but wasn't forwarded previously in handling method, message must be misformatted: {msg}')
+            self.logger.exception(f"Message not to us, but wasn't forwarded previously in handling method, message must be misformatted: {msg}")
 
         # all of the below should be removed but i am paranoid and like
         # sorta bad at reverting changes on git so i am just commenting for now
