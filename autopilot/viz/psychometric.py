@@ -112,7 +112,7 @@ def plot_psychometric(subject_protocols):
     ).mark_line()
 
     combo = alt.layer(acc_points + log_curves, data=combo_df).facet(row='subject:N')
-    #combo.sav
+    #combo.save
     return combo
 
     #combo.serve()

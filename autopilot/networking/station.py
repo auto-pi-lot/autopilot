@@ -134,7 +134,7 @@ class Station(multiprocessing.Process):
             'KILL'   : self.l_kill
         })
 
-        # even tthat signals when we are closing
+        # even that signals when we are closing
         self.closing = multiprocessing.Event()
         self.closing.clear()
 
@@ -636,7 +636,7 @@ class Station(multiprocessing.Process):
             # FIXME UGLY HACK
             self.push(msg=msg)
         else:
-            self.logger.exception(f'Message not to us, but wasnt forwarded previously in handling method, message must be misformatted: {msg}')
+            self.logger.exception(f'Message not to us, but wasn't forwarded previously in handling method, message must be misformatted: {msg}')
 
         # all of the below should be removed but i am paranoid and like
         # sorta bad at reverting changes on git so i am just commenting for now
@@ -1287,7 +1287,7 @@ class Pilot_Station(Station):
         Tell one or more children to start running a task.
 
         By default, the `key` argument passed to `self.send` is 'START'.
-        However, this can be overriden by providing the desired string
+        However, this can be overridden by providing the desired string
         as `msg.value['KEY']`.
 
         This checks the pref `CHILDID` to get the names of one or more children.

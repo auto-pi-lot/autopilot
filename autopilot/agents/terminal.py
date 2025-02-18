@@ -246,7 +246,7 @@ class Terminal(QtWidgets.QMainWindow):
             # window manager reserved areas such as task bars and system menus.
             primary_display = app.primaryScreen().availableGeometry()
 
-        ## Initalize the menuBar
+        ## Initialize the menuBar
         # Linux: Set the menuBar to a fixed height
         # Darwin: Don't worry about menuBar
         if sys.platform == 'darwin':
@@ -877,7 +877,7 @@ class Terminal(QtWidgets.QMainWindow):
         """
 
         if not IMPORTED_VIZ:
-            _ = pop_dialog("Vizualisation function couldn't be imported!", "error", VIZ_ERROR)
+            _ = pop_dialog("Visualisation function couldn't be imported!", "error", VIZ_ERROR)
             return
 
         psychometric_dialog = Psychometric(self.subject_protocols)

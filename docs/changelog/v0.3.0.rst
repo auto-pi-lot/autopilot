@@ -55,7 +55,7 @@ Bugfixes
 * Fix conflict between polarity and pull in initializing `pulls` in pilot
 * Catch ``tables.HDF5ExtError`` if local .h5 file corrupt in pilot
 * For some reason 'fs' wasn't being replaced in the jackd string, reinstated.
-* Fix comparison in LED_RGB that caused '0' to turn on full becuse 'value' was being checked for its truth value (0 is false) rather than checking if value is None.
+* Fix comparison in LED_RGB that caused '0' to turn on full because 'value' was being checked for its truth value (0 is false) rather than checking if value is None.
 * ``obj.next()`` to ``next(obj)``` in jackdserver
 
 Improvements
@@ -267,7 +267,7 @@ Bugfixes
 * :class:`.Net_Node` objects were only implicitly destroyed by their :attr:`~.Net_Node.loop_thread``s being set as daemons, and
   would thus occasionally hang and keep the program open but unresponsive. They are now explicitly closed with a
   :meth:`~.Net_Node.release` method which ends the threaded loop by setting the :attr:`~.Net_Node.closing` event.
-* Embarassingly, :class:`.Pilot` objects were not prevented from running multiple tasks at a time. This led to some very
+* Embarrassingly, :class:`.Pilot` objects were not prevented from running multiple tasks at a time. This led to some very
   confusing and hard-to-debug problems, as well as frequent conflicts over hardware access and resources. Typically what would
   happen is the Terminal would send a ``START`` message to begin a task, and if it wouldn't received a message receipt
   quickly enough would resend it, resulting in two tasks being started -- but this would happen whenever two ``START`` messages were sent

@@ -75,7 +75,7 @@ and then capture a video with :class:`.cameras.PiCamera` and write it to ``test_
 
     Since every hardware object in autopilot is by default nonblocking (eg. work happens in multiple threads, you can
     make other calls while the camera is capturing, etc.), this will work in an interactive python session but would require
-    that you ``sleep`` or call ``cam.stoppping.join()`` or some other means of keeping the process open.
+    that you ``sleep`` or call ``cam.stopping.join()`` or some other means of keeping the process open.
 
 While the camera is capturing, you can access its current frame in its ``frame`` attribute, or to make sure you get
 every frame, by calling :meth:`~.cameras.Camera.queue` .

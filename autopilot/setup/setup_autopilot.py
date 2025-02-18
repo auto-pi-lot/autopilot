@@ -54,7 +54,7 @@ def make_alias(launch_script: Path, bash_profile: typing.Optional[str]=None) -> 
             bash_profile = Path.home() / '.bash_profile'
         else:
             result = False
-            message = 'No bash_profile provided and cant find in default locations! couldnt make alias'
+            message = 'No bash_profile provided and can't find in default locations! couldn't make alias'
             return result, message
 
 

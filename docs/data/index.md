@@ -105,7 +105,7 @@ Transitioning to a uniform data modeling system is in progress! The following ne
 - Hardware parameter descriptions - Need to find better way of having models that represent
   class arguments.
 - {mod}`.graduation` objects.
-- Verious GUI widgets need to use models rather than the zillions of ad-hoc representations:
+- Various GUI widgets need to use models rather than the zillions of ad-hoc representations:
   - {class}`.Protocol_Wizard`
 - {mod}`.utils.plugins` needs its own model to handle dependencies, etc.
 - {mod}`.agents` needs models for defining basic agent attributes.

@@ -78,7 +78,7 @@ class Baselines(Data):
         The minimum mass (g), computed as :attr:`.mass` * :attr:`.minimum_pct`
         """
         if self.mass is None or self.minimum_pct is None:
-            raise ValueError("Cant compute minimum mass without a baseline mass or minimum percent!")
+            raise ValueError("Can't compute minimum mass without a baseline mass or minimum percent!")
         return self.mass * self.minimum_pct
 
 
@@ -94,7 +94,7 @@ class Biography(Attributes):
 
     - Interface with the NWB biographical information schema.
     """
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="The indentifying string, name, subject_id, etc. for this subject. " + \
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="The identifying string, name, subject_id, etc. for this subject. " + \
                                       "This value is also used to name the related Subject file, like {id}.h5, so these are typically expected to be unique. " + \
                                       "If None is provided, a uuid.uuid4() will be generated (which will be ugly so you probably want to give an id).")
     start_date: Optional[datetime] = Field(default_factory=datetime.now, description="The date that this subject file was created. Not that this is not necessarily the date " + \

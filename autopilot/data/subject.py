@@ -672,7 +672,7 @@ class Subject(object):
                 current trial, and session number included.
         """
         if self.protocol is None:
-            e = RuntimeError('No task assigned to subject, cant prepare_run. use Subject.assign_protocol or protocol reassignment wizard in the terminal GUI')
+            e = RuntimeError('No task assigned to subject, can't prepare_run. use Subject.assign_protocol or protocol reassignment wizard in the terminal GUI')
             self.logger.exception(f"{e}")
             raise e
 
@@ -700,7 +700,7 @@ class Subject(object):
             self.current_trial = trial_tab['trial_num'][-1]+1
         except IndexError:
             if 'trial_num' not in trial_tab_keys:
-                self.logger.warning('No trial_num column detected in trial data! this is a basic indexing column for trialwise data and should always be present! You might experience unexpected behavior in your data, make sure you check everyhing is as it should be!')
+                self.logger.warning('No trial_num column detected in trial data! this is a basic indexing column for trialwise data and should always be present! You might experience unexpected behavior in your data, make sure you check everything is as it should be!')
             self.logger.info('Using current_trial = 0')
             self.current_trial = 0
 
@@ -767,7 +767,7 @@ class Subject(object):
 
             except Exception as e:
                 self.logger.exception(
-                    f"Couldnt trim data given to graduation objects to current set of sessions, using full data history. got exception\n {e}")
+                    f"Couldn't trim data given to graduation objects to current set of sessions, using full data history. got exception\n {e}")
 
 
             if not slice_start and slice_start != 0:
@@ -1269,9 +1269,9 @@ def _update_current(h5f) -> Protocol_Status:
         trial_tab = h5f.get_node(active_step.path, 'trial_data')
         got_protocol = True
     except tables.NoSuchNodeError:
-        print("Couldnt find trial_data node, not able to retreive data from trial table. Using zeros for current trial and session")
+        print("Couldn't find trial_data node, not able to retrieve data from trial table. Using zeros for current trial and session")
     except ValueError:
-        print("Couldnt find task, not able to retrieve data from trial table. Using zeros for current trial and session")
+        print("Couldn't find task, not able to retrieve data from trial table. Using zeros for current trial and session")
 
     if got_protocol:
         try:

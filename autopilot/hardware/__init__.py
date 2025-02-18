@@ -102,7 +102,7 @@ class Hardware(object):
             try:
                 self.name = self.get_name()
             except:
-                warnings.warn('wasnt passed name and couldnt find from prefs for object: {}'.format(self.__str__))
+                warnings.warn('wasnt passed name and couldn't find from prefs for object: {}'.format(self.__str__))
                 self.name = None
         self.group = group
 
@@ -203,7 +203,7 @@ class Hardware(object):
             elif self.name is not None:
                 cal_name = self.name
             else:
-                self.logger.debug('Hardware object has no group or name, cant find calibration!')
+                self.logger.debug('Hardware object has no group or name, can't find calibration!')
 
             if cal_name is not None:
                 cal_name += ".json"

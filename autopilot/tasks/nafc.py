@@ -13,7 +13,7 @@ from autopilot.data.models.protocol import Trial_Data
 from collections import OrderedDict as odict
 from pydantic import Field
 
-# This declaration allows Subject to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
+# This declaration allows Subject to identify which class in this file contains the task class. Could also be done with __init__ but yno I didn't for no reason.
 # TODO: Move this to __init__
 TASK = 'Nafc'
 
@@ -205,7 +205,7 @@ class Nafc(Task):
 
         # Initialize stim manager
         if not stim:
-            raise RuntimeError("Cant instantiate task without stimuli!")
+            raise RuntimeError("Can't instantiate task without stimuli!")
         else:
             self.stim_manager = init_manager(stim)
 

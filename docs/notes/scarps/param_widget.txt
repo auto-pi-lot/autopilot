@@ -192,7 +192,7 @@
 #         """
 #         Stores parameters that define sounds.
 #
-#         Sound parameters work a bit differently, speficically we have to retrieve
+#         Sound parameters work a bit differently, specifically we have to retrieve
 #         :py:attr:`.Sound_Widget.sound_dict`.
 #         """
 #         # Have to handle sounds slightly differently

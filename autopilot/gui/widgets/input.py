@@ -38,7 +38,7 @@ class Input(ABC):
     """
     Metaclass to parametrically spawn a Qt Input widget for a given type.
 
-    Primarily for the purpose of making a unified widget creation and value retreival syntax within the :class:`ModelWidget` class
+    Primarily for the purpose of making a unified widget creation and value retrieval syntax within the :class:`ModelWidget` class
     """
     # class variables set by subtypes
     widget: ClassVar[Type[QtWidgets.QWidget]] = None
