@@ -107,7 +107,7 @@ SCRIPTS = odict({
         'type': 'bool',
         'text': 'Disable Bluetooth? (recommended unless you\'re using it <3',
         'commands': [
-            'sudo sed - i \'$s/$/\ndtoverlay=pi3-disable-bt/\' /boot/firmware/config.txt',
+            'sudo sed -i \'$s/$/\ndtoverlay=pi3-disable-bt/\' /boot/firmware/config.txt',
             'sudo systemctl disable hciuart.service',
             'sudo systemctl disable bluealsa.service',
             'sudo systemctl disable bluetooth.service'
