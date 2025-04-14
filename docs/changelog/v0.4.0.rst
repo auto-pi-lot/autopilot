@@ -228,7 +228,7 @@ Minor Improvements
 Bugfixes
 ~~~~~~~~
 
-* Loggers would only work for the last object that was instantiated, which was really embarassing. fixed - https://github.com/auto-pi-lot/autopilot/pull/91
+* Loggers would only work for the last object that was instantiated, which was really embarrassing. fixed - https://github.com/auto-pi-lot/autopilot/pull/91
 * Graduation criteria were calculated incorrectly when subjects were demoted in stages of a protocol - https://github.com/auto-pi-lot/autopilot/pull/91
 * fix durations in solenoid class (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/auto-pi-lot/autopilot/pull/63
 * LED_RGB ignores zero - https://github.com/auto-pi-lot/autopilot/pull/98

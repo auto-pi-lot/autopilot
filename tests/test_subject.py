@@ -74,7 +74,7 @@ def test_assign(dummy_subject:Subject, dummy_protocol_file:Path):
 
 def test_history():
     """
-    We correctly store changes in step, protocol, in the history table and can retreive them
+    We correctly store changes in step, protocol, in the history table and can retrieve them
     """
 
 def test_hashes():

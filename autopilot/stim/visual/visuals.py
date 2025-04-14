@@ -17,7 +17,7 @@ if prefs.get( 'CONFIG'):
     if 'VISUAL' in prefs.get('CONFIG'):
         from psychopy import visual, core
 else:
-    Warning('No CONFIG attr set in prefs, dont know if youre set up for visual stim. not importing psychopy')
+    Warning("No CONFIG attr set in prefs, dont know if you're set up for visual stim. not importing psychopy")
 
 
 class Visual(object):

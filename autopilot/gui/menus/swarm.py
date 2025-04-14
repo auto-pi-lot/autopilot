@@ -48,7 +48,7 @@ class Stream_Video(QtWidgets.QDialog):
 
             self.cameras[pilot] = {}
 
-            # iterate through nested hardware dictionary, lookin for cameras
+            # iterate through nested hardware dictionary, looking for cameras
             hardware = pilot_prefs.get('HARDWARE', {'':{}})
             for hw_group, hw_items in hardware.items():
                 for hw_id, hw_params in hw_items.items():

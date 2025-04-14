@@ -99,3 +99,10 @@ priority = "supplemental"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.codespell]
+# Ref: https://github.com/codespell-project/codespell#using-a-config-file
+skip = '.git*,*.svg,*.lock,*.css,searchindex.js,autopilot_docs.bib'
+check-hidden = true
+ignore-regex = '(\b(Bu)\b|\(O\)ther\b|\(U\)nknown\b|^\s*"image/\S+": ".*)'
+# ignore-words-list = ''

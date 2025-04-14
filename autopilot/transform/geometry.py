@@ -212,7 +212,7 @@ class Rotate(Transform):
 
         # parse dimensions and inverse into slices
         if not dims:
-            e = ValueError('need to provide some dimensino to rotate around, got empty dims')
+            e = ValueError('need to provide some dimension to rotate around, got empty dims')
             self.logger.exception(e)
             raise e
 
@@ -472,7 +472,7 @@ class Order_Points(Transform):
     Useful for when points are extracted from an image, but need to be treated as a line rather than disordered points!
 
     Starting with a point, find the nearest point and add that to a deque. Once all points are found on the 'forward pass',
-    start the initial point again goind the 'other direction.'
+    start the initial point again going the 'other direction.'
 
     The threshold parameter tunes the (percentile) distance consecutive points may be from one another.
     The default threshold of ``1`` will connect all the points but won't necessarily find a very compact line.

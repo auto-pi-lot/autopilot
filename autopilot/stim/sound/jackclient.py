@@ -182,7 +182,7 @@ class JackClient(mp.Process):
         self._continuous_sound = None # type: typing.Optional['Jack_Sound']
         self._continuous_dehydrated = None
 
-        # store the frames of the continuous sound and cycle through them if set in continous mode
+        # store the frames of the continuous sound and cycle through them if set in continuous mode
         self.continuous_cycle = None
 
         # Something calls process() before boot_server(), so this has to
@@ -263,8 +263,8 @@ class JackClient(mp.Process):
             listified_outchannels = self.outchannels
             self.mono_output = False
         
-        ## Initalize self.client
-        # Initalize a new Client and store some its properties
+        ## Initialize self.client
+        # Initialize a new Client and store some its properties
         # I believe this is how downstream code knows the sample rate
         self.client = jack.Client(self.name)
         self.blocksize = self.client.blocksize

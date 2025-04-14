@@ -203,7 +203,7 @@ class Transformer(Child):
             return_ip:
             return_port:
             return_key:
-            router_port (None, int): If not ``None`` (default), spawn the node with a route port to receieve
+            router_port (None, int): If not ``None`` (default), spawn the node with a route port to receive
             stage_block:
             value_subset (str): Optional - subset a value from from a dict/list sent to :meth:`.l_process`
             forward_what (str): one of 'input', 'output', or 'both' (default) that determines what is forwarded

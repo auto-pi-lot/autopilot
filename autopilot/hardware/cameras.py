@@ -1070,13 +1070,13 @@ class Camera_CV(Camera):
                 # but if we're a subsublist... shouldn't have a dictionary
                 elif l.startswith('\t\t'):
                     if not isinstance(vals[subkey], list):
-                        # catch the previously assined value from the top level of the subdictionary
+                        # catch the previously assigned value from the top level of the subdictionary
                         vals[subkey] = [vals[subkey]]
 
                     vals[subkey].append(l.strip('\t'))
 
                 else:
-                    # otherwise if we're at the bottom level, stash the key and any value dictioanry we've gathered before
+                    # otherwise if we're at the bottom level, stash the key and any value dictionary we've gathered before
                     key = l.strip(':')
                     if vals:
                         out_dict[key] = vals
@@ -1594,7 +1594,7 @@ class Camera_Spinnaker(Camera):
     @property
     def writable_attributes(self):
         """
-        All device attributes that are currently writeable wth :meth:`~Camera_Spinnaker.set`
+        All device attributes that are currently writeable with :meth:`~Camera_Spinnaker.set`
 
         Returns:
             dict: A dictionary of attributes that are writeable and their current values
@@ -1923,7 +1923,7 @@ class Video_Writer(mp.Process):
             fps (int): framerate of output video
             timestamps (bool): if True (default), input will be of form (timestamp, frame). if False,
                 input will just be frames and timestamps will be generated as the frame is encoded (**not recommended**)
-            blosc (bool): if True, frames in the :attr:`~Video_Writer.q` will be compresed with blosc. if False, uncompressed
+            blosc (bool): if True, frames in the :attr:`~Video_Writer.q` will be compressed with blosc. if False, uncompressed
 
         Attributes:
             timestamps (list): Timestamps for frames, written to .csv on completion of encoding

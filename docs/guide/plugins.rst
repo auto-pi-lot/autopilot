@@ -166,7 +166,7 @@ import anything we have made/put in our plugins directory, we currently *don't* 
 core library of autopilot -- we want to be able to offer the code for tasks and hardware that have diverse dependencies
 while giving ourselves some protection against writing squirrelly edge cases everywhere.
 
-In practice, anywhere you go to make an explicit import of an autopilot class that is suported by a registry, it is good
+In practice, anywhere you go to make an explicit import of an autopilot class that is supported by a registry, it is good
 practice to use ``autopilot.get`` instead. It is called like::
 
     # autopilot.get('registry_name', 'object_name')

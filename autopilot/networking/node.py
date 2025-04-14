@@ -587,8 +587,8 @@ class Net_Node(object):
                     self.logger.debug("STREAM {}: Sent {} items".format(self.id+'_'+id, len(pending_data)))
                     pending_data = []
         else:
-            # just send like normal messags
-            # just send like normal messags
+            # just send like normal messages
+            # just send like normal messages
             while True:
                 try:
                     data = q.popleft()

@@ -241,7 +241,7 @@ class ModelWidget(QtWidgets.QWidget):
         """
         optional = not field.required
 
-        # Make the label using the schema titel and description
+        # Make the label using the schema title and description
         title = model.schema()['properties'][field.name]['title']
 
         if optional:

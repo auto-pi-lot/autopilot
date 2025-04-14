@@ -127,7 +127,7 @@ def make_ask_string(filters:Union[List[str], str],
         filters = [filters]
 
     if len(filters)==0:
-        raise ValueError(f'You need to provide at least one filter! Cant get the whole wiki!')
+        raise ValueError(f"You need to provide at least one filter! Can't get the whole wiki!")
 
     query_str = "|".join(filters)
 

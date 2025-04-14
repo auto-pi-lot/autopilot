@@ -167,7 +167,7 @@ class GPIO(Hardware):
         super(GPIO, self).__init__(**kwargs)
 
         if not ENABLED:
-            raise RuntimeError('Couldnt import pigpio, so GPIO objects cant be used')
+            raise RuntimeError("Couldn't import pigpio, so GPIO objects can't be used")
 
         # initialize attributes
         self._polarity = None
@@ -179,7 +179,7 @@ class GPIO(Hardware):
             self.pin_bcm = None
         except AttributeError:
             # if a subclass has made this a property, don't fail here
-            self.logger.warning('pin_bcm is defined as a property without a setter so cant be set')
+            self.logger.warning("pin_bcm is defined as a property without a setter so can't be set")
 
         self.pig = None # type: typing.Optional[pigpio.pi]
         self.pigpiod = None
@@ -1090,7 +1090,7 @@ class LED_RGB(Digital_Out):
         Stops the last run script
 
         Args:
-            value (int, float, tuple, list):  If list or tuple, an (R, G, B) color. If float or int, applied to each color channe.
+            value (int, float, tuple, list):  If list or tuple, an (R, G, B) color. If float or int, applied to each color channel.
                 Can be set with floats 0-1, or ints >= 1  (See :attr:`PWM.range`).
                 If None, use ``r``, ``g``, and ``b``.
             r (float, int): value to set red channel
@@ -1295,7 +1295,7 @@ class LED_RGB(Digital_Out):
         if pin is None:
             # just remnants of the attempt to set from the GPIO metaclass
             return
-        self.logger.warning('pin cant be set via the attribute')
+        self.logger.warning("pin can't be set via the attribute")
 
     @property
     def pin_bcm(self):
@@ -1317,7 +1317,7 @@ class LED_RGB(Digital_Out):
         if pin_bcm is None:
             return
 
-        self.logger.warning('pin_bcm cant be set via the attribute')
+        self.logger.warning("pin_bcm can't be set via the attribute")
 
     @property
     def pull(self):
@@ -1327,7 +1327,7 @@ class LED_RGB(Digital_Out):
     def pull(self, direction):
         if direction is None:
             return
-        self.logger.warning('pull cant be set via the attribute')
+        self.logger.warning("pull can't be set via the attribute")
 
 
 class Solenoid(Digital_Out):

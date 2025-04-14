@@ -87,7 +87,7 @@ class H5F_Group(H5F_Node):
             node = h5f.get_node(self.path)
             # if no exception, already exists
             if not isinstance(node, tables.group.Group):
-                raise ValueError(f'{self.path} already exists, but it isnt a group! instead its a {type(node)}')
+                raise ValueError(f"{self.path} already exists, but it isn't a group! instead its a {type(node)}")
         except tables.exceptions.NoSuchNodeError:
             group = h5f.create_group(self.parent, self.name,
                              title=self.title, createparents=True,
@@ -116,7 +116,7 @@ class H5F_Table(H5F_Node):
         try:
             node = h5f.get_node(self.path)
             if not isinstance(node, tables.table.Table):
-                raise ValueError(f'{self.path} already exists, but it isnt a Table! instead its a {type(node)}')
+                raise ValueError(f"{self.path} already exists, but it isn't a Table! instead its a {type(node)}")
             elif set(node.description._v_names) != set(list(self.description.columns.keys())):
                 self._logger.warning(f"Found existing table with columns {node.description._v_names}, but requested a table with {list(self.description.columns.keys())}, remaking.")
                 self._remake_table(h5f)
@@ -261,7 +261,7 @@ def description_to_model(description: typing.Type[tables.IsDescription], cls:typ
     if hasattr(description, 'columns'):
         iterator = description.columns
     elif hasattr(description, '_v_colobjects'):
-        # compatibility iwth tables.description.Description types
+        # compatibility with tables.description.Description types
         iterator = description._v_colobjects
     else:
         raise TypeError(f"Dont know how to convert table from {description}")

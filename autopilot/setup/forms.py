@@ -460,7 +460,7 @@ def unfold_values(v):
         #pdb.set_trace()
 
         if hasattr(v, 'values'):
-            # if it's an object that has mutiple values, ie. a choice box, value is inside a list.
+            # if it's an object that has multiple values, ie. a choice box, value is inside a list.
             v = v.values[v.value[0]]
         elif hasattr(v, 'value'):
             # if it isn't a list, but is still a widget object, get the value

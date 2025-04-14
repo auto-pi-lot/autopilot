@@ -87,7 +87,7 @@ def test_protocol_group(h5file, dummy_protocol):
     pgroup.make(h5file)
     test_tables = ['/data/TEST_PROCOTOL/S00_Free_Water/trial_data', '/data/TEST_PROCOTOL/S01_Nafc/trial_data']
 
-    # just check that one of the default columsn is present because that means we should have the rest!
+    # just check that one of the default columns is present because that means we should have the rest!
     for tab in test_tables:
         tabnode = h5file.get_node(tab)
         assert isinstance(tabnode, tables.table.Table)

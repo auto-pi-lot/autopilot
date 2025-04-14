@@ -31,7 +31,7 @@ where there are user-named ``'GROUPS'`` of hardware objects, like ``'LEDS'`` , e
 the other components in the group. The intention of this structure is to allow multiple categories of hardware objects
 to be parameterized and used separately, even though they might be the same object type. Eg. we may have three LEDs
 in our nosepokes, but also have an LED that serves at the arena light. If we wanted to write a command that turns off all
-LEDs, we would have to explicitly specify their IDs, making it difficult to re-use very common hardware command patterns
+LEDs, we would have to explicitly specify their IDs, making it difficult to reuse very common hardware command patterns
 within tasks. There are obvious drawbacks to this scheme -- clunky, ambiguous, etc. and will be deprecated as parameterization
 continues to congeal across the library.
 
@@ -534,7 +534,7 @@ def get(key: typing.Union[str, None] = None):
                     if not path.exists():
                         path.mkdir(parents=True, exist_ok=True)
                 except Exception as e:
-                    warnings.warn(f"prefs {key} was a directory, but a directory couldnt be created. got exception {e}")
+                    warnings.warn(f"prefs {key} was a directory, but a directory couldn't be created. got exception {e}")
             return globals()['_PREFS'][key]
 
         # if none exists...
@@ -545,7 +545,7 @@ def get(key: typing.Union[str, None] = None):
                 if os.getenv('AUTOPILOT_WARN_DEFAULTS'):
                     if key not in globals()['_WARNED']:
                         globals()['_WARNED'].append(key)
-                        warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt happen and everything should be specified in prefs', DefaultPrefWarning)
+                        warnings.warn(f"Returning default prefs value {key} : {default_val} (ideally this shouldn't happen and everything should be specified in prefs)", DefaultPrefWarning)
                 return default_val
 
             # if you still can't find a value, None is an unambiguous signal for pref not set
@@ -655,7 +655,7 @@ def init(fn=None):
             prefs['HASH'] = ''
             warnings.warn(f'git hash for repo could not be found! will not be able to keep good provenance! got exception: \n{e}')
     else:
-        warnings.warn('REPODIR is not set in prefs.json, cant get git hash!!!')
+        warnings.warn("REPODIR is not set in prefs.json, can't get git hash!!!")
 
     # FIXME: This 100% should not happen here and should happen in the relevant hardware classes.
     # Load any calibration data

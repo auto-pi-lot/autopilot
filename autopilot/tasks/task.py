@@ -75,7 +75,7 @@ class Task(object):
         triggers (dict): Some mapping of some pin to callback methods
         pins (dict): Dict to store references to hardware
         pin_id (dict): Reverse dictionary, pin numbers back to pin letters.
-        punish_block (:class:`threading.Event`): Event to mark when punishment is occuring
+        punish_block (:class:`threading.Event`): Event to mark when punishment is occurring
         logger (:class:`logging.Logger`): gets the 'main' logger for now.
     """
     # dictionary of Params needed to define task,
